@@ -1,4 +1,8 @@
-class Zone(polyinterface.Node):
+
+
+import polyinterface
+
+class ZoneNode(polyinterface.Node):
 
     def __init__(self, controller, primary, address, name):
         super(TemplateNode, self).__init__(controller, primary, address, name)

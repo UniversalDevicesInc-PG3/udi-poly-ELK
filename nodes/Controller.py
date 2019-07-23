@@ -1,5 +1,7 @@
 
 
+import polyinterface
+from node_funcs import *
 from nodes import Zone
 
 class Controller(polyinterface.Controller):
@@ -31,7 +33,13 @@ class Controller(polyinterface.Controller):
             self.nodes[node].reportDrivers()
 
     def discover(self, *args, **kwargs):
-        self.addNode(TemplateNode(self, self.address, 'templateaddr', 'Template Node Name'))
+        self.addNode(
+          ZoneNode(
+            self,
+            self.address,
+            get_valid_node_address('zone_000'),
+            'The Zone Name')
+        )
 
     def delete(self):
         LOGGER.info('Oh no I am being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')
