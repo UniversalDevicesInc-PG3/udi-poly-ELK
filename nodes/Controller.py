@@ -44,7 +44,7 @@ class Controller(polyinterface.Controller):
             #'zone' : {'include' : '1-38', 'exclude' : '15-20'},
         }
 
-        self.ELK = PyElk.Elk(config, log=_LOGGER)
+        self.ELK = PyElk.Elk(config, log=LOGGER)
         self.ELK.connect()
 
         if self.ELK.status == ELK.STATE_DISCONNECTED:
