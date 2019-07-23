@@ -1,6 +1,26 @@
 <editors>
-    <!-- Boolean -->
-    <editor id="bool">
-        <range uom="2" subset="0,1" />
-    </editor>
+  <!-- Boolean -->
+  <editor id="bool">
+      <range uom="2" subset="0,1" />
+  </editor>
+  <!-- Status -->
+  <editor id="zstatus">
+      <range uom="25" subset="0-3" nls="ZSTATUS" />
+  </editor>
+  <!-- Status -->
+  <editor id="zstate">
+      <range uom="25" subset="0-3" nls="ZSTATE" />
+  </editor>
+  <!-- Status -->
+  <editor id="area">
+      <range uom="56" subset="0-15" />
+  </editor>
+  <!-- Status -->
+  <editor id="ztype">
+      <range uom="25" subset="0-3" nls="ZTYPE" />
+  </editor>
+  <!-- Status -->
+  <editor id="zconfig">
+      <range uom="25" subset="0-3" nls="ZCONFIG" />
+  </editor>
 </editors>

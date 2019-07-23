@@ -2,13 +2,12 @@
 
 #### Installation
 
-Here is how you install this poly.
+Install from the Polyglot store.
 
 #### Requirements
 
-Here is what is required to run this poly.
+This uses https://github.com/BioSehnsucht/pyelk which currently only supports an M1EXP in local non secure mode.
 
-## Using this Template
+## Using this Node Server
 
-To use this template as the start of your nodeserver, just hit the + in the upper
-right corner of github and give the path to this repo as the source.
+No info yet

@@ -1,12 +1,91 @@
 # controller
-ND-controller-NAME = Template NodeServer Controller
-CMD-ctl-QUERY"-NAME = Query
+ND-controller-NAME = ELK NodeServer Controller
+CMD-ctl-QUERY-NAME = Query
 CMD-ctl-DISCOVER-NAME = Re-Discover
 CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
-CMD-ctl-REMOVE_NOTICES_ALL-NAME = Remove All Notices
-CMD-ctl-REMOVE_NOTICE_TEST-NAME = Remove Notice Test
 ST-ctl-ST-NAME = NodeServer Online
 
-# mynodetype
-ND-tmplnode-NAME = Template Node
-ST-tmplnode-ST-NAME = Node Status
+# zone
+ND-zone-NAME = Zone Node
+ST-zone-ST-NAME = Status
+ST-zone-GV1-NAME = State
+ST-zone-GV2-NAME = Enabled
+ST-zone-GV3-NAME = Area
+ST-zone-GV4-NAME = Type
+ST-zone-GV5-NAME = Configuration
+
+
+ZSTATE-0 = Unconfigured
+ZSTATE-1 = Open
+ZSTATE-2 = EOL
+ZSTATE-3 = SHORT
+
+ZSTATUS-0 = Normal
+ZSTATUS-1 = Trouble
+ZSTATUS-2 = Violated
+ZSTATUS-3 = Bypassed
+
+ZTYPE-0 = Disabled
+ZTYPE-1 = Burglar Entry/Exit 1
+ZTYPE-2 = Burglar Entry/Exit 2
+ZTYPE-3 = Burglar Perimeter Instant
+ZTYPE-4 = Burglar Interior
+ZTYPE-5 = Burglar Interior Follower
+ZTYPE-6 = Burglar Interior Night
+ZTYPE-7 = Burglar Interior Night Delay
+ZTYPE-8 = Burglar 24 Hour
+ZTYPE-9 = Burglar Box Tamper
+ZTYPE-10 = Fire Alarm
+ZTYPE-11 = Fire Verified
+ZTYPE-12 = Fire Supervisory
+ZTYPE-13 = Aux Alarm 1
+ZTYPE-14 = Aux Alarm 2
+ZTYPE-15 = Keyfob
+ZTYPE-16 = Non Alarm
+ZTYPE-17 = Carbon Monoxide
+ZTYPE-18 = Emergency Alarm
+ZTYPE-19 = Freeze Alarm
+ZTYPE-20 = Gas Alarm
+ZTYPE-21 = Heat Alarm
+ZTYPE-22 = Medical Alarm
+ZTYPE-23 = Police Alarm
+ZTYPE-24 = Police No Indication
+ZTYPE-25 = Water Alarm
+ZTYPE-26 = Key Momentary Arm / Disarm
+ZTYPE-27 = Key Momentary Arm Away
+ZTYPE-28 = Key Momentary Arm Stay
+ZTYPE-29 = Key Momentary Disarm
+ZTYPE-30 = Key On/Off
+ZTYPE-31 = Mute Audibles
+ZTYPE-32 = Power Supervisory
+ZTYPE-33 = Temperature
+ZTYPE-34 = Analog Zone
+ZTYPE-35 = Phone Key
+ZTYPE-36 - Intercom Key
+
+ZCONFIG-0 = Disabled
+ZCONFIG-1 = Burglar Entry/Exit 1
+ZCONFIG-2 = Burglar Entry/Exit 2
+ZCONFIG-3 = Burglar Perimeter Instant
+ZCONFIG-4 = Burglar Interior
+ZCONFIG-5 = Burglar Interior Follower
+ZCONFIG-6 = Burglar Interior Night
+ZCONFIG-7 = Burglar Interior Night Delay
+ZCONFIG-8 = Burglar 24 Hour
+ZCONFIG-9 = Burglar Box Tamper
+ZCONFIG-10 = Fire Alarm
+ZCONFIG-11 = Fire Verified
+ZCONFIG-12 = Fire Supervisory
+ZCONFIG-13 = Aux Alarm 1
+ZCONFIG-14 = Aux Alarm 2
+ZCONFIG-15 = Keyfob
+ZCONFIG-16 = Non Alarm
+ZCONFIG-17 = Carbon Monoxide
+ZCONFIG-18 = Emergency Alarm
+ZCONFIG-19 = Freeze Alarm
+ZCONFIG-20 = Gas Alarm
+ZCONFIG-21 = Head Alarm
+ZCONFIG-22 = Medical Alarm
+ZCONFIG-23 = Police Alarm
+ZCONFIG-24 = Police No Indication
+ZCONFIG-25 = Water Alarm

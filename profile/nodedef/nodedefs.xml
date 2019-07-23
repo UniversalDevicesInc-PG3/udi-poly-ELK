@@ -17,17 +17,29 @@
             </accepts>
         </cmds>
     </nodeDef>
-	<!-- templatenodeid -->
-    <nodeDef id="templatenodeid" nls="tmplnode">
+	<!-- zone -->
+    <nodeDef id="zone" nls="zone">
         <editors />
         <sts>
-            <st id="ST" editor="bool" />
+            <!-- status -->
+            <st id="ST" editor="zstatus" />
+            <!-- input state -->
+            <st id="GV1" editor="zstate" />
+            <!-- enabled -->
+            <st id="GV2" editor="bool" />
+            <!-- area -->
+            <st id="GV3" editor="area" />
+            <!-- definition type -->
+            <st id="GV4" editor="ztype" />
+            <!-- alarm configuration -->
+            <st id="GV5" editor="zconfig" />
         </sts>
         <cmds>
-            <sends />
+            <sends>
+              <cmd id="DON" />
+              <cmd id="DOF" />
+            </sends>
             <accepts>
-                <cmd id="DON" />
-                <cmd id="DOF" />
             </accepts>
         </cmds>
     </nodeDef>
