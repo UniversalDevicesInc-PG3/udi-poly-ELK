@@ -3,7 +3,10 @@
 import polyinterface
 from node_funcs import *
 from nodes import ZoneNode
+import PyElk
+
 LOGGER = polyinterface.LOGGER
+
 
 class Controller(polyinterface.Controller):
     def __init__(self, polyglot):
@@ -14,10 +17,13 @@ class Controller(polyinterface.Controller):
         """
         super(Controller, self).__init__(polyglot)
         self.name = 'ELK Controller'
-        self.poly.onConfig(self.process_config)
+        #Not using because it's called to many times
+        #self.poly.onConfig(self.process_config)
 
     def start(self):
         LOGGER.info('Started ELK NodeServer')
+        self.setDriver('ST', 1)
+        self.setDriver('GV1', 0)
         self.check_params()
         self.discover()
         self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
@@ -34,13 +40,39 @@ class Controller(polyinterface.Controller):
             self.nodes[node].reportDrivers()
 
     def discover(self, *args, **kwargs):
-        self.addNode(
-          ZoneNode(
-            self,
-            self.address,
-            get_valid_node_address('zone_000'),
-            'The Zone Name')
-        )
+        config = {'host' : self.host,
+            #'zone' : {'include' : '1-38', 'exclude' : '15-20'},
+        }
+
+        ELK = PyElk.Elk(config, log=_LOGGER)
+        ELK.connect()
+
+    if ELK.status == ELK.STATE_DISCONNECTED:
+        self.setDriver('GV1', 0)
+        _LOGGER.info('discover: Error connecting')
+    else:
+        _LOGGER.info('discover: Connected, start rescan...')
+        self.setDriver('GV1', 1)
+        ELK.rescan()
+        _LOGGER.info('discover: rescan done...')
+        time.sleep(1)
+        versions = ELK.get_version()
+        LOGGER.info('discover: versions {}'.format(versions))
+        for o in range(0,len(ELK.ZONES)):
+            zone = ELK.ZONES[o]
+            # TODO: Is this the right way?  Or use configured?
+            if zone.description is not None:
+                LOGGER.info('PyElk-test: Zone: {}: {} state:{}'.format(o,zone.description,zone.state))
+                self.addNode(
+                  ZoneNode(
+                    self,
+                    self.address,
+                    get_valid_node_address('zone_%03d' % (zone.number - 1)),
+                    zone.description,
+                    zone
+                  )
+                )
+        print('discover: add zones done...')
 
     def delete(self):
         LOGGER.info('Oh no I am being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')
@@ -75,6 +107,8 @@ class Controller(polyinterface.Controller):
         if self.host == default_host:
             # This doesn't pass a key to test the old way.
             self.addNotice('Please set proper host in configuration page, and restart this nodeserver','default')
+        else:
+            self.discover()
 
     def update_profile(self):
         LOGGER.info('update_profile:')
@@ -91,5 +125,6 @@ class Controller(polyinterface.Controller):
         'UPDATE_PROFILE': cmd_update_profile,
     }
     drivers = [
-        {'driver': 'ST',  'value': 0, 'uom': 22},
+        {'driver': 'ST',   'value': 0, 'uom': 22},
+        {'driver': 'GV1',  'value': 0, 'uom': 22},
     ]

@@ -1,9 +1,11 @@
+
 # controller
 ND-controller-NAME = ELK NodeServer Controller
 CMD-ctl-QUERY-NAME = Query
 CMD-ctl-DISCOVER-NAME = Re-Discover
 CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
 ST-ctl-ST-NAME = NodeServer Online
+ST-ctl-GV1-NAME = ELK M1EXP Connected
 
 # zone
 ND-zone-NAME = Zone Node

@@ -5,8 +5,9 @@ LOGGER = polyinterface.LOGGER
 
 class ZoneNode(polyinterface.Node):
 
-    def __init__(self, controller, primary, address, name):
+    def __init__(self, controller, primary, address, name, pyelk_obj):
         super(ZoneNode, self).__init__(controller, primary, address, name)
+        self.pyelk_obj = pyelk_obj
 
     def start(self):
         self.setDriver('ST',  -1)
@@ -15,7 +16,11 @@ class ZoneNode(polyinterface.Node):
         self.setDriver('GV3', -1)
         self.setDriver('GV4', -1)
         self.setDriver('GV5', -1)
-        pass
+        self.pyelk_obj.callback_add(self.pyelk_callback)
+
+    def pyelk_callback(self,data):
+        _LOGGER.debug('my_callback: self={}, data={}'.format(self,data))
+        _LOGGER.debug('my_callback: Zone: {}: state:{}'.format(data.description,data.state))
 
     def setOn(self, command):
         self.setDriver('ST', 1)
