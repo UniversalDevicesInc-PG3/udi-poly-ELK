@@ -65,7 +65,7 @@ class Controller(polyinterface.Controller):
             self.host = self.polyConfig['customParams']['host']
         else:
             self.host = default_host
-            LOGGER.error('check_params: host not defined in customParams, please add it.  Using {}'.format(self.user))
+            LOGGER.error('check_params: host not defined in customParams, please add it.  Using {}'.format(self.host))
 
         # Make sure they are in the params
         self.addCustomParam( {'host': self.host })
