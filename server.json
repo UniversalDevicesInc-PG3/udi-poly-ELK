@@ -1,5 +1,5 @@
 {
-    "name": "PythonTemplate",
+    "name": "ELK",
     "docs": "https://github.com/jimboca/udi-poly-elk",
     "type": "python3",
     "executable": "elk-poly.py",
@@ -10,7 +10,7 @@
     "longPoll": "240",
     "credits": [
         {
-            "title": "mypoly: a NodeServer for Template Integration",
+            "title": "ELK: a NodeServer for ELK Security Panel Integration",
             "author": "JimBoCA",
             "version": "0.0.1",
             "date": "July 23, 2019",
