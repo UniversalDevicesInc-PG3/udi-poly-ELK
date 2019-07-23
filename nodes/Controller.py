@@ -76,16 +76,19 @@ class Controller(polyinterface.Controller):
             # This doesn't pass a key to test the old way.
             self.addNotice('Please set proper host in configuration page, and restart this nodeserver','default')
 
-    def update_profile(self,command):
+    def update_profile(self):
         LOGGER.info('update_profile:')
-        st = self.poly.installprofile()
-        return st
+        return self.cmd_update_profile('')
+
+    def cmd_update_profile(self,command):
+        LOGGER.info('cmd_update_profile:')
+        return self.poly.installprofile()
 
     id = 'controller'
     commands = {
         'QUERY': query,
         'DISCOVER': discover,
-        'UPDATE_PROFILE': update_profile,
+        'UPDATE_PROFILE': cmd_update_profile,
     }
     drivers = [
         {'driver': 'ST',  'value': 0, 'uom': 22},
