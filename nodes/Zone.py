@@ -1,6 +1,7 @@
 
 
 import polyinterface
+LOGGER = polyinterface.LOGGER
 
 class ZoneNode(polyinterface.Node):
 

@@ -3,6 +3,7 @@
 import polyinterface
 from node_funcs import *
 from nodes import Zone
+LOGGER = polyinterface.LOGGER
 
 class Controller(polyinterface.Controller):
     def __init__(self, polyglot):
