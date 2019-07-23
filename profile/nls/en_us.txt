@@ -14,11 +14,11 @@ ST-zone-GV3-NAME = Area
 ST-zone-GV4-NAME = Type
 ST-zone-GV5-NAME = Configuration
 
-ZSTATE-0 = UNKNOWN
-ZSTATE-1 = Unconfigured
-ZSTATE-2 = Open
-ZSTATE-3 = EOL
-ZSTATE-4 = SHORT
+ZSTATE--1 = UNKNOWN
+ZSTATE-0 = Unconfigured
+ZSTATE-1 = Open
+ZSTATE-2 = EOL
+ZSTATE-3 = SHORT
 
 ZSTATUS--1 = UNKNOWN
 ZSTATUS-0 = Normal
@@ -26,6 +26,7 @@ ZSTATUS-1 = Trouble
 ZSTATUS-2 = Violated
 ZSTATUS-3 = Bypassed
 
+ZTYPE--1 = UNKNOWN
 ZTYPE-0 = UNKNOWN
 ZTYPE-0 = Disabled
 ZTYPE-1 = Burglar Entry/Exit 1
@@ -65,6 +66,7 @@ ZTYPE-34 = Analog Zone
 ZTYPE-35 = Phone Key
 ZTYPE-36 - Intercom Key
 
+ZCONFIG--1 = Disabled
 ZCONFIG-0 = Disabled
 ZCONFIG-1 = Burglar Entry/Exit 1
 ZCONFIG-2 = Burglar Entry/Exit 2

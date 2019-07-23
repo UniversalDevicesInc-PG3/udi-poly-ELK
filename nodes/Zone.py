@@ -9,8 +9,12 @@ class ZoneNode(polyinterface.Node):
         super(ZoneNode, self).__init__(controller, primary, address, name)
 
     def start(self):
-        self.setDriver('ST', -1)
+        self.setDriver('ST',  -1)
         self.setDriver('GV1', -1)
+        self.setDriver('GV2',  0)
+        self.setDriver('GV3', -1)
+        self.setDriver('GV4', -1)
+        self.setDriver('GV5', -1)
         pass
 
     def setOn(self, command):
