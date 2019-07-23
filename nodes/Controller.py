@@ -58,7 +58,7 @@ class Controller(polyinterface.Controller):
         """
         This is an example if using custom Params for user and password and an example with a Dictionary
         """
-        self.remove_notices_all()
+        self.removeNoticesAll()
 
         default_host = "YourELK_IP_Or_Host:PortNum"
         if 'host' in self.polyConfig['customParams']:
@@ -74,11 +74,6 @@ class Controller(polyinterface.Controller):
         if self.host == default_host:
             # This doesn't pass a key to test the old way.
             self.addNotice('Please set proper host in configuration page, and restart this nodeserver','default')
-
-    def remove_notices_all(self,command):
-        LOGGER.info('remove_notices_all: notices={}'.format(self.poly.config['notices']))
-        # Remove all existing notices
-        self.removeNoticesAll()
 
     def update_profile(self,command):
         LOGGER.info('update_profile:')
