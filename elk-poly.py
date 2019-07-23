@@ -7,12 +7,13 @@ by JimBoCA jimboca3@gmail.com
 import polyinterface
 import sys
 import time
+from elk-nodes import Controller
 
 LOGGER = polyinterface.LOGGER
 
 if __name__ == "__main__":
     try:
-        polyglot = polyinterface.Interface('Template')
+        polyglot = polyinterface.Interface('ELK')
         """
         Instantiates the Interface to Polyglot.
         The name doesn't really matter unless you are starting it from the
