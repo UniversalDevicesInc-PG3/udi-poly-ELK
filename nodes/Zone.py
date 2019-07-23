@@ -6,7 +6,7 @@ LOGGER = polyinterface.LOGGER
 class ZoneNode(polyinterface.Node):
 
     def __init__(self, controller, primary, address, name):
-        super(TemplateNode, self).__init__(controller, primary, address, name)
+        super(ZoneNode, self).__init__(controller, primary, address, name)
 
     def start(self):
         self.setDriver('ST', 1)
