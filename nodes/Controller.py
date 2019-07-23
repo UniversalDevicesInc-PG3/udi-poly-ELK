@@ -44,35 +44,35 @@ class Controller(polyinterface.Controller):
             #'zone' : {'include' : '1-38', 'exclude' : '15-20'},
         }
 
-        ELK = PyElk.Elk(config, log=_LOGGER)
-        ELK.connect()
+        self.ELK = PyElk.Elk(config, log=_LOGGER)
+        self.ELK.connect()
 
-    if ELK.status == ELK.STATE_DISCONNECTED:
-        self.setDriver('GV1', 0)
-        _LOGGER.info('discover: Error connecting')
-    else:
-        _LOGGER.info('discover: Connected, start rescan...')
-        self.setDriver('GV1', 1)
-        ELK.rescan()
-        _LOGGER.info('discover: rescan done...')
-        time.sleep(1)
-        versions = ELK.get_version()
-        LOGGER.info('discover: versions {}'.format(versions))
-        for o in range(0,len(ELK.ZONES)):
-            zone = ELK.ZONES[o]
-            # TODO: Is this the right way?  Or use configured?
-            if zone.description is not None:
-                LOGGER.info('PyElk-test: Zone: {}: {} state:{}'.format(o,zone.description,zone.state))
-                self.addNode(
-                  ZoneNode(
-                    self,
-                    self.address,
-                    get_valid_node_address('zone_%03d' % (zone.number - 1)),
-                    zone.description,
-                    zone
-                  )
-                )
-        print('discover: add zones done...')
+        if self.ELK.status == ELK.STATE_DISCONNECTED:
+            self.setDriver('GV1', 0)
+            _LOGGER.info('discover: Error connecting')
+        else:
+            _LOGGER.info('discover: Connected, start rescan...')
+            self.setDriver('GV1', 1)
+            self.ELK.rescan()
+            _LOGGER.info('discover: rescan done...')
+            time.sleep(1)
+            versions = self.ELK.get_version()
+            LOGGER.info('discover: versions {}'.format(versions))
+            for o in range(0,len(self.ELK.ZONES)):
+                zone = self.ELK.ZONES[o]
+                # TODO: Is this the right way?  Or use configured?
+                if zone.description is not None:
+                    LOGGER.info('PyElk-test: Zone: {}: {} state:{}'.format(o,zone.description,zone.state))
+                    self.addNode(
+                      ZoneNode(
+                        self,
+                        self.address,
+                        get_valid_node_address('zone_%03d' % (zone.number - 1)),
+                        zone.description,
+                        zone
+                      )
+                    )
+            print('discover: add zones done...')
 
     def delete(self):
         LOGGER.info('Oh no I am being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')
