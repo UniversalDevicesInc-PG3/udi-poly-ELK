@@ -59,7 +59,8 @@ class Controller(polyinterface.Controller):
         This is an example if using custom Params for user and password and an example with a Dictionary
         """
         self.removeNoticesAll()
-
+        # TODO: Only when necessary
+        self.update_profile()
         default_host = "YourELK_IP_Or_Host:PortNum"
         if 'host' in self.polyConfig['customParams']:
             self.host = self.polyConfig['customParams']['host']
