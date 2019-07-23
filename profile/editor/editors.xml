@@ -5,7 +5,7 @@
   </editor>
   <!-- Status -->
   <editor id="zstatus">
-      <range uom="25" subset="0-3" nls="ZSTATUS" />
+      <range uom="25" subset="-1,0-3" nls="ZSTATUS" />
   </editor>
   <!-- Status -->
   <editor id="zstate">
