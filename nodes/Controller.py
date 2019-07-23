@@ -1,6 +1,6 @@
 
 
-from elk-nodes import Zone
+from nodes import Zone
 
 class Controller(polyinterface.Controller):
     def __init__(self, polyglot):

@@ -7,7 +7,7 @@ by JimBoCA jimboca3@gmail.com
 import polyinterface
 import sys
 import time
-from elk-nodes import Controller
+from nodes import Controller
 
 LOGGER = polyinterface.LOGGER
 
