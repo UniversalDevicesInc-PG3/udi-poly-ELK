@@ -2,7 +2,7 @@
 
 import polyinterface
 from node_funcs import *
-from nodes import Zone
+from nodes import ZoneNode
 LOGGER = polyinterface.LOGGER
 
 class Controller(polyinterface.Controller):
