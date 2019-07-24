@@ -19,8 +19,8 @@ class ZoneNode(polyinterface.Node):
         self.pyelk_obj.callback_add(self.pyelk_callback)
 
     def pyelk_callback(self,data):
-        _LOGGER.debug('my_callback: self={}, data={}'.format(self,data))
-        _LOGGER.debug('my_callback: Zone: {}: state:{}'.format(data.description,data.state))
+        LOGGER.debug('my_callback: self={}, data={}'.format(self,data))
+        LOGGER.debug('my_callback: Zone: {}: state:{}'.format(data.description,data.state))
 
     def setOn(self, command):
         self.setDriver('ST', 1)
