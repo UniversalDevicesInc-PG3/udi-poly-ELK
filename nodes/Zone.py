@@ -10,14 +10,14 @@ class ZoneNode(polyinterface.Node):
         self.pyelk = pyelk_obj
 
     def start(self):
-        self.setDriver('ST',  -1)
-        self.setDriver('GV1', -1)
-        self.setDriver('GV2',  0)
-        self.setDriver('GV3', -1)
-        self.setDriver('GV4', -1)
-        self.setDriver('GV5', -1)
-        self.pyelk.callback_add(self.pyelk_callback)
+        #self.setDriver('ST',  -1)
+        #self.setDriver('GV1', -1)
+        #self.setDriver('GV2',  0)
+        #self.setDriver('GV3', -1)
+        #self.setDriver('GV4', -1)
+        #self.setDriver('GV5', -1)
         self.set_drivers()
+        self.pyelk.callback_add(self.pyelk_callback)
 
     def set_drivers(self):
         self._set_drivers(self.pyelk)
