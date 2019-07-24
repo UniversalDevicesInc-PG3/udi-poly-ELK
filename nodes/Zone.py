@@ -7,7 +7,7 @@ class ZoneNode(polyinterface.Node):
 
     def __init__(self, controller, primary, address, name, pyelk_obj):
         super(ZoneNode, self).__init__(controller, primary, address, name)
-        self.pyelk_obj = pyelk_obj
+        self.pyelk = pyelk_obj
 
     def start(self):
         self.setDriver('ST',  -1)
@@ -16,7 +16,11 @@ class ZoneNode(polyinterface.Node):
         self.setDriver('GV3', -1)
         self.setDriver('GV4', -1)
         self.setDriver('GV5', -1)
-        self.pyelk_obj.callback_add(self.pyelk_callback)
+        self.pyelk.callback_add(self.pyelk_callback)
+        self.set_drivers()
+
+    def set_drivers():
+        self.setDriver('GV1', self.pyelk.state)
 
     def pyelk_callback(self,data):
         LOGGER.debug('my_callback: self={}, data={}'.format(self,data))
@@ -35,11 +39,17 @@ class ZoneNode(polyinterface.Node):
     hint = [1,2,3,4]
     drivers = [{'driver': 'ST', 'value': 0, 'uom': 2}]
     drivers = [
+        # status
         {'driver': 'ST',  'value': 0, 'uom': 25},
+        # state
         {'driver': 'GV1', 'value': 0, 'uom': 25},
+        # enabled
         {'driver': 'GV2', 'value': 0, 'uom': 2},
+        # area
         {'driver': 'GV3', 'value': 0, 'uom': 56},
+        # definition type
         {'driver': 'GV4', 'value': 0, 'uom': 25},
+        # alarm configuration
         {'driver': 'GV5', 'value': 0, 'uom': 25},
     ]
     id = 'zone'
