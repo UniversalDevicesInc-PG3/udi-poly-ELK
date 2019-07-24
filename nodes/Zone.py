@@ -19,7 +19,7 @@ class ZoneNode(polyinterface.Node):
         self.pyelk.callback_add(self.pyelk_callback)
         self.set_drivers()
 
-    def set_drivers():
+    def set_drivers(self):
         self.setDriver('GV1', self.pyelk.state)
 
     def pyelk_callback(self,data):
