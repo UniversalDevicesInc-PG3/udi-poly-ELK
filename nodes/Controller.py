@@ -49,12 +49,12 @@ class Controller(polyinterface.Controller):
 
         if self.ELK.status == self.ELK.STATE_DISCONNECTED:
             self.setDriver('GV1', 0)
-            _LOGGER.info('discover: Error connecting')
+            LOGGER.info('discover: Error connecting')
         else:
-            _LOGGER.info('discover: Connected, start rescan...')
+            LOGGER.info('discover: Connected, start rescan...')
             self.setDriver('GV1', 1)
             self.ELK.rescan()
-            _LOGGER.info('discover: rescan done...')
+            LOGGER.info('discover: rescan done...')
             time.sleep(1)
             versions = self.ELK.get_version()
             LOGGER.info('discover: versions {}'.format(versions))
