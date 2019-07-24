@@ -47,7 +47,7 @@ class Controller(polyinterface.Controller):
         self.ELK = PyElk.Elk(config, log=LOGGER)
         self.ELK.connect()
 
-        if self.ELK.status == ELK.STATE_DISCONNECTED:
+        if self.ELK.status == self.ELK.STATE_DISCONNECTED:
             self.setDriver('GV1', 0)
             _LOGGER.info('discover: Error connecting')
         else:
