@@ -8,14 +8,10 @@ class ZoneNode(polyinterface.Node):
     def __init__(self, controller, primary, address, name, pyelk_obj):
         super(ZoneNode, self).__init__(controller, primary, address, name)
         self.pyelk = pyelk_obj
+        self.state = -2
+        self.status = -2
 
     def start(self):
-        #self.setDriver('ST',  -1)
-        #self.setDriver('GV1', -1)
-        #self.setDriver('GV2',  0)
-        #self.setDriver('GV3', -1)
-        #self.setDriver('GV4', -1)
-        #self.setDriver('GV5', -1)
         self.set_drivers()
         self.pyelk.callback_add(self.pyelk_callback)
 
@@ -24,15 +20,31 @@ class ZoneNode(polyinterface.Node):
 
     def _set_drivers(self,pyelk):
         LOGGER.debug('_set_drivers: Zone: {}: state:{}'.format(pyelk.description,pyelk.state))
-        self.setDriver('ST', pyelk.status)
-        self.setDriver('GV1', pyelk.state)
+        self.set_status(pyelk.status)
+        self.set_state(pyelk.state)
         self.setDriver('GV2', pyelk.enabled)
         self.setDriver('GV3', pyelk.area)
         self.setDriver('GV4', pyelk.definition)
         self.setDriver('GV5', pyelk.alarm)
 
+    def set_status(self,val):
+        val = int(val)
+        self.setDriver('ST', val)
+
+    def set_state(self,val):
+        val = int(val)
+        if val != self.state:
+            self.state = val
+            # Send DON for Violated?
+            if val == 1:
+                self.reportCmd("DON",2)
+            else:
+                self.reportCmd("DOF",2)
+        self.setDriver('GV1', val)
+
+
     def pyelk_callback(self,data):
-        LOGGER.debug('my_callback: self={}, data={}'.format(self,data))
+        LOGGER.debug('pyelk_callback:zone: self={}, data={}'.format(self,data))
         self._set_drivers(data)
 
     def setOn(self, command):
