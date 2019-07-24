@@ -1,5 +1,6 @@
 
 
+import time
 import polyinterface
 from node_funcs import *
 from nodes import ZoneNode
@@ -55,6 +56,7 @@ class Controller(polyinterface.Controller):
             self.setDriver('GV1', 1)
             self.ELK.rescan()
             LOGGER.info('discover: rescan done...')
+            # Not sure why this is here, but sample pyELK used it?
             time.sleep(1)
             versions = self.ELK.get_version()
             LOGGER.info('discover: versions {}'.format(versions))
