@@ -40,7 +40,7 @@ class Controller(polyinterface.Controller):
             self.nodes[node].reportDrivers()
 
     def discover(self, *args, **kwargs):
-        config = {'host' : self.host,
+        config = {'host' : 'socket://'+self.host,
             #'zone' : {'include' : '1-38', 'exclude' : '15-20'},
         }
 
@@ -125,6 +125,6 @@ class Controller(polyinterface.Controller):
         'UPDATE_PROFILE': cmd_update_profile,
     }
     drivers = [
-        {'driver': 'ST',   'value': 0, 'uom': 22},
-        {'driver': 'GV1',  'value': 0, 'uom': 22},
+        {'driver': 'ST',   'value': 0, 'uom': 2},
+        {'driver': 'GV1',  'value': 0, 'uom': 2},
     ]
