@@ -1,7 +1,7 @@
 
 # controller
 ND-controller-NAME = ELK NodeServer Controller
-ND-controller-ICON = Generic controller
+ND-controller-ICON = GenericCtl
 CMD-ctl-QUERY-NAME = Query
 CMD-ctl-DISCOVER-NAME = Re-Discover
 CMD-ctl-UPDATE_PROFILE-NAME = Update Profile

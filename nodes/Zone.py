@@ -19,10 +19,13 @@ class ZoneNode(polyinterface.Node):
         self._set_drivers(self.pyelk)
 
     def _set_drivers(self,pyelk):
-        LOGGER.debug('_set_drivers: Zone: {}: state:{}'.format(pyelk.description,pyelk.state))
+        LOGGER.debug('_set_drivers: Zone:"{}" state:{} enabled:{}'.format(pyelk.description,pyelk.state,pyelk.enabled))
         self.set_status(pyelk.status)
         self.set_state(pyelk.state)
-        self.setDriver('GV2', pyelk.enabled)
+        if pyelk.enabled:
+            self.setDriver('GV2', 1)
+        else:
+            self.setDriver('GV2', 0)
         self.setDriver('GV3', pyelk.area)
         self.setDriver('GV4', pyelk.definition)
         self.setDriver('GV5', pyelk.alarm)
