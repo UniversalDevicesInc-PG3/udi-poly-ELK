@@ -1,6 +1,7 @@
 
 # controller
 ND-controller-NAME = ELK NodeServer Controller
+ND-controller-ICON = Generic controller
 CMD-ctl-QUERY-NAME = Query
 CMD-ctl-DISCOVER-NAME = Re-Discover
 CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
@@ -9,6 +10,7 @@ ST-ctl-GV1-NAME = ELK M1EXP Connected
 
 # zone
 ND-zone-NAME = Zone Node
+ND-zone-ICON = Output
 ST-zone-ST-NAME = Status
 ST-zone-GV1-NAME = State
 ST-zone-GV2-NAME = Enabled
@@ -67,7 +69,7 @@ ZTYPE-32 = Power Supervisory
 ZTYPE-33 = Temperature
 ZTYPE-34 = Analog Zone
 ZTYPE-35 = Phone Key
-ZTYPE-36 - Intercom Key
+ZTYPE-36 = Intercom Key
 
 ZCONFIG--1 = Disabled
 ZCONFIG-0 = Disabled

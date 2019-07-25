@@ -75,6 +75,4 @@ class ZoneNode(polyinterface.Node):
     ]
     id = 'zone'
     commands = {
-        'DON': setOn,
-        'DOF': setOff
     }
