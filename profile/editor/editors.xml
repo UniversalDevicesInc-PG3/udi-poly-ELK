@@ -9,7 +9,7 @@
   </editor>
   <!-- Status -->
   <editor id="zstate">
-      <range uom="25" subset="0-3" nls="ZSTATE" />
+      <range uom="25" subset="-1,0-3" nls="ZSTATE" />
   </editor>
   <!-- Status -->
   <editor id="area">
@@ -17,10 +17,10 @@
   </editor>
   <!-- Status -->
   <editor id="ztype">
-      <range uom="25" subset="0-3" nls="ZTYPE" />
+      <range uom="25" subset="0-36" nls="ZTYPE" />
   </editor>
   <!-- Status -->
-  <editor id="zconfig">
-      <range uom="25" subset="0-3" nls="ZCONFIG" />
+  <editor id="zalarm">
+      <range uom="25" subset="0-25" nls="ZALARM" />
   </editor>
 </editors>

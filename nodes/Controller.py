@@ -2,6 +2,7 @@
 
 import time
 import polyinterface
+import logging
 from node_funcs import *
 from nodes import ZoneNode
 import PyElk
@@ -45,6 +46,7 @@ class Controller(polyinterface.Controller):
             #'zone' : {'include' : '1-38', 'exclude' : '15-20'},
         }
 
+        LOGGER.setLevel(logging.DEBUG)
         self.ELK = PyElk.Elk(config, log=LOGGER)
         self.ELK.connect()
 
@@ -68,7 +70,6 @@ class Controller(polyinterface.Controller):
                     self.addNode(
                       ZoneNode(
                         self,
-                        self.address,
                         get_valid_node_address('zone_%03d' % (zone.number - 1)),
                         zone.description,
                         zone

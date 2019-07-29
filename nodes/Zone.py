@@ -2,16 +2,26 @@
 
 import polyinterface
 LOGGER = polyinterface.LOGGER
+from nodes import ZoneOffNode
 
 class ZoneNode(polyinterface.Node):
 
-    def __init__(self, controller, primary, address, name, pyelk_obj):
-        super(ZoneNode, self).__init__(controller, primary, address, name)
+    def __init__(self, controller, address, name, pyelk_obj):
+        super(ZoneNode, self).__init__(controller, address, address, name)
         self.pyelk = pyelk_obj
         self.state = -2
         self.status = -2
 
     def start(self):
+        self.zone_off = self.controller.addNode(
+          ZoneOffNode(
+            self.controller,
+            self,
+            self.address+"_off",
+            self.name+' Off',
+            self.pyelk.state
+          )
+        )
         self.set_drivers()
         self.pyelk.callback_add(self.pyelk_callback)
 
@@ -19,9 +29,13 @@ class ZoneNode(polyinterface.Node):
         self._set_drivers(self.pyelk)
 
     def _set_drivers(self,pyelk):
-        LOGGER.debug('_set_drivers: Zone:"{}" state:{} enabled:{}'.format(pyelk.description,pyelk.state,pyelk.enabled))
-        self.set_status(pyelk.status)
+        LOGGER.debug('_set_drivers: Zone:{} description:"{}" state:{}={} status:{}={} enabled:{} area:{} definition:{}={} alarm:{}={}'
+                    .format(pyelk.number, pyelk.description, pyelk.state, pyelk.state_pretty(), pyelk.status, pyelk.status_pretty(), pyelk.enabled,
+                            pyelk.area, pyelk.definition, pyelk.definition_pretty(), pyelk.alarm, pyelk.alarm_pretty()))
+        # ISY Calls this Status, PyELK calls it state
         self.set_state(pyelk.state)
+        # ISY Calls this Physical Status? PyELK Calls it Status
+        self.set_status(pyelk.status)
         if pyelk.enabled:
             self.setDriver('GV2', 1)
         else:
@@ -32,19 +46,19 @@ class ZoneNode(polyinterface.Node):
 
     def set_status(self,val):
         val = int(val)
-        self.setDriver('ST', val)
+        self.setDriver('GV1', val)
 
-    def set_state(self,val):
+    def set_state(self,val,force=False):
         val = int(val)
-        if val != self.state:
+        if force or val != self.state:
             self.state = val
             # Send DON for Violated?
             if val == 1:
                 self.reportCmd("DON",2)
-            else:
-                self.reportCmd("DOF",2)
-        self.setDriver('GV1', val)
-
+            #else:
+                #self.reportCmd("DOF",2)
+        self.setDriver('ST', val)
+        self.zone_off.set_state(val)
 
     def pyelk_callback(self,data):
         LOGGER.debug('pyelk_callback:zone: self={}, data={}'.format(self,data))
@@ -61,7 +75,6 @@ class ZoneNode(polyinterface.Node):
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
-    drivers = [{'driver': 'ST', 'value': 0, 'uom': 2}]
     drivers = [
         # status
         {'driver': 'ST',  'value': 0, 'uom': 25},
