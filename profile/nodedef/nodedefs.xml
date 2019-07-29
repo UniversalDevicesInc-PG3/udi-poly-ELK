@@ -21,9 +21,9 @@
         <editors />
         <sts>
             <!-- status -->
-            <st id="ST" editor="zstate" />
+            <st id="ST" editor="zstatus" />
             <!-- input state -->
-            <st id="GV1" editor="zstatus" />
+            <st id="GV1" editor="zstate" />
             <!-- enabled -->
             <st id="GV2" editor="bool" />
             <!-- area -->
@@ -32,6 +32,22 @@
             <st id="GV4" editor="ztype" />
             <!-- alarm configuration -->
             <st id="GV5" editor="zalarm" />
+        </sts>
+        <cmds>
+            <sends>
+              <cmd id="DON" />
+              <cmd id="DOF" />
+            </sends>
+            <accepts>
+            </accepts>
+        </cmds>
+    </nodeDef>
+    <!-- zoneoff -->
+    <nodeDef id="zoneoff" nls="zone">
+        <editors />
+        <sts>
+            <!-- status -->
+            <st id="ST" editor="zstatus" />
         </sts>
         <cmds>
             <sends>
