@@ -2,26 +2,16 @@
 
 import polyinterface
 LOGGER = polyinterface.LOGGER
-from nodes import ZoneOffNode
 
 class ZoneNode(polyinterface.Node):
 
-    def __init__(self, controller, address, name, pyelk_obj):
-        super(ZoneNode, self).__init__(controller, address, address, name)
-        self.pyelk = pyelk_obj
-        self.state = -2
+    def __init__(self, controller, parent_address, address, name, pyelk_obj):
+        super(ZoneNode, self).__init__(controller, parent_address, address, name)
+        self.pyelk  = pyelk_obj
+        self.state  = -2
         self.status = -2
 
     def start(self):
-        self.zone_off = self.controller.addNode(
-          ZoneOffNode(
-            self.controller,
-            self,
-            self.address+"_off",
-            self.name+' Off',
-            self.pyelk.state
-          )
-        )
         self.set_drivers()
         self.pyelk.callback_add(self.pyelk_callback)
 
@@ -37,12 +27,12 @@ class ZoneNode(polyinterface.Node):
         # ISY Calls this Physical Status? PyELK Calls it Status
         self.set_status(pyelk.status,True)
         if pyelk.enabled:
-            self.setDriver('GV2', 1)
+            self.setDriver('GV1', 1)
         else:
-            self.setDriver('GV2', 0)
-        self.setDriver('GV3', pyelk.area)
-        self.setDriver('GV4', pyelk.definition)
-        self.setDriver('GV5', pyelk.alarm)
+            self.setDriver('GV1', 0)
+        self.setDriver('GV2', pyelk.area)
+        self.setDriver('GV3', pyelk.definition)
+        self.setDriver('GV4', pyelk.alarm)
 
     def set_status(self,val,force=False):
         val = int(val)
@@ -54,11 +44,10 @@ class ZoneNode(polyinterface.Node):
             #else:
                 #self.reportCmd("DOF",2)
         self.setDriver('ST', val)
-        self.zone_off.set_status(val)
 
     def set_state(self,val):
         val = int(val)
-        self.setDriver('GV1', val)
+        self.setDriver('GV0', val)
 
     def pyelk_callback(self,data):
         LOGGER.debug('pyelk_callback:zone: self={}, data={}'.format(self,data))
@@ -79,14 +68,16 @@ class ZoneNode(polyinterface.Node):
         # status
         {'driver': 'ST',  'value': 0, 'uom': 25},
         # state
-        {'driver': 'GV1', 'value': 0, 'uom': 25},
+        {'driver': 'GV0', 'value': 0, 'uom': 25},
         # enabled
-        {'driver': 'GV2', 'value': 0, 'uom': 2},
+        {'driver': 'GV1', 'value': 0, 'uom': 2},
         # area
-        {'driver': 'GV3', 'value': 0, 'uom': 56},
+        {'driver': 'GV2', 'value': 0, 'uom': 56},
         # definition type
-        {'driver': 'GV4', 'value': 0, 'uom': 25},
+        {'driver': 'GV3', 'value': 0, 'uom': 25},
         # alarm configuration
+        {'driver': 'GV4', 'value': 0, 'uom': 25},
+        # DON/DOF Config
         {'driver': 'GV5', 'value': 0, 'uom': 25},
     ]
     id = 'zone'

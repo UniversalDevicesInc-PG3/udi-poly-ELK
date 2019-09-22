@@ -8,15 +8,26 @@ CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
 ST-ctl-ST-NAME = NodeServer Online
 ST-ctl-GV1-NAME = ELK M1EXP Connected
 
+# area
+ND-area-NAME = Area Node
+ND-area-ICON = Input
+ASTATUS-0 = Normal
+ASTATUS-1 = Trouble
+ASTATUS-2 = Violated
+ASTATUS-3 = Bypassed
+
 # zone
 ND-zone-NAME = Zone Node
 ND-zone-ICON = Output
 ST-zone-ST-NAME = State
-ST-zone-GV1-NAME = Status
-ST-zone-GV2-NAME = Enabled
-ST-zone-GV3-NAME = Area
-ST-zone-GV4-NAME = Type
-ST-zone-GV5-NAME = Alarm
+ST-zone-GV0-NAME = Status
+ST-zone-GV1-NAME = Enabled
+ST-zone-GV2-NAME = Area
+ST-zone-GV3-NAME = Type
+ST-zone-GV4-NAME = Alarm
+ST-zone-GV5-NAME = DON/DOF
+
+CMD-zone-GV5-NAME = DON/DOF
 
 ZSTATE--1 = UNKNOWN
 ZSTATE-0 = Unconfigured
@@ -96,3 +107,10 @@ ZALARM-22 = Medical Alarm
 ZALARM-23 = Police Alarm
 ZALARM-24 = Police No Indication
 ZALARM-25 = Water Alarm
+
+ZDCONF-0 = Send Both
+ZDCONF-1 = ON Only
+ZDCONF-2 = OFF Only
+ZDCONF-3 = Reverse Send Both
+ZDCONF-4 = Reverse On Only
+ZDCONF-5 = Reverse OFf Only

@@ -5,6 +5,7 @@ import polyinterface
 import logging
 from node_funcs import *
 from nodes import ZoneNode
+from nodes import AreaNode
 import PyElk
 
 LOGGER = polyinterface.LOGGER
@@ -26,6 +27,7 @@ class Controller(polyinterface.Controller):
         LOGGER.info('Started ELK NodeServer')
         self.setDriver('ST', 1)
         self.setDriver('GV1', 0)
+        self.elk_st = -1
         self.check_params()
         self.discover()
         self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
@@ -34,7 +36,25 @@ class Controller(polyinterface.Controller):
         pass
 
     def longPoll(self):
+        self.check_connection()
         pass
+
+    def check_connection(self):
+        if self.ELK.status == self.ELK.STATE_DISCONNECTED:
+            st = False
+        else:
+            st = True
+        if self.elk_st != st:
+            # We have been connected, but lost it...
+            if self.elk_st:
+                LOGGER.error("Lost Connection! Will try to reconnect.")
+            self.elk_st = st
+            if st:
+                LOGGER.debug('check_connection: Connected')
+                self.setDriver('GV1', 1)
+            else:
+                LOGGER.debug('check_connection: NOT Connected')
+                self.setDriver('GV1', 0)
 
     def query(self):
         self.check_params()
@@ -49,28 +69,34 @@ class Controller(polyinterface.Controller):
         LOGGER.setLevel(logging.DEBUG)
         self.ELK = PyElk.Elk(config, log=LOGGER)
         self.ELK.connect()
-
-        if self.ELK.status == self.ELK.STATE_DISCONNECTED:
-            self.setDriver('GV1', 0)
-            LOGGER.info('discover: Error connecting')
-        else:
-            LOGGER.info('discover: Connected, start rescan...')
-            self.setDriver('GV1', 1)
+        self.check_connection()
+        if self.elk_st:
+            LOGGER.info('discover: start rescan...')
             self.ELK.rescan()
             LOGGER.info('discover: rescan done...')
             # Not sure why this is here, but sample pyELK used it?
             time.sleep(1)
             versions = self.ELK.get_version()
             LOGGER.info('discover: versions {}'.format(versions))
-            for o in range(0,len(self.ELK.ZONES)):
-                zone = self.ELK.ZONES[o]
-                # TODO: Is this the right way?  Or use configured?
+            for area in self.ELK.AREAS:
+                LOGGER.info('discover: Area {} {}'.format(area.number,area.description))
+                self.addNode(
+                    AreaNode(
+                        self,
+                        'area_%03d' % area.number,
+                        area.description,
+                        area
+                    )
+                )
+            for zone in self.ELK.ZONES:
+                # TODO: Is this the description the right way?  Or use configured?
                 if zone.description is not None:
-                    LOGGER.info('PyElk-test: Zone: {}: {} state:{}'.format(o,zone.description,zone.state))
-                    self.addNode(
+                    LOGGER.info('PyElk-test: Zone: {}: {} state:{}'.format(zone.number,zone.description,zone.state))
+                    self.controller.addNode(
                       ZoneNode(
                         self,
-                        get_valid_node_address('zone_%03d' % (zone.number - 1)),
+                        'area_%03d' % zone.area,
+                        'zone_%03d' % zone.number,
                         zone.description,
                         zone
                       )
@@ -81,6 +107,7 @@ class Controller(polyinterface.Controller):
         LOGGER.info('Oh no I am being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')
 
     def stop(self):
+        self.ELK.stop()
         LOGGER.debug('NodeServer stopped.')
 
     def process_config(self, config):
@@ -115,11 +142,11 @@ class Controller(polyinterface.Controller):
 
     def update_profile(self):
         LOGGER.info('update_profile:')
-        return self.cmd_update_profile('')
+        return self.poly.installprofile()
 
     def cmd_update_profile(self,command):
         LOGGER.info('cmd_update_profile:')
-        return self.poly.installprofile()
+        return self.update_profile()
 
     id = 'controller'
     commands = {

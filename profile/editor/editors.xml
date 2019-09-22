@@ -23,4 +23,8 @@
   <editor id="zalarm">
       <range uom="25" subset="0-25" nls="ZALARM" />
   </editor>
+  <!-- Status -->
+  <editor id="zdconf">
+      <range uom="25" subset="0-5" nls="ZDCONF" />
+  </editor>
 </editors>
