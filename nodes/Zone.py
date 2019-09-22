@@ -45,7 +45,7 @@ class ZoneNode(polyinterface.Node):
                 self.reportCmd("DOF",2)
         self.setDriver('ST', val)
 
-    def set_status(self,val):
+    def set_status(self,val,force=False):
         val = int(val)
         self.setDriver('GV0', val)
 
@@ -60,6 +60,7 @@ class ZoneNode(polyinterface.Node):
         self.setDriver('ST', 0)
 
     def query(self):
+        self.set_drivers()
         self.reportDrivers()
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"

@@ -42,7 +42,7 @@
             <!-- status -->
             <st id="ST" editor="zstate" />
             <!-- input state -->
-            <st id="GV0" editor="zstaus" />
+            <st id="GV0" editor="zstatus" />
             <!-- enabled -->
             <st id="GV1" editor="bool" />
             <!-- area -->
