@@ -91,7 +91,7 @@ class Controller(polyinterface.Controller):
             for zone in self.ELK.ZONES:
                 # TODO: Is this the description the right way?  Or use configured?
                 if zone.description is not None:
-                    LOGGER.info('PyElk-test: Zone: {}: {} state:{}'.format(zone.number,zone.description,zone.state))
+                    LOGGER.info('discover: Zone: {}: {} state:{}'.format(zone.number,zone.description,zone.state))
                     self.controller.addNode(
                       ZoneNode(
                         self,

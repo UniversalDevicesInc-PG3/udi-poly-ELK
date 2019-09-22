@@ -11,10 +11,65 @@ ST-ctl-GV1-NAME = ELK M1EXP Connected
 # area
 ND-area-NAME = Area Node
 ND-area-ICON = Input
-ASTATUS-0 = Normal
-ASTATUS-1 = Trouble
-ASTATUS-2 = Violated
-ASTATUS-3 = Bypassed
+ST-area-ST-NAME = Arm Status
+ST-area-GV0-NAME = Arm Up Status
+ST-area-GV1-NAME = Alarm
+ST-area-GV2-NAME = Chime Mode
+CMD-area-ST-NAME = Arm Status
+CMD-area-GV0-NAME = Arm Up Status
+CMD-area-GV1-NAME = Alarm
+CMD-area-GV2-NAME = Chime Mode
+
+ASTATUS--1 = Unknown
+ASTATUS-0 = Disarmed
+ASTATUS-1 = Armed Away
+ASTATUS-1 = Armed Stay
+ASTATUS-2 = Armed Stay Instant
+ASTATUS-3 = Armed Night
+ASTATUS-4 = Armed Night Instant
+ASTATUS-5 = Armed Vacation
+ASTATUS-6 = Alarm Pending
+ASTATUS-7 = Alarm Triggered
+ASTATUS-8 = Entry Timer Running
+ASTATUS-9 = Exit Timer Running
+
+ARMUP-0 = Not Ready To Arm
+ARMUP-1 = Ready To Arm
+ARMUP-2 = Ready To Arm, but a zone violated and can be Force Armed
+ARMUP-3 = Armed with Exit Timer working
+ARMUP-4 = Armed Fully
+ARMUP-5 = Force Armed with a force arm zone violated
+ARMUP-6 = Armed with a bypass
+
+ALARM-0 = No Alarm Active
+ALARM-1 = Entrance Delay is Active
+ALARM-2 = Alarm Abort Delay Active
+ALARM-3 = Fire Alarm
+ALARM-4 = Medical Alarm
+ALARM-5 = Police Alarm
+ALARM-6 = Burglar Alarm
+ALARM-7 = Aux 1 Alarm
+ALARM-8 = Aux 2 Alarm
+ALARM-9 = Aux 3 Alarm
+ALARM-10 = Aux 4 Alarm
+ALARM-11 = Carbon Monoxide Alarm
+ALARM-12 = Emergency Alarm
+ALARM-13 = Freeze Alarm
+ALARM-14 = Gas Alarm
+ALARM-15 = Heat Alarm
+ALARM-16 = Water Alarm
+ALARM-17 = Fire Supervisory
+ALARM-18 = Verify Fire
+
+CHIME-0 = Silent
+CHIME-1 = Single Beep
+CHIME-2 = Constantly Beeping
+CHIME-3 = Single Beep while Constantly Beeping
+CHIME-4 = Single Chime
+CHIME-5 = Single Chime with Single Beep
+CHIME-6 = Single Chime with Constantly Beeping
+CHIME-7 = Single Chime with Single Beep and Constantly Beeping
+
 
 # zone
 ND-zone-NAME = Zone Node
@@ -26,7 +81,6 @@ ST-zone-GV2-NAME = Area
 ST-zone-GV3-NAME = Type
 ST-zone-GV4-NAME = Alarm
 ST-zone-GV5-NAME = DON/DOF
-
 CMD-zone-GV5-NAME = DON/DOF
 
 # pyElk: State

@@ -3,6 +3,28 @@
   <editor id="bool">
       <range uom="2" subset="0,1" />
   </editor>
+
+  <!-- AREAS -->
+
+  <!-- Status -->
+  <editor id="astatus">
+      <range uom="25" subset="-1,0-9" nls="ASTATUS" />
+  </editor>
+  <editor id="astatusc">
+      <range uom="25" subset="0-5" nls="ASTATUS" />
+  </editor>
+  <editor id="armup">
+      <range uom="25" subset="-1,0-6" nls="ARMUP" />
+  </editor>
+  <editor id="alarm">
+      <range uom="25" subset="-1,0-18" nls="ALARM" />
+  </editor>
+  <editor id="chime">
+      <range uom="25" subset="-1,0-7" nls="CHIME" />
+  </editor>
+
+  <!-- ZONES -->
+
   <!-- Status -->
   <editor id="zstatus">
       <range uom="25" subset="-1,0-3" nls="ZSTATUS" />

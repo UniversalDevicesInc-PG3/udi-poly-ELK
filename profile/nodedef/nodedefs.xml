@@ -23,6 +23,9 @@
         <sts>
             <!-- status -->
             <st id="ST" editor="astatus" />
+            <st id="GV0" editor="armup" />
+            <st id="GV1" editor="alarm" />
+            <st id="GV2" editor="chime" />
         </sts>
         <cmds>
             <sends>
@@ -30,6 +33,9 @@
               <cmd id="DOF" />
             </sends>
             <accepts>
+              <cmd id="ST">
+                <p id="" editor="astatusc" init="ST" />
+              </cmd>
             </accepts>
         </cmds>
     </nodeDef>
