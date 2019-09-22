@@ -40,9 +40,9 @@
         <editors />
         <sts>
             <!-- status -->
-            <st id="ST" editor="zstatus" />
+            <st id="ST" editor="zstate" />
             <!-- input state -->
-            <st id="GV0" editor="zstate" />
+            <st id="GV0" editor="zstaus" />
             <!-- enabled -->
             <st id="GV1" editor="bool" />
             <!-- area -->

@@ -23,7 +23,7 @@ class ZoneNode(polyinterface.Node):
                     .format(pyelk.number, pyelk.description, pyelk.state, pyelk.state_pretty(), pyelk.status, pyelk.status_pretty(), pyelk.enabled,
                             pyelk.area, pyelk.definition, pyelk.definition_pretty(), pyelk.alarm, pyelk.alarm_pretty()))
         # ISY Calls this Status, PyELK calls it state
-        self.set_state(pyelk.state)
+        self.set_state(pyelk.state,True)
         # ISY Calls this Physical Status? PyELK Calls it Status
         self.set_status(pyelk.status,True)
         if pyelk.enabled:
@@ -34,18 +34,18 @@ class ZoneNode(polyinterface.Node):
         self.setDriver('GV3', pyelk.definition)
         self.setDriver('GV4', pyelk.alarm)
 
-    def set_status(self,val,force=False):
+    def set_state(self,val,force=False):
         val = int(val)
-        if force or val != self.status:
-            self.status = val
+        if force or val != self.state:
+            self.state = val
             # Send DON for Violated?
-            if val == 2:
+            if val == 1:
                 self.reportCmd("DON",2)
-            #else:
-                #self.reportCmd("DOF",2)
+            elif val == 3:
+                self.reportCmd("DOF",2)
         self.setDriver('ST', val)
 
-    def set_state(self,val):
+    def set_status(self,val):
         val = int(val)
         self.setDriver('GV0', val)
 

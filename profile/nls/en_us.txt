@@ -29,12 +29,18 @@ ST-zone-GV5-NAME = DON/DOF
 
 CMD-zone-GV5-NAME = DON/DOF
 
+# pyElk: State
+# ISY-ELK: Physical Status
+# Driver: ST
 ZSTATE--1 = UNKNOWN
 ZSTATE-0 = Unconfigured
 ZSTATE-1 = Open
 ZSTATE-2 = EOL
 ZSTATE-3 = SHORT
 
+# pyElk: Status
+# ISY-ELK: Status
+# Driver: GV0
 ZSTATUS--1 = UNKNOWN
 ZSTATUS-0 = Normal
 ZSTATUS-1 = Trouble
