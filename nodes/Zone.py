@@ -51,7 +51,7 @@ class ZoneNode(polyinterface.Node):
         self.setDriver('GV0', val)
 
     def pyelk_callback(self,obj,data):
-        LOGGER.debug('pyelk_callback:zone: self={}, obj={} data={}'.format(self,obj,data))
+        LOGGER.debug('pyelk_callback:zone: obj={} data={}'.format(obj,data))
         #self._set_drivers(data)
 
     def setOn(self, command):

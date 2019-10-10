@@ -42,8 +42,8 @@ class AreaNode(polyinterface.Node):
         val = int(val)
         self.setDriver('GV0', val)
 
-    def pyelk_callback(self,data):
-        LOGGER.debug('pyelk_callback:area: self={}, data={}'.format(self,data))
+    def pyelk_callback(self,obj,data):
+        LOGGER.debug('pyelk_callback:area: obj={}, data={}'.format(obj,data))
         self._set_drivers(data)
 
     def query(self):
