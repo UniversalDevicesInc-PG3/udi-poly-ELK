@@ -173,4 +173,4 @@ ZDCONF-1 = ON Only
 ZDCONF-2 = OFF Only
 ZDCONF-3 = Reverse Send Both
 ZDCONF-4 = Reverse On Only
-ZDCONF-5 = Reverse OFf Only
+ZDCONF-5 = Reverse Off Only

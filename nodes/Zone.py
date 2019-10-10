@@ -12,20 +12,20 @@ class ZoneNode(polyinterface.Node):
         self.status = -2
 
     def start(self):
-        self.set_drivers()
+        self.set_drivers(force=True,reportCmd=False)
         self.pyelk.callback_add(self.pyelk_callback)
 
-    def set_drivers(self):
+    def set_drivers(self,force=False,reportCmd=True):
         self._set_drivers(self.pyelk)
 
-    def _set_drivers(self,pyelk):
+    def _set_drivers(self,pyelk,force=False,reportCmd=True):
         LOGGER.debug('_set_drivers: Zone:{} description:"{}" state:{}={} status:{}={} enabled:{} area:{} definition:{}={} alarm:{}={}'
                     .format(pyelk.number, pyelk.description, pyelk.state, pyelk.state_pretty(), pyelk.status, pyelk.status_pretty(), pyelk.enabled,
                             pyelk.area, pyelk.definition, pyelk.definition_pretty(), pyelk.alarm, pyelk.alarm_pretty()))
         # ISY Calls this Status, PyELK calls it state
-        self.set_state(pyelk.state,True)
+        self.set_state(pyelk.state,force,reportCmd)
         # ISY Calls this Physical Status? PyELK Calls it Status
-        self.set_status(pyelk.status,True)
+        self.set_status(pyelk.status,foce)
         if pyelk.enabled:
             self.setDriver('GV1', 1)
         else:
@@ -34,16 +34,17 @@ class ZoneNode(polyinterface.Node):
         self.setDriver('GV3', pyelk.definition)
         self.setDriver('GV4', pyelk.alarm)
 
-    def set_state(self,val,force=False):
+    def set_state(self,val,force=False,reportCmd=True):
         val = int(val)
         if force or val != self.state:
             self.state = val
             # Send DON for Violated?
-            if val == 1:
-                self.reportCmd("DON",2)
-            elif val == 3:
-                self.reportCmd("DOF",2)
-        self.setDriver('ST', val)
+            if reportCmd:
+                if val == 1:
+                    self.reportCmd("DON",2)
+                elif val == 3:
+                    self.reportCmd("DOF",2)
+            self.setDriver('ST', val)
 
     def set_status(self,val,force=False):
         val = int(val)
