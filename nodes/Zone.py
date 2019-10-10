@@ -25,7 +25,7 @@ class ZoneNode(polyinterface.Node):
         # ISY Calls this Status, PyELK calls it state
         self.set_state(pyelk.state,force,reportCmd)
         # ISY Calls this Physical Status? PyELK Calls it Status
-        self.set_status(pyelk.status,foce)
+        self.set_status(pyelk.status,force)
         if pyelk.enabled:
             self.setDriver('GV1', 1)
         else:
