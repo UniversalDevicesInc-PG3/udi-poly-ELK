@@ -25,7 +25,7 @@ class ZoneNode(polyinterface.Node):
         # ISY Calls this Status, PyELK calls it state
         self.set_state(pyelk.state,force,reportCmd)
         # ISY Calls this Physical Status? PyELK Calls it Status
-        self.set_status(pyelk.status,foce)
+        self.set_status(pyelk.status,force)
         if pyelk.enabled:
             self.setDriver('GV1', 1)
         else:
@@ -50,8 +50,8 @@ class ZoneNode(polyinterface.Node):
         val = int(val)
         self.setDriver('GV0', val)
 
-    def pyelk_callback(self,obj,data):
-        LOGGER.debug('pyelk_callback:zone: self={}, obj={} data={}'.format(self,obj,data))
+    def pyelk_callback(self,obj,data,d2):
+        LOGGER.debug('pyelk_callback:zone: obj={} data={} d2={}'.format(obj,data,d2))
         #self._set_drivers(data)
 
     def setOn(self, command):
