@@ -16,7 +16,7 @@ class ZoneNode(polyinterface.Node):
         self.pyelk.callback_add(self.pyelk_callback)
 
     def set_drivers(self,force=False,reportCmd=True):
-        self._set_drivers(self.pyelk)
+        self._set_drivers(self.pyelk,force=force,reportCmd=reportCmd)
 
     def _set_drivers(self,pyelk,force=False,reportCmd=True):
         LOGGER.debug('_set_drivers: Zone:{} description:"{}" state:{}={} status:{}={} enabled:{} area:{} definition:{}={} alarm:{}={}'
