@@ -30,7 +30,7 @@ class AreaNode(polyinterface.Node):
     def set_status(self,val,force=False):
         if val is None:
             val = 0
-        else
+        else:
             val = int(val)
         if force or val != self.status:
             self.status = val
