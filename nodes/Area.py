@@ -28,7 +28,10 @@ class AreaNode(polyinterface.Node):
         self.setDriver('GV2', pyelk.chime_mode)
 
     def set_status(self,val,force=False):
-        val = int(val)
+        if val is None:
+            val = 0
+        else
+            val = int(val)
         if force or val != self.status:
             self.status = val
             # Send DON for Violated?

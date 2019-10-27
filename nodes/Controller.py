@@ -27,7 +27,7 @@ class Controller(polyinterface.Controller):
         LOGGER.info('Started ELK NodeServer')
         self.setDriver('ST', 1)
         self.setDriver('GV1', 0)
-        self.elk_st = -1
+        self.elk_st = None
         self.check_params()
         self.discover()
         self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
@@ -44,6 +44,7 @@ class Controller(polyinterface.Controller):
             st = False
         else:
             st = True
+        # Did connection status change?
         if self.elk_st != st:
             # We have been connected, but lost it...
             if self.elk_st:
