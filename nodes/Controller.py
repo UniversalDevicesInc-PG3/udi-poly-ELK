@@ -22,12 +22,14 @@ class Controller(polyinterface.Controller):
         self.name = 'ELK Controller'
         #Not using because it's called to many times
         #self.poly.onConfig(self.process_config)
+        # We track our driver values because we need the value before it's been pushed.
+        self.driver = {}
 
     def start(self):
         LOGGER.info('Started ELK NodeServer')
         self.setDriver('ST', 1)
         self.setDriver('GV1', 0)
-        self.elk_st = -1
+        self.elk_st = None
         self.check_params()
         self.discover()
         self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
@@ -39,15 +41,27 @@ class Controller(polyinterface.Controller):
         self.check_connection()
         pass
 
+    def setDriver(self,driver,value):
+        LOGGER.debug("setDriver: {}={}".format(driver,value))
+        self.driver[driver] = value
+        super(Controller, self).setDriver(driver,value)
+
+    def getDriver(self,driver):
+        if driver in self.driver:
+            return self.driver[driver]
+        else:
+            return super(Controller, self).getDriver(driver)
+
     def check_connection(self):
         if self.ELK.status == self.ELK.STATE_DISCONNECTED:
             st = False
         else:
             st = True
+        LOGGER.debug("check_connection: st={} elk_st={}".format(st,self.elk_st))
         if self.elk_st != st:
             # We have been connected, but lost it...
-            if self.elk_st:
-                LOGGER.error("Lost Connection! Will try to reconnect.")
+            if self.elk_st is True:
+                LOGGER.error("check_connection: Lost Connection! Will try to reconnect.")
             self.elk_st = st
             if st:
                 LOGGER.debug('check_connection: Connected')
