@@ -57,6 +57,7 @@ class Controller(polyinterface.Controller):
             st = False
         else:
             st = True
+        # Did connection status change?
         LOGGER.debug("check_connection: st={} elk_st={}".format(st,self.elk_st))
         if self.elk_st != st:
             # We have been connected, but lost it...
