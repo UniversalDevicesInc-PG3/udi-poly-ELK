@@ -28,7 +28,7 @@ class Controller(polyinterface.Controller):
     def start(self):
         LOGGER.info('Started ELK NodeServer')
         self.setDriver('ST', 1)
-        self.setDriver('GV1', 0)
+        #self.setDriver('GV1', 0) # This can cause race where later set to 1 gets ignored?
         self.elk_st = None
         self.check_params()
         self.discover()
