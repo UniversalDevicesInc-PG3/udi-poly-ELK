@@ -1,4 +1,4 @@
 
 # This is POLYGLOT_CONFIG.md
 
-This should have any description about how to configure your nodeserver.
+'zone' : {'include' : '1-38', 'exclude' : '15-20'},

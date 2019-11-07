@@ -33,7 +33,7 @@
               <cmd id="DOF" />
             </sends>
             <accepts>
-              <cmd id="ST">
+              <cmd id="SET_STATUS">
                 <p id="" editor="astatusc" init="ST" />
               </cmd>
             </accepts>
@@ -66,7 +66,7 @@
               <cmd id="DOF" />
             </sends>
             <accepts>
-              <cmd id="GV5">
+              <cmd id="SET_ONOFF">
                 <p id="" editor="zdconf" init="GV5" />
               </cmd>
             </accepts>

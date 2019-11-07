@@ -47,6 +47,6 @@
   </editor>
   <!-- Status -->
   <editor id="zdconf">
-      <range uom="25" subset="0-5" nls="ZDCONF" />
+      <range uom="25" subset="0-6" nls="ZDCONF" />
   </editor>
 </editors>

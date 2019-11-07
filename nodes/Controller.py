@@ -77,8 +77,18 @@ class Controller(polyinterface.Controller):
             self.nodes[node].reportDrivers()
 
     def discover(self, *args, **kwargs):
-        config = {'host' : 'socket://'+self.host,
-            #'zone' : {'include' : '1-38', 'exclude' : '15-20'},
+        config = {
+            'host' : 'socket://'+self.host,
+            #'zone'       : {'include' : '0-87', 'exclude' : '88-207'},
+            #'output'     : {'include' : '0',    'exclude' : '0-208'},
+            #'area'       : {'include' : '0',    'exclude' : '1-7'},
+            #'keypad'     : {'include' : '0-1',  'exclude' : '2-15'},
+            #'thermostat' : {'include' : '0',    'exclude' : '0-16'},
+            #'x10'        : {'include' : '0',    'exclude' : '0-256'},
+            #'task'       : {'include' : '0',    'exclude' : '0-32'},
+            #'user'       : {'include' : '0-10', 'exclude' : '11-203'},
+            #'counter'    : {'include' : '0',    'exclude' : '0-64'},
+            #'setting'    : {'include' : '0',    'exclude' : '0-20'}
         }
 
         LOGGER.setLevel(logging.DEBUG)

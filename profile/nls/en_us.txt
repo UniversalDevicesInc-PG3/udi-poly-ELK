@@ -81,7 +81,7 @@ ST-zone-GV2-NAME = Area
 ST-zone-GV3-NAME = Type
 ST-zone-GV4-NAME = Alarm
 ST-zone-GV5-NAME = DON/DOF
-CMD-zone-GV5-NAME = DON/DOF
+CMD-zone-SET_ONOFF-NAME = DON/DOF
 
 # pyElk: State
 # ISY-ELK: Physical Status
@@ -169,8 +169,9 @@ ZALARM-24 = Police No Indication
 ZALARM-25 = Water Alarm
 
 ZDCONF-0 = Send Both
-ZDCONF-1 = ON Only
-ZDCONF-2 = OFF Only
-ZDCONF-3 = Reverse Send Both
-ZDCONF-4 = Reverse On Only
-ZDCONF-5 = Reverse Off Only
+ZDCONF-1 = Sond None
+ZDCONF-2 = ON Only
+ZDCONF-3 = OFF Only
+ZDCONF-4 = Reverse Send Both
+ZDCONF-5 = Reverse On Only
+ZDCONF-6 = Reverse Off Only
