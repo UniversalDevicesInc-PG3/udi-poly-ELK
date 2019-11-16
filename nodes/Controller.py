@@ -20,6 +20,7 @@ class Controller(polyinterface.Controller):
         """
         super(Controller, self).__init__(polyglot)
         self.name = 'ELK Controller'
+        self.hb = 0
         #Not using because it's called to many times
         #self.poly.onConfig(self.process_config)
         # We track our driver values because we need the value before it's been pushed.
@@ -32,14 +33,22 @@ class Controller(polyinterface.Controller):
         self.elk_st = None
         self.check_params()
         self.discover()
-        self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
 
     def shortPoll(self):
         pass
 
     def longPoll(self):
+        self.heartbeat()
         self.check_connection()
-        pass
+
+    def heartbeat(self):
+        self.l_debug('heartbeat','hb={}'.format(self.hb))
+        if self.hb == 0:
+            self.reportCmd("DON",2)
+            self.hb = 1
+        else:
+            self.reportCmd("DOF",2)
+            self.hb = 0
 
     def setDriver(self,driver,value):
         LOGGER.debug("setDriver: {}={}".format(driver,value))
@@ -80,7 +89,7 @@ class Controller(polyinterface.Controller):
         config = {
             'host' : 'socket://'+self.host,
             #'zone'       : {'include' : '0-87', 'exclude' : '88-207'},
-            'output'     : {                    'exclude' : '0-208'},
+            #'output'     : {                    'exclude' : '0-208'},
             #'area'       : {'include' : '0',    'exclude' : '1-7'},
             #'keypad'     : {'include' : '0-1',  'exclude' : '2-15'},
             #'thermostat' : {'include' : '0',    'exclude' : '0-16'},
@@ -164,6 +173,7 @@ class Controller(polyinterface.Controller):
             self.addNotice('Please set proper host in configuration page, and restart this nodeserver','default')
         else:
             self.discover()
+        self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
 
     def update_profile(self):
         LOGGER.info('update_profile:')
