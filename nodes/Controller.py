@@ -80,7 +80,7 @@ class Controller(polyinterface.Controller):
         config = {
             'host' : 'socket://'+self.host,
             #'zone'       : {'include' : '0-87', 'exclude' : '88-207'},
-            #'output'     : {'include' : '0',    'exclude' : '0-208'},
+            'output'     : {                    'exclude' : '0-208'},
             #'area'       : {'include' : '0',    'exclude' : '1-7'},
             #'keypad'     : {'include' : '0-1',  'exclude' : '2-15'},
             #'thermostat' : {'include' : '0',    'exclude' : '0-16'},
