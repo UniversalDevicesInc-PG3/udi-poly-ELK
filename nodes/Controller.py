@@ -38,7 +38,7 @@ class Controller(polyinterface.Controller):
         self.check_connection()
 
     def heartbeat(self):
-        self.l_debug('heartbeat','hb={}'.format(self.hb))
+        LOGGER.debug('heartbeat','hb={}'.format(self.hb))
         if self.hb == 0:
             self.reportCmd("DON",2)
             self.hb = 1
