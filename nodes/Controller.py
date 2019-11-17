@@ -13,24 +13,20 @@ LOGGER = polyinterface.LOGGER
 
 class Controller(polyinterface.Controller):
     def __init__(self, polyglot):
-        """
-        Optional.
-        Super runs all the parent class necessities. You do NOT have
-        to override the __init__ method, but if you do, you MUST call super.
-        """
         super(Controller, self).__init__(polyglot)
         self.name = 'ELK Controller'
         self.hb = 0
+        self.elk_st = None
+        self.driver = {}
         #Not using because it's called to many times
         #self.poly.onConfig(self.process_config)
         # We track our driver values because we need the value before it's been pushed.
-        self.driver = {}
 
     def start(self):
         LOGGER.info('Started ELK NodeServer')
         self.setDriver('ST', 1)
+        self.heartbeat()
         #self.setDriver('GV1', 0) # This can cause race where later set to 1 gets ignored?
-        self.elk_st = None
         self.check_params()
         self.discover()
 
