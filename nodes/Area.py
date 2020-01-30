@@ -1,16 +1,28 @@
 
 
+import os.time
 import polyinterface
 LOGGER = polyinterface.LOGGER
 
 class AreaNode(polyinterface.Node):
 
-    def __init__(self, controller, address, name, pyelk_obj):
-        super(AreaNode, self).__init__(controller, address, address, name)
-        self.controler = controller
-        self.pyelk  = pyelk_obj
+    def __init__(self, controller, number):
+        self.init   = False
         self.status = -1
         self.state  = -1
+        self.elk    = controller.ELK.zones[number]
+        # We set the call back and wait for it to be called...
+        self.elk.add_callback(self.callback)
+        LOGGER.debug('Area {} waiting to be initialized...'.format(number))
+        while (not self.init):
+            sleep 1
+        address     = 'area_{}'.format(number)
+        name        = self.elk.name
+        super(AreaNode, self).__init__(controller, address, address, name)
+
+    def callback(self, element, changeset):
+        LOGGER.debug('Area callback: el={} cs={}'.format(element,changeset))
+        self.init   = True
 
     def start(self):
         self.set_drivers()

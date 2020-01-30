@@ -3,13 +3,13 @@
 import time
 import polyinterface
 import logging
+from threading import Thread
 from node_funcs import *
 from nodes import ZoneNode
 from nodes import AreaNode
-import PyElk
+from elkm1_lib import Elk
 
 LOGGER = polyinterface.LOGGER
-
 
 class Controller(polyinterface.Controller):
     def __init__(self, polyglot):
@@ -57,8 +57,9 @@ class Controller(polyinterface.Controller):
         else:
             return super(Controller, self).getDriver(driver)
 
-    def check_connection(self):
-        if self.ELK.status == self.ELK.STATE_DISCONNECTED:
+    # Should not be needed with new library?
+    def xx_check_connection(self):
+        if self.ELK.status == self.ELK.is_connected:
             st = False
         else:
             st = True
@@ -83,55 +84,25 @@ class Controller(polyinterface.Controller):
 
     def discover(self, *args, **kwargs):
         config = {
-            'host' : 'socket://'+self.host,
-            #'zone'       : {'include' : '0-87', 'exclude' : '88-207'},
-            #'output'     : {                    'exclude' : '0-208'},
-            #'area'       : {'include' : '0',    'exclude' : '1-7'},
-            #'keypad'     : {'include' : '0-1',  'exclude' : '2-15'},
-            #'thermostat' : {'include' : '0',    'exclude' : '0-16'},
-            #'x10'        : {'include' : '0',    'exclude' : '0-256'},
-            #'task'       : {'include' : '0',    'exclude' : '0-32'},
-            #'user'       : {'include' : '0-10', 'exclude' : '11-203'},
-            #'counter'    : {'include' : '0',    'exclude' : '0-64'},
-            #'setting'    : {'include' : '0',    'exclude' : '0-20'}
+            # TODO: Support secure which would use elks: and add 'userid': 'xxx', 'password': 'xxx'
+            'url' : 'elk://'+self.host,
         }
-
         LOGGER.setLevel(logging.DEBUG)
-        self.ELK = PyElk.Elk(config, log=LOGGER)
+        self.ELK = Elk(config)
+        LOGGER.info("Connecting to Elk...")
         self.ELK.connect()
         self.check_connection()
         if self.elk_st:
-            LOGGER.info('discover: start rescan...')
-            self.ELK.rescan()
-            LOGGER.info('discover: rescan done...')
-            # Not sure why this is here, but sample pyELK used it?
-            time.sleep(1)
-            versions = self.ELK.get_version()
-            LOGGER.info('discover: versions {}'.format(versions))
-            for area in self.ELK.AREAS:
-                LOGGER.info('discover: Area {} {}'.format(area.number,area.description))
+            for area_number in range(7):
+                LOGGER.info('discover: Area {}'.format(area.number))
                 self.addNode(
                     AreaNode(
                         self,
-                        'area_%03d' % area.number,
-                        area.description,
-                        area
+                        'area.number,
                     )
                 )
-            for zone in self.ELK.ZONES:
-                # TODO: Is this the description the right way?  Or use configured?
-                if zone.description is not None:
-                    LOGGER.info('discover: Zone: {}: {} state:{}'.format(zone.number,zone.description,zone.state))
-                    self.controller.addNode(
-                      ZoneNode(
-                        self,
-                        'area_%03d' % zone.area,
-                        'zone_%03d' % zone.number,
-                        zone.description,
-                        zone
-                      )
-                    )
             print('discover: add zones done...')
+        self.elk_thread = Thread(name='ELK_RUN',target=elk.run())
 
     def delete(self):
         LOGGER.info('Oh no I am being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')
