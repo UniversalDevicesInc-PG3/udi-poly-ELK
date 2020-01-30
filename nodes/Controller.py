@@ -3,6 +3,7 @@
 import time
 import polyinterface
 import logging
+import asyncio
 from threading import Thread
 from node_funcs import *
 from nodes import ZoneNode
@@ -58,7 +59,7 @@ class Controller(polyinterface.Controller):
             return super(Controller, self).getDriver(driver)
 
     # Should not be needed with new library?
-    def xx_check_connection(self):
+    def check_connection(self):
         if self.ELK.status == self.ELK.is_connected:
             st = False
         else:
@@ -87,6 +88,8 @@ class Controller(polyinterface.Controller):
             # TODO: Support secure which would use elks: and add 'userid': 'xxx', 'password': 'xxx'
             'url' : 'elk://'+self.host,
         }
+        # We have to create a loop since we are in a thread
+        loop = asyncio.new_event_loop()
         LOGGER.setLevel(logging.DEBUG)
         self.ELK = Elk(config)
         LOGGER.info("Connecting to Elk...")
