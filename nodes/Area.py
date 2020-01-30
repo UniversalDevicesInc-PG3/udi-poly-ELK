@@ -15,7 +15,7 @@ class AreaNode(polyinterface.Node):
         self.elk.add_callback(self.callback)
         LOGGER.debug('Area {} waiting to be initialized...'.format(number))
         while (not self.init):
-            sleep 1
+            time.sleep(1) # TODO: Use Event?
         address     = 'area_{}'.format(number)
         name        = self.elk.name
         super(AreaNode, self).__init__(controller, address, address, name)
