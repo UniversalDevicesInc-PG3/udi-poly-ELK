@@ -98,7 +98,7 @@ class Controller(polyinterface.Controller):
                 self.addNode(
                     AreaNode(
                         self,
-                        'area.number,
+                        area_number,
                     )
                 )
             print('discover: add zones done...')
