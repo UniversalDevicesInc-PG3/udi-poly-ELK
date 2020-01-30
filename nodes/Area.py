@@ -1,6 +1,6 @@
 
 
-import os.time
+import time
 import polyinterface
 LOGGER = polyinterface.LOGGER
 
