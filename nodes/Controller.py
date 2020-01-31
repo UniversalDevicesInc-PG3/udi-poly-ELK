@@ -86,9 +86,10 @@ class Controller(polyinterface.Controller):
             self.nodes[node].reportDrivers()
 
     def callback_area(self, element, changeset):
+        LOGGER.debug('callback_area: element={} changeset={}'.format(element,changeset))
         i = element.index - 1
         if self.areas[i] is None:
-            LOGGER.debug('add_area: {}'.format(element))
+            LOGGER.debug('callback_area: add_area {}'.format(element))
             self.areas[i] = self.addNode(
                     AreaNode(
                         self,
