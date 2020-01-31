@@ -104,7 +104,7 @@ class Controller(polyinterface.Controller):
                 self.addNode(
                     AreaNode(
                         self,
-                        number,
+                        self.elk.areas[number]
                     )
                 )
             print('discover: add zones done...')

@@ -6,17 +6,16 @@ LOGGER = polyinterface.LOGGER
 
 class AreaNode(polyinterface.Node):
 
-    def __init__(self, controller, number):
+    def __init__(self, controller, elk):
         self.init   = False
         self.status = -1
         self.state  = -1
-        self.elk    = controller.ELK.zones[number]
         # We set the call back and wait for it to be called...
         self.elk.add_callback(self.callback)
         LOGGER.debug('Area {} waiting to be initialized...'.format(number))
         while (not self.init):
             time.sleep(1) # TODO: Use Event?
-        address     = 'area_{}'.format(number)
+        address     = 'area_{}'.format(self.elk.index)
         name        = self.elk.name
         super(AreaNode, self).__init__(controller, address, address, name)
 
