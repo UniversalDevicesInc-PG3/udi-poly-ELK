@@ -90,6 +90,7 @@ class Controller(polyinterface.Controller):
         }
         # We have to create a loop since we are in a thread
         loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         LOGGER.setLevel(logging.DEBUG)
         self.ELK = Elk(config)
         LOGGER.info("Connecting to Elk...")
