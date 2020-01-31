@@ -99,6 +99,7 @@ class Controller(polyinterface.Controller):
         self.elk.connect()
         self.check_connection()
         if self.elk_st:
+            self.elk_thread = Thread(name='ELK_RUN',target=self.elk.run())
             for number in range(7):
                 LOGGER.info('discover: Area {}'.format(number))
                 self.addNode(
@@ -108,7 +109,6 @@ class Controller(polyinterface.Controller):
                     )
                 )
             print('discover: add zones done...')
-        self.elk_thread = Thread(name='ELK_RUN',target=self.elk.run())
 
     def delete(self):
         LOGGER.info('Oh no I am being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')
