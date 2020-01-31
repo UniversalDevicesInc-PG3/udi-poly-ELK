@@ -12,6 +12,9 @@ from elkm1_lib import Elk
 
 LOGGER = polyinterface.LOGGER
 
+asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+#mainloop = asyncio.get_event_loop()
+
 def callback_area(element, changeset):
     LOGGER("this works")
 
@@ -107,11 +110,13 @@ class Controller(polyinterface.Controller):
             'url' : 'elk://'+self.host,
         }
         # We have to create a loop since we are in a thread
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
+        #myloop = asyncio.new_event_loop()
         LOGGER.setLevel(logging.DEBUG)
+        logging.getLogger('elkm1_lib').setLevel(logging.DEBUG)
+        #asyncio.set_event_loop(mainloop)
+        mainloop = False
         self.elk = Elk(config)
-        LOGGER.info("Connecting to Elk...")
+        LOGGER.info("Connecting to Elk loop={}".format(mainloop))
         self.elk.connect()
         self.check_connection()
         if self.elk_st:
@@ -123,7 +128,8 @@ class Controller(polyinterface.Controller):
                 self.areas.append(None)
                 self.elk.areas[number].add_callback(callback_area)
                 LOGGER.info('discover: Area {}'.format(number))
-            print('discover: areas done...')
+            print('discover: areas done loop={}'.format(mainloop))
+
 
     def delete(self):
         LOGGER.info('Oh no I am being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')

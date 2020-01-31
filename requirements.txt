@@ -1,2 +1,2 @@
-polyinterface>=2.0.30
-pyelk
+polyinterface>=2.0.34
+elkm1_lib
