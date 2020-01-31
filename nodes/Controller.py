@@ -94,9 +94,9 @@ class Controller(polyinterface.Controller):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         LOGGER.setLevel(logging.DEBUG)
-        self.ELK = Elk(config)
+        self.elk = Elk(config)
         LOGGER.info("Connecting to Elk...")
-        self.ELK.connect()
+        self.elk.connect()
         self.check_connection()
         if self.elk_st:
             for area_number in range(7):
@@ -108,7 +108,7 @@ class Controller(polyinterface.Controller):
                     )
                 )
             print('discover: add zones done...')
-        self.elk_thread = Thread(name='ELK_RUN',target=elk.run())
+        self.elk_thread = Thread(name='ELK_RUN',target=self.elk.run())
 
     def delete(self):
         LOGGER.info('Oh no I am being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')
