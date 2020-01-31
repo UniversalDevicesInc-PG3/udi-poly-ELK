@@ -155,8 +155,8 @@ class Controller(polyinterface.Controller):
         if self.host == default_host:
             # This doesn't pass a key to test the old way.
             self.addNotice('Please set proper host in configuration page, and restart this nodeserver','default')
-        else:
-            self.discover()
+        #else:
+        #    self.discover()
         self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
 
     def update_profile(self):
