@@ -117,6 +117,7 @@ class Controller(polyinterface.Controller):
             self.areas = []
             for number in range(7):
                 self.areas.append(None)
+                elk.areas[number].add_callback(self.callback_area)
                 LOGGER.info('discover: Area {}'.format(number))
             print('discover: areas done...')
 

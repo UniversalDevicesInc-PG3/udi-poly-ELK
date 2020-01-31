@@ -17,7 +17,6 @@ class AreaNode(polyinterface.Node):
 
     def start(self):
         self.set_drivers()
-        self.pyelk.callback_add(self.pyelk_callback)
 
     def callback(self, changeset):
         LOGGER.debug('Area callback: cs={}'.format(changeset))
