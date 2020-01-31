@@ -86,15 +86,16 @@ class Controller(polyinterface.Controller):
             self.nodes[node].reportDrivers()
 
     def callback_area(self, element, changeset):
-        if self.areas[element.index] is None:
+        i = element.index - 1
+        if self.areas[i] is None:
             LOGGER.debug('add_area: {}'.format(element))
-            self.areas[element.index] = self.addNode(
+            self.areas[i] = self.addNode(
                     AreaNode(
                         self,
                         element
                     )
                 )
-        self.areas[element.index].callback(changeset)
+        self.areas[i].callback(changeset)
 
     def discover(self, *args, **kwargs):
         config = {
@@ -115,7 +116,7 @@ class Controller(polyinterface.Controller):
             LOGGER.info("discover: areas...")
             self.areas = []
             for number in range(7):
-                self.areas[number] = None
+                self.areas.append(None)
                 LOGGER.info('discover: Area {}'.format(number))
             print('discover: areas done...')
 
