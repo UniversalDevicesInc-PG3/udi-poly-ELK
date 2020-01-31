@@ -99,12 +99,12 @@ class Controller(polyinterface.Controller):
         self.elk.connect()
         self.check_connection()
         if self.elk_st:
-            for area_number in range(7):
-                LOGGER.info('discover: Area {}'.format(area.number))
+            for number in range(7):
+                LOGGER.info('discover: Area {}'.format(number))
                 self.addNode(
                     AreaNode(
                         self,
-                        area_number,
+                        number,
                     )
                 )
             print('discover: add zones done...')
