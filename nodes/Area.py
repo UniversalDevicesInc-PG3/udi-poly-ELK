@@ -13,7 +13,7 @@ class AreaNode(polyinterface.Node):
         self.state  = -1
         # We set the call back and wait for it to be called...
         self.elk.add_callback(self.callback)
-        LOGGER.debug('Area {} waiting to be initialized...'.format(number))
+        LOGGER.debug('Area {} waiting to be initialized...'.format(self.elk.index))
         while (not self.init):
             time.sleep(1) # TODO: Use Event?
         address     = 'area_{}'.format(self.elk.index)
