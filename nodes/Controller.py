@@ -101,7 +101,7 @@ class Controller(polyinterface.Controller):
         if self.elk_st:
             LOGGER.info("Starting Elk run thread...")
             self.elk_thread = Thread(name='ELK_RUN',target=self.elk.run)
-            LOGGEr.info("discover: areas...")
+            LOGGER.info("discover: areas...")
             for number in range(7):
                 LOGGER.info('discover: Area {}'.format(number))
                 self.addNode(
