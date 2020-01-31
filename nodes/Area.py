@@ -7,6 +7,7 @@ LOGGER = polyinterface.LOGGER
 class AreaNode(polyinterface.Node):
 
     def __init__(self, controller, elk):
+        self.elk    = elk
         self.init   = False
         self.status = -1
         self.state  = -1
