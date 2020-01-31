@@ -113,6 +113,7 @@ class Controller(polyinterface.Controller):
             LOGGER.info("Starting Elk run thread...")
             self.elk_thread = Thread(name='ELK_RUN',target=self.elk.run)
             LOGGER.info("discover: areas...")
+            self.areas = []
             for number in range(7):
                 self.areas[number] = None
                 LOGGER.info('discover: Area {}'.format(number))
