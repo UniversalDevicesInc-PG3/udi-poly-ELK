@@ -60,10 +60,12 @@ class Controller(polyinterface.Controller):
 
     # Should not be needed with new library?
     def check_connection(self):
-        if self.ELK.status == self.ELK.is_connected:
+        if self.elk is None:
             st = False
-        else:
+        elif self.elk.is_connected:
             st = True
+        else:
+            st = False
         # Did connection status change?
         LOGGER.debug("check_connection: st={} elk_st={}".format(st,self.elk_st))
         if self.elk_st != st:
