@@ -12,6 +12,9 @@ from elkm1_lib import Elk
 
 LOGGER = polyinterface.LOGGER
 
+def callback_area(element, changeset):
+    LOGGER("this works")
+
 class Controller(polyinterface.Controller):
     def __init__(self, polyglot):
         super(Controller, self).__init__(polyglot)
@@ -118,7 +121,7 @@ class Controller(polyinterface.Controller):
             self.areas = []
             for number in range(7):
                 self.areas.append(None)
-                self.elk.areas[number].add_callback(self.callback_area)
+                self.elk.areas[number].add_callback(callback_area)
                 LOGGER.info('discover: Area {}'.format(number))
             print('discover: areas done...')
 
