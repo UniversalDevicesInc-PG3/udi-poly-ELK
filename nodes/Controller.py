@@ -85,6 +85,17 @@ class Controller(polyinterface.Controller):
         for node in self.nodes:
             self.nodes[node].reportDrivers()
 
+    def callback_area(self, element, changeset):
+        if self.areas[element.index] is None:
+            LOGGER.debug('add_area: {}'.format(element))
+            self.areas[element.index] = self.addNode(
+                    AreaNode(
+                        self,
+                        element
+                    )
+                )
+        self.areas[element.index].callback(changeset)
+
     def discover(self, *args, **kwargs):
         config = {
             # TODO: Support secure which would use elks: and add 'userid': 'xxx', 'password': 'xxx'
@@ -103,13 +114,8 @@ class Controller(polyinterface.Controller):
             self.elk_thread = Thread(name='ELK_RUN',target=self.elk.run)
             LOGGER.info("discover: areas...")
             for number in range(7):
+                self.areas[number] = None
                 LOGGER.info('discover: Area {}'.format(number))
-                self.addNode(
-                    AreaNode(
-                        self,
-                        self.elk.areas[number]
-                    )
-                )
             print('discover: areas done...')
 
     def delete(self):

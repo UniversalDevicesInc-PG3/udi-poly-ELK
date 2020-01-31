@@ -11,22 +11,16 @@ class AreaNode(polyinterface.Node):
         self.init   = False
         self.status = -1
         self.state  = -1
-        # We set the call back and wait for it to be called...
-        self.elk.add_callback(self.callback)
-        LOGGER.debug('Area {} waiting to be initialized...'.format(self.elk.index))
-        while (not self.init):
-            time.sleep(1) # TODO: Use Event?
         address     = 'area_{}'.format(self.elk.index)
         name        = self.elk.name
         super(AreaNode, self).__init__(controller, address, address, name)
 
-    def callback(self, element, changeset):
-        LOGGER.debug('Area callback: el={} cs={}'.format(element,changeset))
-        self.init   = True
-
     def start(self):
         self.set_drivers()
         self.pyelk.callback_add(self.pyelk_callback)
+
+    def callback(self, changeset):
+        LOGGER.debug('Area callback: cs={}'.format(changeset))
 
     def set_drivers(self):
         self._set_drivers(self.pyelk)
