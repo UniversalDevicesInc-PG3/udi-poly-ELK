@@ -8,21 +8,22 @@ from threading import Thread
 from node_funcs import *
 from nodes import ZoneNode
 from nodes import AreaNode
+
+import sys
+sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
 
 LOGGER = polyinterface.LOGGER
 
-asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
-#mainloop = asyncio.get_event_loop()
-
-def callback_area(element, changeset):
-    LOGGER("this works")
+#asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
+mainloop = asyncio.get_event_loop()
 
 class Controller(polyinterface.Controller):
     def __init__(self, polyglot):
         super(Controller, self).__init__(polyglot)
         self.name = 'ELK Controller'
         self.hb = 0
+        self.elk = None
         self.elk_st = None
         self.driver = {}
         #Not using because it's called to many times
@@ -104,31 +105,50 @@ class Controller(polyinterface.Controller):
                 )
         self.areas[i].callback(changeset)
 
-    def discover(self, *args, **kwargs):
-        config = {
+    def callback_area(self, element, changeset):
+        print('el={} cs={}'.format(element,changeset))
+        i = element.index
+        if self.areas[i] is None:
+            # First changeset is allstatus like:
+            # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
+            self.areas[i] = changeset
+        else:
+            for key in changeset:
+                self.areas[i][key] = changeset[key]
+        # As soon as we get the real name, add the node.
+        if not 'node' in self.areas[i] and 'name' in self.areas[i]:
+            self.areas[i]['node'] = self.addNode(AreaNode(self, element))
+
+    def discover(self):
+        self.elk_config = {
             # TODO: Support secure which would use elks: and add 'userid': 'xxx', 'password': 'xxx'
             'url' : 'elk://'+self.host,
         }
         # We have to create a loop since we are in a thread
-        #myloop = asyncio.new_event_loop()
+        #mainloop = asyncio.new_event_loop()
         LOGGER.setLevel(logging.DEBUG)
+        LOGGER.info('discover: started')
         logging.getLogger('elkm1_lib').setLevel(logging.DEBUG)
-        #asyncio.set_event_loop(mainloop)
-        mainloop = False
-        self.elk = Elk(config)
-        LOGGER.info("Connecting to Elk loop={}".format(mainloop))
+        asyncio.set_event_loop(mainloop)
+        self.elk = Elk(self.elk_config,loop=mainloop)
+        LOGGER.info("discover: Connecting to Elk loop={}".format(mainloop))
         self.elk.connect()
-        self.check_connection()
-        if self.elk_st:
-            LOGGER.info("Starting Elk run thread...")
-            self.elk_thread = Thread(name='ELK_RUN',target=self.elk.run)
-            LOGGER.info("discover: areas...")
-            self.areas = []
-            for number in range(7):
-                self.areas.append(None)
-                self.elk.areas[number].add_callback(callback_area)
-                LOGGER.info('discover: Area {}'.format(number))
-            print('discover: areas done loop={}'.format(mainloop))
+        #self.config_complete_timer = self.elk.loop.call_later(1, self.config_complete)
+        #if  self.elk.is_connected():
+        LOGGER.info("discover: areas...")
+        self.areas = []
+        for number in range(7):
+            self.areas.append(None)
+            self.elk.areas[number].add_callback(self.callback_area)
+            LOGGER.info('discover: Area {}'.format(number))
+        print('discover: areas done loop={}'.format(mainloop))
+        self.elk_thread = Thread(name='ELK_RUN',target=self.elk.run)
+        self.elk_thread.daemon = True
+        self.elk_thread.start()
+
+    def elkm1_run(self):
+
+        self.elk.run()
 
 
     def delete(self):
