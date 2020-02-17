@@ -11,36 +11,17 @@ ST-ctl-GV1-NAME = ELK M1EXP Connected
 # area
 ND-area-NAME = Area Node
 ND-area-ICON = Input
-ST-area-ST-NAME = Arm Status
-ST-area-GV0-NAME = Arm Up Status
-ST-area-GV1-NAME = Alarm
+ST-area-ST-NAME = Alarm Status
+ST-area-GV0-NAME = Armed Status
+ST-area-GV1-NAME = Arm Up State
 ST-area-GV2-NAME = Chime Mode
-CMD-area-ST-NAME = Arm Status
-CMD-area-GV0-NAME = Arm Up Status
-CMD-area-GV1-NAME = Alarm
+CMD-area-ST-NAME = Alarm Status
+CMD-area-GV0-NAME = Armed Status
+CMD-area-GV1-NAME = Arm Up State
 CMD-area-GV2-NAME = Chime Mode
+CMD-area-SET_ARMED_STATUS-NAME = Armed Status
 
-ASTATUS--1 = Unknown
-ASTATUS-0 = Disarmed
-ASTATUS-1 = Armed Away
-ASTATUS-1 = Armed Stay
-ASTATUS-2 = Armed Stay Instant
-ASTATUS-3 = Armed Night
-ASTATUS-4 = Armed Night Instant
-ASTATUS-5 = Armed Vacation
-ASTATUS-6 = Alarm Pending
-ASTATUS-7 = Alarm Triggered
-ASTATUS-8 = Entry Timer Running
-ASTATUS-9 = Exit Timer Running
-
-ARMUP-0 = Not Ready To Arm
-ARMUP-1 = Ready To Arm
-ARMUP-2 = Ready To Arm, but a zone violated and can be Force Armed
-ARMUP-3 = Armed with Exit Timer working
-ARMUP-4 = Armed Fully
-ARMUP-5 = Force Armed with a force arm zone violated
-ARMUP-6 = Armed with a bypass
-
+# ST = alarm_state
 ALARM-0 = No Alarm Active
 ALARM-1 = Entrance Delay is Active
 ALARM-2 = Alarm Abort Delay Active
@@ -61,6 +42,30 @@ ALARM-16 = Water Alarm
 ALARM-17 = Fire Supervisory
 ALARM-18 = Verify Fire
 
+
+# GV0 = armed_status
+ASTATUS--1 = Unknown
+ASTATUS-0 = Disarmed
+ASTATUS-1 = Armed Away
+ASTATUS-1 = Armed Stay
+ASTATUS-2 = Armed Stay Instant
+ASTATUS-3 = Armed Night
+ASTATUS-4 = Armed Night Instant
+ASTATUS-5 = Armed Vacation
+ASTATUS-6 = Alarm Pending
+ASTATUS-7 = Alarm Triggered
+ASTATUS-8 = Entry Timer Running
+ASTATUS-9 = Exit Timer Running
+
+# GV1 = arm_up_state
+ARMUP-0 = Not Ready To Arm
+ARMUP-1 = Ready To Arm
+ARMUP-2 = Ready To Arm, but a zone violated and can be Force Armed
+ARMUP-3 = Armed with Exit Timer working
+ARMUP-4 = Armed Fully
+ARMUP-5 = Force Armed with a force arm zone violated
+ARMUP-6 = Armed with a bypass
+
 CHIME-0 = Silent
 CHIME-1 = Single Beep
 CHIME-2 = Constantly Beeping
@@ -74,32 +79,33 @@ CHIME-7 = Single Chime with Single Beep and Constantly Beeping
 # zone
 ND-zone-NAME = Zone Node
 ND-zone-ICON = Output
-ST-zone-ST-NAME = State
-ST-zone-GV0-NAME = Status
-ST-zone-GV1-NAME = Enabled
+ST-zone-ST-NAME = Physical Status
+ST-zone-GV0-NAME = Logical Status
+ST-zone-GV1-NAME = Triggered
 ST-zone-GV2-NAME = Area
 ST-zone-GV3-NAME = Type
 ST-zone-GV4-NAME = Alarm
 ST-zone-GV5-NAME = DON/DOF
+ST-zone-GV6-NAME = Bypasseds
 CMD-zone-SET_ONOFF-NAME = DON/DOF
 
 # pyElk: State
 # ISY-ELK: Physical Status
 # Driver: ST
-ZSTATE--1 = UNKNOWN
-ZSTATE-0 = Unconfigured
-ZSTATE-1 = Open
-ZSTATE-2 = EOL
-ZSTATE-3 = SHORT
+ZPST--1 = UNKNOWN
+ZPST-0 = Unconfigured
+ZPST-1 = Open
+ZPST-2 = EOL
+ZPST-3 = SHORT
 
 # pyElk: Status
-# ISY-ELK: Status
+# ISY-ELK: Logical Status
 # Driver: GV0
-ZSTATUS--1 = UNKNOWN
-ZSTATUS-0 = Normal
-ZSTATUS-1 = Trouble
-ZSTATUS-2 = Violated
-ZSTATUS-3 = Bypassed
+ZLST--1 = UNKNOWN
+ZLST-0 = Normal
+ZLST-1 = Trouble
+ZLST-2 = Violated
+ZLST-3 = Bypassed
 
 ZTYPE--1 = UNKNOWN
 ZTYPE-0 = Disabled

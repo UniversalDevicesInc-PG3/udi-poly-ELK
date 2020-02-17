@@ -19,22 +19,21 @@ class AreaNode(polyinterface.Node):
         self.set_drivers()
 
     def callback(self, changeset):
-        LOGGER.debug('Area callback: cs={}'.format(changeset))
+        LOGGER.debug('AreaNode:callback: cs={}'.format(changeset))
 
+    # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
+    # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
     def set_drivers(self):
-        self._set_drivers(self.pyelk)
+        LOGGER.debug('set_drivers: Area:{} {}'
+                    .format(self.elk.index,self.elk.name))
+        self.set_alarm_state()
+        self.set_armed_status()
+        self.set_arm_up_state()
+        #self.setDriver('GV2', pyelk.chime_mode)
 
-    def _set_drivers(self,pyelk):
-        LOGGER.debug('_set_drivers: Area:{}'
-                    .format(pyelk.number))
-        self.set_status(pyelk.status)
-        self.setDriver('GV0', pyelk.arm_up)
-        self.setDriver('GV1', pyelk._alarm) # No method?
-        self.setDriver('GV2', pyelk.chime_mode)
-
-    def set_status(self,val,force=False):
+    def set_alarm_state(self,val=None,force=False):
         if val is None:
-            val = 0
+            val = self.elk.alarm_state
         else:
             val = int(val)
         if force or val != self.status:
@@ -46,13 +45,19 @@ class AreaNode(polyinterface.Node):
             #    self.reportCmd("DOF",2)
         self.setDriver('ST', val)
 
-    def set_state(self,val):
-        val = int(val)
+    def set_armed_status(self,val=None):
+        if val is None:
+            val = self.elk.armed_status
+        else:
+            val = int(val)
         self.setDriver('GV0', val)
 
-    def pyelk_callback(self,obj,data,d2):
-        LOGGER.debug('pyelk_callback:area: obj={}, data={} d2={}'.format(obj,data,d2))
-        self._set_drivers(data)
+    def set_arm_up_state(self,val=None):
+        if val is None:
+            val = self.elk.arm_up_state
+        else:
+            val = int(val)
+        self.setDriver('GV1', val)
 
     def query(self):
         self.set_drivers()

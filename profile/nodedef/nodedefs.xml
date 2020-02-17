@@ -25,9 +25,9 @@
         <editors />
         <sts>
             <!-- status -->
-            <st id="ST" editor="astatus" />
-            <st id="GV0" editor="armup" />
-            <st id="GV1" editor="alarm" />
+            <st id="ST" editor="alarm" />
+            <st id="GV0" editor="astatus" />
+            <st id="GV1" editor="armup" />
             <st id="GV2" editor="chime" />
         </sts>
         <cmds>
@@ -36,7 +36,7 @@
               <cmd id="DOF" />
             </sends>
             <accepts>
-              <cmd id="SET_STATUS">
+              <cmd id="SET_ARMED_STATUS">
                 <p id="" editor="astatusc" init="ST" />
               </cmd>
             </accepts>
@@ -49,17 +49,19 @@
         <editors />
         <sts>
             <!-- status -->
-            <st id="ST" editor="zstate" />
+            <st id="ST" editor="zpst" />
             <!-- input state -->
-            <st id="GV0" editor="zstatus" />
-            <!-- enabled -->
+            <st id="GV0" editor="zlst" />
+            <!-- Triggered -->
             <st id="GV1" editor="bool" />
+            <!-- Bypassed -->
+            <st id="GV6" editor="bool" />
             <!-- area -->
             <st id="GV2" editor="area" />
             <!-- definition type -->
             <st id="GV3" editor="ztype" />
             <!-- alarm configuration -->
-            <st id="GV4" editor="zalarm" />
+            <!--<st id="GV4" editor="zalarm" />-->
             <!-- DON/DOF Config -->
             <st id="GV5" editor="zdconf" />
         </sts>

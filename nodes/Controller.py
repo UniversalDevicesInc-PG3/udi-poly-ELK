@@ -36,7 +36,8 @@ class Controller(polyinterface.Controller):
         self.heartbeat()
         #self.setDriver('GV1', 0) # This can cause race where later set to 1 gets ignored?
         self.check_params()
-        self.discover()
+        self.connect_and_discover()
+        self.check_connection()
 
     def shortPoll(self):
         pass
@@ -93,33 +94,32 @@ class Controller(polyinterface.Controller):
             self.nodes[node].reportDrivers()
 
     def callback_area(self, element, changeset):
-        LOGGER.debug('callback_area: element={} changeset={}'.format(element,changeset))
-        i = element.index - 1
-        if self.areas[i] is None:
-            LOGGER.debug('callback_area: add_area {}'.format(element))
-            self.areas[i] = self.addNode(
-                    AreaNode(
-                        self,
-                        element
-                    )
-                )
-        self.areas[i].callback(changeset)
-
-    def callback_area(self, element, changeset):
-        print('el={} cs={}'.format(element,changeset))
+        LOGGER.debug('callback_area: el={} cs={}'.format(element,changeset))
         i = element.index
         if self.areas[i] is None:
             # First changeset is allstatus like:
             # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
             self.areas[i] = changeset
         else:
+            # We have the node, so just run it's callback.
+            if 'node' in self.areas[i]:
+                return self.areas[i].callback(changeset)
+            # Keep track of our changes until the node is addded
             for key in changeset:
                 self.areas[i][key] = changeset[key]
         # As soon as we get the real name, add the node.
-        if not 'node' in self.areas[i] and 'name' in self.areas[i]:
+        if 'name' in self.areas[i]:
             self.areas[i]['node'] = self.addNode(AreaNode(self, element))
+            # Add our zones
+            for ni in range(207):
+                #LOGGER.debug('i={} n={} area={}'.format(i,ni,self.elk.zones[ni].area))
+                if self.elk.zones[ni].area == i:
+                    LOGGER.debug("callback_area: adding node '{}' for zone '{}'".format(self.elk.zones[ni].name,element.name))
+                    self.addNode(ZoneNode(self,self.elk.zones[ni]))
+                    time.sleep(.1)
 
-    def discover(self):
+
+    def connect_and_discover(self):
         self.elk_config = {
             # TODO: Support secure which would use elks: and add 'userid': 'xxx', 'password': 'xxx'
             'url' : 'elk://'+self.host,
@@ -137,13 +137,14 @@ class Controller(polyinterface.Controller):
         #if  self.elk.is_connected():
         LOGGER.info("discover: areas...")
         self.areas = []
+        self.zones = []
         for number in range(7):
             self.areas.append(None)
             self.elk.areas[number].add_callback(self.callback_area)
             LOGGER.info('discover: Area {}'.format(number))
         print('discover: areas done loop={}'.format(mainloop))
         self.elk_thread = Thread(name='ELK_RUN',target=self.elk.run)
-        self.elk_thread.daemon = True
+        #self.elk_thread.daemon = True
         self.elk_thread.start()
 
     def elkm1_run(self):
@@ -200,7 +201,7 @@ class Controller(polyinterface.Controller):
     id = 'controller'
     commands = {
         'QUERY': query,
-        'DISCOVER': discover,
+        'DISCOVER': connect_and_discover,
         'UPDATE_PROFILE': cmd_update_profile,
     }
     drivers = [

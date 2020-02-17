@@ -1,40 +1,50 @@
 
-
 import polyinterface
 LOGGER = polyinterface.LOGGER
 
 class ZoneNode(polyinterface.Node):
 
-    def __init__(self, controller, parent_address, address, name, pyelk_obj):
-        super(ZoneNode, self).__init__(controller, parent_address, address, name)
-        self.pyelk  = pyelk_obj
+    def __init__(self, controller, elk):
+        LOGGER.debug("Zone:__init__: {}".format(elk))
+        self.elk    = elk
+        self.controller = controller
+        self.init   = False
+        self.physical_status = -2
         self.state  = -2
-        self.status = -2
+        self.address   = 'zone_{}'.format(self.elk.index)
+        parent_address = 'area_{}'.format(self.elk.area)
+        super(ZoneNode, self).__init__(controller, parent_address, self.address, self.elk.name)
 
     def start(self):
+        self.l_debug('start','')
+        # Set drivers that never change
+        # Definition Type
+        self.setDriver('GV3',self.elk.definition)
+        # Zone Area
+        self.setDriver('GV2', self.elk.area)
+        # Set drivers that change
         self.set_drivers(force=True,reportCmd=False)
-        self.pyelk.callback_add(self.pyelk_callback)
+        self.elk.add_callback(self.callback)
+
+
+    def callback(self, obj, changeset):
+        self.l_debug('callback','changeset={}'.format(changeset))
+        self.l_debug('callback','ps {}'.format(changeset['physical_status']))
+        if 'physical_status' in changeset:
+            self.set_physical_status(changeset['physical_status'])
+        if 'logical_status' in changeset:
+            self.set_logical_status(changeset['logical_status'])
 
     def set_drivers(self,force=False,reportCmd=True):
-        self._set_drivers(self.pyelk,force=force,reportCmd=reportCmd)
-
-    def _set_drivers(self,pyelk,force=False,reportCmd=True):
-        LOGGER.debug('_set_drivers: Zone:{} description:"{}" state:{}={} status:{}={} enabled:{} area:{} definition:{}={} alarm:{}={}'
-                    .format(pyelk.number, pyelk.description, pyelk.state, pyelk.state_pretty(), pyelk.status, pyelk.status_pretty(), pyelk.enabled,
-                            pyelk.area, pyelk.definition, pyelk.definition_pretty(), pyelk.alarm, pyelk.alarm_pretty()))
-        # Others need this set
+        self.l_debug('set_drivers','')
+        #LOGGER.debug('_set_drivers: Zone:{} description:"{}" state:{}={} status:{}={} enabled:{} area:{} definition:{}={} alarm:{}={}'
+        #            .format(pyelk.number, pyelk.description, pyelk.state, pyelk.state_pretty(), pyelk.status, pyelk.status_pretty(), pyelk.enabled,
+        #                    pyelk.area, pyelk.definition, pyelk.definition_pretty(), pyelk.alarm, pyelk.alarm_pretty()))
         self.set_onoff()
-        # ISY Calls this Status, PyELK calls it state
-        self.set_state(pyelk.state,force,reportCmd)
-        # ISY Calls this Physical Status? PyELK Calls it Status
-        self.set_status(pyelk.status,force)
-        if pyelk.enabled:
-            self.setDriver('GV1', 1)
-        else:
-            self.setDriver('GV1', 0)
-        self.setDriver('GV2', pyelk.area)
-        self.setDriver('GV3', pyelk.definition)
-        self.setDriver('GV4', pyelk.alarm)
+        self.set_physical_status(force=force,reportCmd=reportCmd)
+        self.set_logical_status(force=force)
+        self.set_triggered()
+        self.set_bypassed()
 
     """
         ZDCONF-0 = Send Both
@@ -45,11 +55,14 @@ class ZoneNode(polyinterface.Node):
         ZDCONF-5 = Reverse On Only
         ZDCONF-6 = Reverse Off Only
     """
-    def set_state(self,val,force=False,reportCmd=True):
-        self.l_info('set_state','val={} onoff={}'.format(val,self.onoff))
-        val = int(val)
-        if force or val != self.state:
-            self.state = val
+    def set_physical_status(self,val=None,force=False,reportCmd=True):
+        if val is None:
+            val = self.elk.physical_status
+        else:
+            val = int(val)
+        self.l_info('set_physical_status','val={} onoff={}'.format(val,self.onoff))
+        if force or val != self.physical_status:
+            self.physical_status = val
             # Send DON for Violated?
             if reportCmd and self.onoff != 1:
                 if (val == 1 and (self.onoff == 0 or self.onoff == 2)) or (val == 3 and (self.onoff == 4 or self.onoff == 6)):
@@ -58,13 +71,29 @@ class ZoneNode(polyinterface.Node):
                     self.reportCmd("DOF",2)
             self.setDriver('ST', val)
 
-    def set_status(self,val,force=False):
-        val = int(val)
+    def set_logical_status(self,val=None,force=False):
+        if val is None:
+            val = self.elk.logical_status
+        else:
+            val = int(val)
+        self.l_debug('set_logical_status','{}'.format(val))
         self.setDriver('GV0', val)
 
-    def pyelk_callback(self,obj,data):
-        LOGGER.debug('pyelk_callback:zone: obj={} data={}'.format(obj,data))
-        self._set_drivers(data)
+    def set_triggered(self,val=None,force=False):
+        if val is None:
+            val = self.elk.triggered_alarm
+        else:
+            val = int(val)
+        self.l_debug('set_triggered','{}'.format(val))
+        self.setDriver('GV1', val)
+
+    def set_bypassed(self,val=None,force=False):
+        if val is None:
+            val = self.elk.bypassed
+        else:
+            val = int(val)
+        self.l_debug('set_bypassed','{}'.format(val))
+        self.setDriver('GV6', val)
 
     def setOn(self, command):
         self.setDriver('ST', 1)
@@ -79,6 +108,7 @@ class ZoneNode(polyinterface.Node):
     def set_onoff(self,val=None):
         mname = 'set_onoff'
         self.l_info(mname,val)
+        # Restore onoff setting from DB for existing nodes
         mdrv = 'GV5'
         if val is None:
             try:
@@ -114,11 +144,11 @@ class ZoneNode(polyinterface.Node):
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
-        # status
+        # physical status
         {'driver': 'ST',  'value': 0, 'uom': 25},
-        # state
+        # logical status
         {'driver': 'GV0', 'value': 0, 'uom': 25},
-        # enabled
+        # triggered
         {'driver': 'GV1', 'value': 0, 'uom': 2},
         # area
         {'driver': 'GV2', 'value': 0, 'uom': 56},
@@ -128,6 +158,8 @@ class ZoneNode(polyinterface.Node):
         {'driver': 'GV4', 'value': 0, 'uom': 25},
         # DON/DOF Config
         {'driver': 'GV5', 'value': 0, 'uom': 25},
+        # bypassed
+        {'driver': 'GV6', 'value': 0, 'uom': 2},
     ]
     id = 'zone'
     commands = {

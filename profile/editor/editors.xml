@@ -26,12 +26,12 @@
   <!-- ZONES -->
 
   <!-- Status -->
-  <editor id="zstatus">
-      <range uom="25" subset="-1,0-3" nls="ZSTATUS" />
+  <editor id="zpst">
+      <range uom="25" subset="-1,0-3" nls="ZPST" />
   </editor>
   <!-- Status -->
-  <editor id="zstate">
-      <range uom="25" subset="-1,0-3" nls="ZSTATE" />
+  <editor id="zlst">
+      <range uom="25" subset="-1,0-3" nls="ZLST" />
   </editor>
   <!-- Status -->
   <editor id="area">
