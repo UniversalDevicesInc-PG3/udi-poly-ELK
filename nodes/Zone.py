@@ -29,7 +29,6 @@ class ZoneNode(polyinterface.Node):
 
     def callback(self, obj, changeset):
         self.l_debug('callback','changeset={}'.format(changeset))
-        self.l_debug('callback','ps {}'.format(changeset['physical_status']))
         if 'physical_status' in changeset:
             self.set_physical_status(changeset['physical_status'])
         if 'logical_status' in changeset:
