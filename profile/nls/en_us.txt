@@ -22,6 +22,7 @@ CMD-area-GV2-NAME = Chime Mode
 CMD-area-SET_ARMED_STATUS-NAME = Armed Status
 
 # ST = alarm_state
+ALARM--1 = Unknown
 ALARM-0 = No Alarm Active
 ALARM-1 = Entrance Delay is Active
 ALARM-2 = Alarm Abort Delay Active
@@ -58,6 +59,7 @@ ASTATUS-8 = Entry Timer Running
 ASTATUS-9 = Exit Timer Running
 
 # GV1 = arm_up_state
+ARMUP--1 = Unknown
 ARMUP-0 = Not Ready To Arm
 ARMUP-1 = Ready To Arm
 ARMUP-2 = Ready To Arm, but a zone violated and can be Force Armed
@@ -66,6 +68,7 @@ ARMUP-4 = Armed Fully
 ARMUP-5 = Force Armed with a force arm zone violated
 ARMUP-6 = Armed with a bypass
 
+CHIME--1 = Unknown
 CHIME-0 = Silent
 CHIME-1 = Single Beep
 CHIME-2 = Constantly Beeping
@@ -86,8 +89,10 @@ ST-zone-GV2-NAME = Area
 ST-zone-GV3-NAME = Type
 ST-zone-GV4-NAME = Alarm
 ST-zone-GV5-NAME = DON/DOF
-ST-zone-GV6-NAME = Bypasseds
+ST-zone-GV6-NAME = Bypassed
+ST-zone-GV7-NAME = Off Node
 CMD-zone-SET_ONOFF-NAME = DON/DOF
+CMD-zone-SET_OFFNODE-NAME = Use Off Node
 
 # pyElk: State
 # ISY-ELK: Physical Status

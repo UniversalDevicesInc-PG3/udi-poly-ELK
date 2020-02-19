@@ -43,7 +43,6 @@
         </cmds>
     </nodeDef>
 
-
   	<!-- zone -->
     <nodeDef id="zone" nls="zone">
         <editors />
@@ -64,6 +63,8 @@
             <!--<st id="GV4" editor="zalarm" />-->
             <!-- DON/DOF Config -->
             <st id="GV5" editor="zdconf" />
+            <!-- Off Node -->
+            <st id="GV7" editor="bool" />
         </sts>
         <cmds>
             <sends>
@@ -74,7 +75,30 @@
               <cmd id="SET_ONOFF">
                 <p id="" editor="zdconf" init="GV5" />
               </cmd>
+              <cmd id="SET_OFFNODE">
+                <p id="" editor="bool" init="GV7" />
+              </cmd>
             </accepts>
         </cmds>
     </nodeDef>
+
+    <!-- zone -->
+    <nodeDef id="zoneoff" nls="zone">
+        <editors />
+        <sts>
+            <!-- status -->
+            <st id="ST" editor="zpst" />
+            <!-- input state -->
+            <st id="GV0" editor="zlst" />
+        </sts>
+        <cmds>
+            <sends>
+              <cmd id="DOF" />
+            </sends>
+            <accepts>
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+
 </nodeDefs>

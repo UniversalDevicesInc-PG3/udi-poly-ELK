@@ -1,6 +1,7 @@
 
 import polyinterface
 LOGGER = polyinterface.LOGGER
+from nodes import ZoneOffNode
 
 class ZoneNode(polyinterface.Node):
 
@@ -10,10 +11,12 @@ class ZoneNode(polyinterface.Node):
         self.controller = controller
         self.init   = False
         self.physical_status = -2
-        self.state  = -2
+        self.logical_status = -2
+        self.offnode = None
+        self.offnode_obj = None
         self.address   = 'zone_{}'.format(self.elk.index)
-        parent_address = 'area_{}'.format(self.elk.area)
-        super(ZoneNode, self).__init__(controller, parent_address, self.address, self.elk.name)
+        self.parent_address = 'area_{}'.format(self.elk.area)
+        super(ZoneNode, self).__init__(controller, self.parent_address, self.address, self.elk.name)
 
     def start(self):
         self.l_debug('start','')
@@ -43,6 +46,7 @@ class ZoneNode(polyinterface.Node):
         self.set_onoff()
         self.set_physical_status(force=force,reportCmd=reportCmd)
         self.set_logical_status(force=force)
+        self.set_offnode()
         self.set_triggered()
         self.set_bypassed()
 
@@ -117,17 +121,54 @@ class ZoneNode(polyinterface.Node):
             except:
                 self.l_error(mname,'getDriver({}) failed'.format(mdrv),True)
                 val = 0
-        val = int(val)
+        if val is None:
+            val = 0
+        else:
+            val = int(val)
         try:
             self.setDriver(mdrv, val)
             self.onoff = val
         except:
             self.l_error(mname,'setDriver({},{}) failed'.format(mdrv,val),True)
 
+    def set_offnode(self,val=None):
+        mname = 'set_offnode'
+        self.l_info(mname,'val={} offnode={} offnode_obj={}'.format(val,self.offnode,self.offnode_obj))
+        # Restore offnode setting from DB for existing nodes
+        mdrv = 'GV7'
+        if val is None:
+            try:
+                val = self.getDriver(mdrv)
+                self.l_info(mname,val)
+            except:
+                self.l_error(mname,'getDriver({}) failed'.format(mdrv),True)
+                val = 0
+        if val is None:
+            val = 0
+        else:
+            val = int(val)
+        try:
+            self.setDriver(mdrv, val)
+            self.offnode = val
+        except:
+            self.l_error(mname,'setDriver({},{}) failed'.format(mdrv,val),True)
+        if val == 0:
+            #self.controller.removeNode("somenode")
+            pass
+        else:
+            if self.offnode_obj is None:
+                self.l_info(mname,"Adding off node.")
+                self.offnode_obj = self.controller.addNode(ZoneOffNode(self.controller,self.parent_address,self.address+'_off',self.elk.name+" - Off"))
+
     def cmd_set_onoff(self,command):
         val = int(command.get('value'))
         self.l_info("cmd_set_onoff",val)
         self.set_onoff(val)
+
+    def cmd_set_offnode(self,command):
+        val = int(command.get('value'))
+        self.l_info("cmd_set_offnode",val)
+        self.set_offnode(val)
 
     def l_info(self, name, string):
         LOGGER.info("%s:%s:%s: %s" %  (self.id,self.name,name,string))
@@ -160,8 +201,11 @@ class ZoneNode(polyinterface.Node):
         {'driver': 'GV5', 'value': 0, 'uom': 25},
         # bypassed
         {'driver': 'GV6', 'value': 0, 'uom': 2},
+        # off node
+        {'driver': 'GV7', 'value': 0, 'uom': 2},
     ]
     id = 'zone'
     commands = {
         'SET_ONOFF': cmd_set_onoff,
+        'SET_OFFNODE': cmd_set_offnode,
     }
