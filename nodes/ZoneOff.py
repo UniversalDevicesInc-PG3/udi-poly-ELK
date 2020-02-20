@@ -4,12 +4,17 @@ LOGGER = polyinterface.LOGGER
 
 class ZoneOffNode(polyinterface.Node):
 
-    def __init__(self, controller, parent_address, address, name):
+    def __init__(self, controller, parent_address, address, name, physical_status, logical_status):
         LOGGER.debug("ZoneOff:__init__: {} {}".format(address,name))
+        self.logical_status = logical_status
+        self.physical_status = physical_status
         super(ZoneOffNode, self).__init__(controller, parent_address, address, name)
 
     def start(self):
         self.l_debug('start','')
+        # Init values from Zone node
+        self.setDriver('ST',self.physical_status)
+        self.setDriver('GV0',self.logical_status)
         super(ZoneOffNode, self).start()
 
     def l_info(self, name, string):

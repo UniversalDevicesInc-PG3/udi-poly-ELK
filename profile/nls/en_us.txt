@@ -94,6 +94,12 @@ ST-zone-GV7-NAME = Off Node
 CMD-zone-SET_ONOFF-NAME = DON/DOF
 CMD-zone-SET_OFFNODE-NAME = Use Off Node
 
+# zone off
+ND-zoneoff-NAME = Zone Node
+ND-zoneoff-ICON = Input
+ST-zoneoff-ST-NAME = Physical Status
+ST-zoneoff-GV0-NAME = Logical Status
+
 # pyElk: State
 # ISY-ELK: Physical Status
 # Driver: ST

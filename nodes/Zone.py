@@ -3,6 +3,7 @@ import polyinterface
 LOGGER = polyinterface.LOGGER
 from nodes import ZoneOffNode
 
+
 class ZoneNode(polyinterface.Node):
 
     def __init__(self, controller, elk):
@@ -29,6 +30,8 @@ class ZoneNode(polyinterface.Node):
         self.set_drivers(force=True,reportCmd=False)
         self.elk.add_callback(self.callback)
 
+    def query(self):
+        self.set_drivers(force=False,reportCmd=False)
 
     def callback(self, obj, changeset):
         self.l_debug('callback','changeset={}'.format(changeset))
@@ -71,8 +74,13 @@ class ZoneNode(polyinterface.Node):
                 if (val == 1 and (self.onoff == 0 or self.onoff == 2)) or (val == 3 and (self.onoff == 4 or self.onoff == 6)):
                     self.reportCmd("DON",2)
                 elif (val == 3 and (self.onoff == 0 or self.onoff == 3)) or (val == 1 and (self.onoff == 4 or self.onoff == 5)):
-                    self.reportCmd("DOF",2)
+                    if self.offnode_obj is None:
+                        self.reportCmd("DOF",2)
+                    else:
+                        self.offnode_obj.reportCmd("DOF",2)
             self.setDriver('ST', val)
+            if self.offnode_obj is not None:
+                self.offnode_obj.setDriver('ST', val)
 
     def set_logical_status(self,val=None,force=False):
         if val is None:
@@ -80,11 +88,21 @@ class ZoneNode(polyinterface.Node):
         else:
             val = int(val)
         self.l_debug('set_logical_status','{}'.format(val))
+        self.logical_status = val
         self.setDriver('GV0', val)
+        if self.offnode_obj is not None:
+            self.offnode_obj.setDriver('GV0', val)
 
     def set_triggered(self,val=None,force=False):
         if val is None:
             val = self.elk.triggered_alarm
+            if val is True:
+                val = 1
+            elif val is False:
+                val = 0
+            else:
+                self.l_error('set_triggered','Unknown value {}, assuming 0'.format(val))
+                val = 0
         else:
             val = int(val)
         self.l_debug('set_triggered','{}'.format(val))
@@ -93,6 +111,13 @@ class ZoneNode(polyinterface.Node):
     def set_bypassed(self,val=None,force=False):
         if val is None:
             val = self.elk.bypassed
+            if val is True:
+                val = 1
+            elif val is False:
+                val = 0
+            else:
+                self.l_error('set_bypassed','Unknown value {}, assuming 0'.format(val))
+                val = 0
         else:
             val = int(val)
         self.l_debug('set_bypassed','{}'.format(val))
@@ -152,12 +177,14 @@ class ZoneNode(polyinterface.Node):
         except:
             self.l_error(mname,'setDriver({},{}) failed'.format(mdrv,val),True)
         if val == 0:
-            #self.controller.removeNode("somenode")
-            pass
+            if self.offnode_obj is not None:
+                self.controller.delNode(self.offnode_obj.address)
+            self.offnode_obj = None
         else:
             if self.offnode_obj is None:
                 self.l_info(mname,"Adding off node.")
-                self.offnode_obj = self.controller.addNode(ZoneOffNode(self.controller,self.parent_address,self.address+'_off',self.elk.name+" - Off"))
+                self.offnode_obj = self.controller.addNode(ZoneOffNode(self.controller,self.parent_address,self.address+'_off',self.elk.name+" - Off",
+                self.physical_status, self.logical_status))
 
     def cmd_set_onoff(self,command):
         val = int(command.get('value'))
