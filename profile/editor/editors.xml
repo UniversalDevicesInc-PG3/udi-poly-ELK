@@ -6,12 +6,12 @@
 
   <!-- AREAS -->
 
-  <!-- Status -->
+  <!-- Arm Status -->
   <editor id="astatus">
-      <range uom="25" subset="-1,0-9" nls="ASTATUS" />
+      <range uom="25" subset="-1,0-10" nls="ASTATUS" />
   </editor>
   <editor id="astatusc">
-      <range uom="25" subset="0-5" nls="ASTATUS" />
+      <range uom="25" subset="0-10" nls="ASTATUS" />
   </editor>
   <editor id="armup">
       <range uom="25" subset="-1,0-6" nls="ARMUP" />

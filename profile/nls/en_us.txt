@@ -16,10 +16,10 @@ ST-area-GV0-NAME = Armed Status
 ST-area-GV1-NAME = Arm Up State
 ST-area-GV2-NAME = Chime Mode
 CMD-area-ST-NAME = Alarm Status
-CMD-area-GV0-NAME = Armed Status
-CMD-area-GV1-NAME = Arm Up State
-CMD-area-GV2-NAME = Chime Mode
-CMD-area-SET_ARMED_STATUS-NAME = Armed Status
+CMD-area-GV0-NAME = Set Armed Status
+CMD-area-GV1-NAME = Set Arm Up State
+CMD-area-GV2-NAME = Set Chime Mode
+CMD-area-SET_ARMED_STATUS-NAME = Set Armed Status
 
 # ST = alarm_state
 ALARM--1 = Unknown
@@ -45,18 +45,29 @@ ALARM-18 = Verify Fire
 
 
 # GV0 = armed_status
+# a0  |   ✓    | Disarm
+# a1  |   ✓    | Arm to away
+# a2  |   ✓    | Arm to stay
+# a3  |   ✓    | Arm to stay instant
+# a4  |   ✓    | Arm to night
+# a5  |   ✓    | Arm to night instant
+# a6  |   ✓    | Arm to vacation
+# a7  |   ✓    | Arm, step to next Away Mode
+# a8  |   ✓    | Arm, step to next Stay Mode
+# a9  |   ✓    | Force Arm to Away Mode
+# a:  |   ✓    | Force Arm to Stay Mode
 ASTATUS--1 = Unknown
 ASTATUS-0 = Disarmed
 ASTATUS-1 = Armed Away
-ASTATUS-1 = Armed Stay
-ASTATUS-2 = Armed Stay Instant
-ASTATUS-3 = Armed Night
-ASTATUS-4 = Armed Night Instant
-ASTATUS-5 = Armed Vacation
-ASTATUS-6 = Alarm Pending
-ASTATUS-7 = Alarm Triggered
-ASTATUS-8 = Entry Timer Running
-ASTATUS-9 = Exit Timer Running
+ASTATUS-2 = Armed Stay
+ASTATUS-3 = Armed Stay Instant
+ASTATUS-4 = Armed Night
+ASTATUS-5 = Armed Night Instant
+ASTATUS-6 = Armed Vacation
+ASTATUS-7 = Armed next Away Mode
+ASTATUS-8 = Armed next Stay Mode
+ASTATUS-9 = Force Arm to Away Mode
+ASTATUS-10 = Force Arm to Stay Mode
 
 # GV1 = arm_up_state
 ARMUP--1 = Unknown

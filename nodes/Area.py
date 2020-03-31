@@ -1,10 +1,10 @@
 
 
 import time
-import polyinterface
-LOGGER = polyinterface.LOGGER
+#from elkm1_lib import const
+from nodes import BaseNode
 
-class AreaNode(polyinterface.Node):
+class AreaNode(BaseNode):
 
     def __init__(self, controller, elk):
         self.elk    = elk
@@ -16,15 +16,18 @@ class AreaNode(polyinterface.Node):
         super(AreaNode, self).__init__(controller, address, address, name)
 
     def start(self):
+        self.elk.add_callback(self.callback)
         self.set_drivers()
 
-    def callback(self, changeset):
-        LOGGER.debug('AreaNode:callback: cs={}'.format(changeset))
+    def callback(self, element, changeset):
+        self.l_info('AreaNode','callback: cs={}'.format(changeset))
+        if 'armed_status' in changeset:
+            self.set_armed_status(changeset['armed_status'])
 
     # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
     # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
     def set_drivers(self):
-        LOGGER.debug('set_drivers: Area:{} {}'
+        self.l_info('set_drivers','Area:{} {}'
                     .format(self.elk.index,self.elk.name))
         self.set_alarm_state()
         self.set_armed_status()
@@ -46,6 +49,7 @@ class AreaNode(polyinterface.Node):
         self.setDriver('ST', val)
 
     def set_armed_status(self,val=None):
+        self.l_info('set_armed_status',val)
         if val is None:
             val = self.elk.armed_status
         else:
@@ -63,6 +67,11 @@ class AreaNode(polyinterface.Node):
         self.set_drivers()
         self.reportDrivers()
 
+    def cmd_set_armed_status(self,command):
+        val = int(command.get('value'))
+        self.l_info('cmd_set_armed_status',val)
+        self.elk.arm(val,self.controller.user_code)
+
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
@@ -75,4 +84,5 @@ class AreaNode(polyinterface.Node):
     ]
     id = 'area'
     commands = {
-    }
+            'SET_ARMED_STATUS': cmd_set_armed_status,
+}

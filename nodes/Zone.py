@@ -72,12 +72,12 @@ class ZoneNode(polyinterface.Node):
             # Send DON for Violated?
             if reportCmd and self.onoff != 1:
                 if (val == 1 and (self.onoff == 0 or self.onoff == 2)) or (val == 3 and (self.onoff == 4 or self.onoff == 6)):
-                    self.reportCmd("DON",2)
+                    self.reportCmd("DON")
                 elif (val == 3 and (self.onoff == 0 or self.onoff == 3)) or (val == 1 and (self.onoff == 4 or self.onoff == 5)):
                     if self.offnode_obj is None:
-                        self.reportCmd("DOF",2)
+                        self.reportCmd("DOF")
                     else:
-                        self.offnode_obj.reportCmd("DOF",2)
+                        self.offnode_obj.reportCmd("DOF")
             self.setDriver('ST', val)
             if self.offnode_obj is not None:
                 self.offnode_obj.setDriver('ST', val)

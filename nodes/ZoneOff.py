@@ -12,10 +12,10 @@ class ZoneOffNode(polyinterface.Node):
 
     def start(self):
         self.l_debug('start','')
+        super(ZoneOffNode, self).start()
         # Init values from Zone node
         self.setDriver('ST',self.physical_status)
         self.setDriver('GV0',self.logical_status)
-        super(ZoneOffNode, self).start()
 
     def l_info(self, name, string):
         LOGGER.info("%s:%s:%s: %s" %  (self.id,self.name,name,string))

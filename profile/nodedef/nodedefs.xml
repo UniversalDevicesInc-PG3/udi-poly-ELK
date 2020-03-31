@@ -37,7 +37,7 @@
             </sends>
             <accepts>
               <cmd id="SET_ARMED_STATUS">
-                <p id="" editor="astatusc" init="ST" />
+                <p id="" editor="astatusc" init="GV0" />
               </cmd>
             </accepts>
         </cmds>
