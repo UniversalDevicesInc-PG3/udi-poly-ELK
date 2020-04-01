@@ -3,6 +3,7 @@
 import time
 #from elkm1_lib import const
 from nodes import BaseNode
+from nodes import ZoneNode
 
 class AreaNode(BaseNode):
 
@@ -18,6 +19,12 @@ class AreaNode(BaseNode):
     def start(self):
         self.elk.add_callback(self.callback)
         self.set_drivers()
+        for zn in range(207):
+            #self.l_debug('i={} n={} area={}'.format(i,ni,self.elk.zones[ni].area))
+            if self.controller.elk.zones[zn].area == self.elk.index:
+                self.l_debug("start","adding node '{}'".format(self.controller.elk.zones[zn].name))
+                self.controller.addNode(ZoneNode(self.controller,self.controller,self.controller.elk.zones[zn]))
+                time.sleep(.1)
 
     def callback(self, element, changeset):
         self.l_info('AreaNode','callback: cs={}'.format(changeset))

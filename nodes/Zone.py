@@ -6,10 +6,11 @@ from nodes import ZoneOffNode
 
 class ZoneNode(polyinterface.Node):
 
-    def __init__(self, controller, elk):
+    def __init__(self, controller, parent, elk):
         LOGGER.debug("Zone:__init__: {}".format(elk))
         self.elk    = elk
         self.controller = controller
+        self.parent     = parent
         self.init   = False
         self.physical_status = -2
         self.logical_status = -2

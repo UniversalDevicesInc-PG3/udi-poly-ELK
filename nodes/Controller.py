@@ -5,12 +5,11 @@ import asyncio
 from threading import Thread
 from node_funcs import *
 from nodes import BaseController
-from nodes import ZoneNode
 from nodes import AreaNode
 
 
 import sys
-sys.path.insert(0, "../elkm1")
+#sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
 
 #asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
@@ -26,7 +25,7 @@ class Controller(BaseController):
         self.driver = {}
         #Not using because it's called to many times
         #self.poly.onConfig(self.process_config)
-        # We track our driver values because we need the value before it's been pushed.
+        # We track our drsiver values because we need the value before it's been pushed.
 
     def start(self):
         self.l_info('start',self.name)
@@ -100,15 +99,8 @@ class Controller(BaseController):
                 self.areas[i][key] = changeset[key]
         # As soon as we get the real name, add the node.
         if 'name' in self.areas[i]:
-            self.addNode(AreaNode(self, element))
             self.areas[i] = True
             # Add our zones
-            for ni in range(207):
-                #self.l_debug('i={} n={} area={}'.format(i,ni,self.elk.zones[ni].area))
-                if self.elk.zones[ni].area == i:
-                    self.l_debug("callback_area","adding node '{}' for zone '{}'".format(self.elk.zones[ni].name,element.name))
-                    self.addNode(ZoneNode(self,self.elk.zones[ni]))
-                    time.sleep(.1)
 
 
     def connect_and_discover(self):
@@ -123,24 +115,25 @@ class Controller(BaseController):
         logging.getLogger('elkm1_lib').setLevel(logging.DEBUG)
         asyncio.set_event_loop(mainloop)
         self.elk = Elk(self.elk_config,loop=mainloop)
-        self.l_info('discover','Connecting to Elk loop={}'.format(mainloop))
+        self.l_info('discover','Connecting to Elk...')
         self.elk.connect()
+        self.l_info('discover','Waiting for sync to complete...')
+        mainloop.run_until_complete(self.elk.sync_complete())
+        self.l_info('discover','sync_complete')
         #self.config_complete_timer = self.elk.loop.call_later(1, self.config_complete)
         #if  self.elk.is_connected():
-        self.l_info("discover","areas...")
-        self.areas = []
-        self.zones = []
-        for number in range(7):
-            self.areas.append(None)
-            self.elk.areas[number].add_callback(self.callback_area)
-            self.l_info('discover','Area {}'.format(number))
-        print('discover','areas done loop={}'.format(mainloop))
+        self.l_info('discover','areas...')
+        for an in range(7):
+            self.l_info('discover','Area {}'.format(an))
+            self.addNode(AreaNode(self, self.elk.areas[an]))
+            #self.areas.append(None)
+            #self.elk.areas[number].add_callback(self.callback_area)
+        print('discover','areas done')
         self.elk_thread = Thread(name='ELK_RUN',target=self.elk.run)
-        #self.elk_thread.daemon = True
+        self.elk_thread.daemon = True
         self.elk_thread.start()
 
     def elkm1_run(self):
-
         self.elk.run()
 
 
@@ -148,8 +141,8 @@ class Controller(BaseController):
         self.l_info('delete','Oh no I am being deleted. Nooooooooooooooooooooooooooooooooooooooooo.')
 
     def stop(self):
-        self.ELK.stop()
-        self.l_debug('stop','NodeServer stopped.')
+        self.l_debug('stop','NodeServer stopping...')
+        self.elk.disconnect()
 
     def process_config(self, config):
         # this seems to get called twice for every change, why?
