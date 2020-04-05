@@ -37,9 +37,9 @@ class ZoneNode(polyinterface.Node):
     def callback(self, obj, changeset):
         self.l_debug('callback','changeset={}'.format(changeset))
         if 'physical_status' in changeset:
-            self.set_physical_status(changeset['physical_status'])
+            self._set_physical_status(changeset['physical_status'])
         if 'logical_status' in changeset:
-            self.set_logical_status(changeset['logical_status'])
+            self._set_logical_status(changeset['logical_status'])
 
     def set_drivers(self,force=False,reportCmd=True):
         self.l_debug('set_drivers','')
@@ -69,19 +69,21 @@ class ZoneNode(polyinterface.Node):
             val = int(val)
         self.l_info('set_physical_status','val={} onoff={}'.format(val,self.onoff))
         if force or val != self.physical_status:
-            self.physical_status = val
-            # Send DON for Violated?
-            if reportCmd and self.onoff != 1:
-                if (val == 1 and (self.onoff == 0 or self.onoff == 2)) or (val == 3 and (self.onoff == 4 or self.onoff == 6)):
-                    self.reportCmd("DON")
-                elif (val == 3 and (self.onoff == 0 or self.onoff == 3)) or (val == 1 and (self.onoff == 4 or self.onoff == 5)):
-                    if self.offnode_obj is None:
-                        self.reportCmd("DOF")
-                    else:
-                        self.offnode_obj.reportCmd("DOF")
-            self.setDriver('ST', val)
-            if self.offnode_obj is not None:
-                self.offnode_obj.setDriver('ST', val)
+            self._set_physical_status(val)
+
+    def _set_pysical_status(self,val):
+        # Send DON for Violated?
+        if (val == 1 and (self.onoff == 0 or self.onoff == 2)) or (val == 3 and (self.onoff == 4 or self.onoff == 6)):
+            self.reportCmd("DON")
+        elif (val == 3 and (self.onoff == 0 or self.onoff == 3)) or (val == 1 and (self.onoff == 4 or self.onoff == 5)):
+            if self.offnode_obj is None:
+                self.reportCmd("DOF")
+            else:
+                self.offnode_obj.reportCmd("DOF")
+        self.setDriver('ST', val)
+        self.physical_status = val
+        if self.offnode_obj is not None:
+            self.offnode_obj.setDriver('ST', val)
 
     def set_logical_status(self,val=None,force=False):
         if val is None:
@@ -89,8 +91,12 @@ class ZoneNode(polyinterface.Node):
         else:
             val = int(val)
         self.l_debug('set_logical_status','{}'.format(val))
-        self.logical_status = val
+        if force or val != self.logical_status:
+            self._set_logical_status(val)
+
+    def _set_logical_status(self,val):
         self.setDriver('GV0', val)
+        self.logical_status = val
         if self.offnode_obj is not None:
             self.offnode_obj.setDriver('GV0', val)
 
