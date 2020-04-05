@@ -71,7 +71,7 @@ class ZoneNode(polyinterface.Node):
         if force or val != self.physical_status:
             self._set_physical_status(val)
 
-    def _set_pysical_status(self,val):
+    def _set_physical_status(self,val):
         # Send DON for Violated?
         if (val == 1 and (self.onoff == 0 or self.onoff == 2)) or (val == 3 and (self.onoff == 4 or self.onoff == 6)):
             self.reportCmd("DON")
