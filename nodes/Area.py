@@ -78,9 +78,10 @@ class AreaNode(Node):
         self.reportDrivers()
 
     def cmd_set_armed_status(self,command):
-        LOGGER.info(f'{self.lpfx} {command}')
+        val = command.get('value')
+        LOGGER.info(f'{self.lpfx} {val}')
         # val is a string, not integer :(
-        self.elk.arm(command.get('value'),self.controller.user_code)
+        self.elk.arm(val,self.controller.user_code)
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
