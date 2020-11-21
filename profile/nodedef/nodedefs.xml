@@ -36,6 +36,7 @@
               <cmd id="DOF" />
             </sends>
             <accepts>
+              <cmd id="SET_BYPASS" />
               <cmd id="SET_ARMED_STATUS">
                 <p id="" editor="astatusc" init="GV0" />
               </cmd>
@@ -54,7 +55,7 @@
             <!-- Triggered -->
             <st id="GV1" editor="bool" />
             <!-- Bypassed -->
-            <st id="GV6" editor="bool" />
+            <!-- <st id="GV6" editor="bool" />-->
             <!-- area -->
             <st id="GV2" editor="area" />
             <!-- definition type -->

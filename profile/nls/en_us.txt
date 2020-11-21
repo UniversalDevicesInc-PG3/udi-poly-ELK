@@ -20,6 +20,7 @@ CMD-area-GV0-NAME = Set Armed Status
 CMD-area-GV1-NAME = Set Arm Up State
 CMD-area-GV2-NAME = Set Chime Mode
 CMD-area-SET_ARMED_STATUS-NAME = Set Armed Status
+CMD-area-SET_BYPASS-NAME = Bypass
 
 # ST = alarm_state
 ALARM--1 = Unknown

@@ -1,13 +1,11 @@
 
-import polyinterface
-LOGGER = polyinterface.LOGGER
+from polyinterface import Node,LOGGER
 from nodes import ZoneOffNode
 
 
-class ZoneNode(polyinterface.Node):
+class ZoneNode(Node):
 
     def __init__(self, controller, parent, elk):
-        LOGGER.debug("Zone:__init__: {}".format(elk))
         self.elk    = elk
         self.controller = controller
         self.parent     = parent
@@ -18,10 +16,12 @@ class ZoneNode(polyinterface.Node):
         self.offnode_obj = None
         self.address   = 'zone_{}'.format(self.elk.index)
         self.parent_address = 'area_{}'.format(self.elk.area)
+        self.logger    = controller.logger
         super(ZoneNode, self).__init__(controller, self.parent_address, self.address, self.elk.name)
+        self.lpfx = f'{self.name}:'
 
     def start(self):
-        self.l_debug('start','')
+        LOGGER.debug(f'{self.lpfx}')
         # Set drivers that never change
         # Definition Type
         self.setDriver('GV3',self.elk.definition)
@@ -29,20 +29,21 @@ class ZoneNode(polyinterface.Node):
         self.setDriver('GV2', self.elk.area)
         # Set drivers that change
         self.set_drivers(force=True,reportCmd=False)
+        self.reportDrivers()
         self.elk.add_callback(self.callback)
 
     def query(self):
         self.set_drivers(force=False,reportCmd=False)
 
     def callback(self, obj, changeset):
-        self.l_debug('callback','changeset={}'.format(changeset))
+        LOGGER.debug(f'{self.lpfx} changeset={changeset}')
         if 'physical_status' in changeset:
             self._set_physical_status(changeset['physical_status'])
         if 'logical_status' in changeset:
             self._set_logical_status(changeset['logical_status'])
 
     def set_drivers(self,force=False,reportCmd=True):
-        self.l_debug('set_drivers','')
+        LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
         #LOGGER.debug('_set_drivers: Zone:{} description:"{}" state:{}={} status:{}={} enabled:{} area:{} definition:{}={} alarm:{}={}'
         #            .format(pyelk.number, pyelk.description, pyelk.state, pyelk.state_pretty(), pyelk.status, pyelk.status_pretty(), pyelk.enabled,
         #                    pyelk.area, pyelk.definition, pyelk.definition_pretty(), pyelk.alarm, pyelk.alarm_pretty()))
@@ -51,7 +52,6 @@ class ZoneNode(polyinterface.Node):
         self.set_logical_status(force=force)
         self.set_offnode()
         self.set_triggered()
-        self.set_bypassed()
 
     """
         ZDCONF-0 = Send Both
@@ -67,7 +67,7 @@ class ZoneNode(polyinterface.Node):
             val = self.elk.physical_status
         else:
             val = int(val)
-        self.l_info('set_physical_status','val={} onoff={}'.format(val,self.onoff))
+        LOGGER.debug(f'{self.lpfx} val={val} onoff={self.onoff}')
         if force or val != self.physical_status:
             self._set_physical_status(val)
 
@@ -90,7 +90,7 @@ class ZoneNode(polyinterface.Node):
             val = self.elk.logical_status
         else:
             val = int(val)
-        self.l_debug('set_logical_status','{}'.format(val))
+        LOGGER.debug(f'{self.lpfx} val={val}')
         if force or val != self.logical_status:
             self._set_logical_status(val)
 
@@ -108,27 +108,13 @@ class ZoneNode(polyinterface.Node):
             elif val is False:
                 val = 0
             else:
-                self.l_error('set_triggered','Unknown value {}, assuming 0'.format(val))
+                LOGGER.error(f'{self.lpfx} Unknown value {val}, assuming 0')
                 val = 0
         else:
             val = int(val)
-        self.l_debug('set_triggered','{}'.format(val))
+        LOGGER.debug(f'{self.lpfx} val={val}')
         self.setDriver('GV1', val)
 
-    def set_bypassed(self,val=None,force=False):
-        if val is None:
-            val = self.elk.bypassed
-            if val is True:
-                val = 1
-            elif val is False:
-                val = 0
-            else:
-                self.l_error('set_bypassed','Unknown value {}, assuming 0'.format(val))
-                val = 0
-        else:
-            val = int(val)
-        self.l_debug('set_bypassed','{}'.format(val))
-        self.setDriver('GV6', val)
 
     def setOn(self, command):
         self.setDriver('ST', 1)
@@ -140,80 +126,53 @@ class ZoneNode(polyinterface.Node):
         self.set_drivers()
         self.reportDrivers()
 
-    def set_onoff(self,val=None):
-        mname = 'set_onoff'
-        self.l_info(mname,val)
-        # Restore onoff setting from DB for existing nodes
-        mdrv = 'GV5'
+    def set_driver(self,mdrv,val,default=0):
         if val is None:
+            # Restore from DB for existing nodes
             try:
                 val = self.getDriver(mdrv)
-                self.l_info(mname,val)
+                LOGGER.info(f'{self.lpfx} {val}')
             except:
-                self.l_error(mname,'getDriver({}) failed'.format(mdrv),True)
-                val = 0
-        if val is None:
-            val = 0
-        else:
-            val = int(val)
+                LOGGER.warning(f'{self.lpfx} getDriver({mdrv}) failed which can happen on new nodes, using {default}')
+                val = default
+        val = default if val is None else int(val)
         try:
+            LOGGER.debug(f'{self.lpfx} setDriver({mdrv},{val})')
             self.setDriver(mdrv, val)
-            self.onoff = val
         except:
-            self.l_error(mname,'setDriver({},{}) failed'.format(mdrv,val),True)
+            LOGGER.error(f'{self.lpfx} setDriver({mdrv},{val}) failed')
+            return None
+        return val
+
+    def set_onoff(self,val=None):
+        LOGGER.info(f'{self.lpfx} {val}')
+        self.onoff = self.set_driver('GV5',val)
 
     def set_offnode(self,val=None):
-        mname = 'set_offnode'
-        self.l_info(mname,'val={} offnode={} offnode_obj={}'.format(val,self.offnode,self.offnode_obj))
-        # Restore offnode setting from DB for existing nodes
-        mdrv = 'GV7'
-        if val is None:
-            try:
-                val = self.getDriver(mdrv)
-                self.l_info(mname,val)
-            except:
-                self.l_error(mname,'getDriver({}) failed'.format(mdrv),True)
-                val = 0
-        if val is None:
-            val = 0
-        else:
-            val = int(val)
-        try:
-            self.setDriver(mdrv, val)
-            self.offnode = val
-        except:
-            self.l_error(mname,'setDriver({},{}) failed'.format(mdrv,val),True)
-        if val == 0:
+        LOGGER.info(f'{self.lpfx} val={val} offnode={self.offnode} offnode_obj={self.offnode_obj}')
+        self.offnode  = self.set_driver('GV7',val)
+        if self.offnode == 0:
+            # No more off node, delete the node...
             if self.offnode_obj is not None:
+                LOGGER.info(f'{self.lpfx} Deleting off node {self.offnode_obj.address}')
                 self.controller.delNode(self.offnode_obj.address)
             self.offnode_obj = None
         else:
+            # We have a off node, is it new?
             if self.offnode_obj is None:
-                self.l_info(mname,"Adding off node.")
+                LOGGER.info(f'{self.lpfx} Adding off node')
                 self.offnode_obj = self.controller.addNode(ZoneOffNode(self.controller,self.parent_address,self.address+'_off',self.elk.name+" - Off",
                 self.physical_status, self.logical_status))
 
     def cmd_set_onoff(self,command):
         val = int(command.get('value'))
-        self.l_info("cmd_set_onoff",val)
+        LOGGER.debug(f'{self.lpfx} val={val}')
         self.set_onoff(val)
 
     def cmd_set_offnode(self,command):
         val = int(command.get('value'))
-        self.l_info("cmd_set_offnode",val)
+        LOGGER.debug(f'{self.lpfx} val={val}')
         self.set_offnode(val)
-
-    def l_info(self, name, string):
-        LOGGER.info("%s:%s:%s: %s" %  (self.id,self.name,name,string))
-
-    def l_error(self, name, string):
-        LOGGER.error("%s:%s:%s: %s" % (self.id,self.name,name,string))
-
-    def l_warning(self, name, string):
-        LOGGER.warning("%s:%s:%s: %s" % (self.id,self.name,name,string))
-
-    def l_debug(self, name, string):
-        LOGGER.debug("%s:%s:%s: %s" % (self.id,self.name,name,string))
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
@@ -233,7 +192,7 @@ class ZoneNode(polyinterface.Node):
         # DON/DOF Config
         {'driver': 'GV5', 'value': 0, 'uom': 25},
         # bypassed
-        {'driver': 'GV6', 'value': 0, 'uom': 2},
+        #{'driver': 'GV6', 'value': 0, 'uom': 2},
         # off node
         {'driver': 'GV7', 'value': 0, 'uom': 2},
     ]

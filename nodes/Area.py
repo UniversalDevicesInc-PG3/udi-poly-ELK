@@ -2,40 +2,41 @@
 
 import time
 #from elkm1_lib import const
-from nodes import BaseNode
+from polyinterface import Node,LOGGER
 from nodes import ZoneNode
 
-class AreaNode(BaseNode):
+class AreaNode(Node):
 
     def __init__(self, controller, elk):
         self.elk    = elk
         self.init   = False
-        self.status = -1
-        self.state  = -1
+        self.status = None
+        self.state  = None
         address     = 'area_{}'.format(self.elk.index)
         name        = self.elk.name
         super(AreaNode, self).__init__(controller, address, address, name)
+        self.lpfx = f'{self.name}:'
 
     def start(self):
         self.elk.add_callback(self.callback)
         self.set_drivers()
+        self.reportDrivers()
         for zn in range(207):
-            #self.l_debug('i={} n={} area={}'.format(i,ni,self.elk.zones[ni].area))
+            #LOGGER.debug(f{self.lpfx} i={} n={} area={}'.format(i,ni,self.elk.zones[ni].area))
             if self.controller.elk.zones[zn].area == self.elk.index:
-                self.l_debug("start","adding node '{}'".format(self.controller.elk.zones[zn].name))
+                LOGGER.debug(f"{self.lpfx} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
                 self.controller.addNode(ZoneNode(self.controller,self.controller,self.controller.elk.zones[zn]))
                 time.sleep(.1)
 
     def callback(self, element, changeset):
-        self.l_info('AreaNode','callback: cs={}'.format(changeset))
+        LOGGER.info(f'{self.lpfx} cs={changeset}')
         if 'armed_status' in changeset:
             self.set_armed_status(changeset['armed_status'])
 
     # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
     # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
     def set_drivers(self):
-        self.l_info('set_drivers','Area:{} {}'
-                    .format(self.elk.index,self.elk.name))
+        LOGGER.info(f'{self.lpfx} Area:{self.elk.index} {self.elk.name}')
         self.set_alarm_state()
         self.set_armed_status()
         self.set_arm_up_state()
@@ -56,7 +57,7 @@ class AreaNode(BaseNode):
         self.setDriver('ST', val)
 
     def set_armed_status(self,val=None):
-        self.l_info('set_armed_status',val)
+        LOGGER.info(f'{self.lpfx} {val}')
         if val is None:
             val = self.elk.armed_status
         else:
@@ -64,6 +65,7 @@ class AreaNode(BaseNode):
         self.setDriver('GV0', val)
 
     def set_arm_up_state(self,val=None):
+        LOGGER.info(f'{self.lpfx} {val}')
         if val is None:
             val = self.elk.arm_up_state
         else:
@@ -71,13 +73,14 @@ class AreaNode(BaseNode):
         self.setDriver('GV1', val)
 
     def query(self):
+        LOGGER.info(f'{self.lpfx}')
         self.set_drivers()
         self.reportDrivers()
 
     def cmd_set_armed_status(self,command):
-        val = int(command.get('value'))
-        self.l_info('cmd_set_armed_status',val)
-        self.elk.arm(val,self.controller.user_code)
+        LOGGER.info(f'{self.lpfx} {val}')
+        # val is a string, not integer :(
+        self.elk.arm(command.get('value'),self.controller.user_code)
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]

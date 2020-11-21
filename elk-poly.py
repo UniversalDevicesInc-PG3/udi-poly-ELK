@@ -9,7 +9,13 @@ import sys
 import time
 from nodes import Controller
 
+import logging
 LOGGER = polyinterface.LOGGER
+# I want this logging
+#logging.Formatter('%(asctime)s %(threadName)-10s %(name)-18s %(levelname)-8s %(module)s:%(funcName)s: %(message)s')
+# Default Format is:         '%(asctime)s %(threadName)-10s %(name)-18s %(levelname)-8s %(module)s:%(funcName)s: %(message)s'
+#                            '%(asctime)s %(threadName)-10s %(module)-13s %(levelname)-8s %(funcName)s: %(message)s [%(module)s:%(funcName)s]'
+#polyinterface.set_log_format('%(asctime)s %(threadName)-10s %(name)-18s %(levelname)-8s %(message)s [%(module)s:%(funcName)s]')
 
 if __name__ == "__main__":
     try:
