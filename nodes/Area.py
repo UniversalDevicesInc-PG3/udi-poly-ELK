@@ -78,7 +78,7 @@ class AreaNode(Node):
         self.reportDrivers()
 
     def cmd_set_armed_status(self,command):
-        LOGGER.info(f'{self.lpfx} {val}')
+        LOGGER.info(f'{self.lpfx} {command}')
         # val is a string, not integer :(
         self.elk.arm(command.get('value'),self.controller.user_code)
 
