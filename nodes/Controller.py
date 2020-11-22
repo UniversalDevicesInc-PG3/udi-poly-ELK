@@ -77,7 +77,7 @@ class Controller(Controller):
         LOGGER.debug(f'{self.lpfx} st={st} elk_st={self.elk_st}')
         self.set_st(st)
 
-    def set_st(self,val):
+    def set_st(self,st):
         # Did connection status change?
         if self.elk_st != st:
             # We have been connected, but lost it...
