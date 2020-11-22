@@ -79,7 +79,7 @@ class AreaNode(Node):
 
     def cmd_set_armed_status(self,command):
         val = command.get('value')
-        LOGGER.info(f'{self.lpfx} {val}')
+        LOGGER.info(f'{self.lpfx} elk.arm({val},****')
         # val is a string, not integer :(
         self.elk.arm(val,self.controller.user_code)
 
