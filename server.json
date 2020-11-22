@@ -4,7 +4,7 @@
     "type": "python3",
     "executable": "elk-poly.py",
     "install": "install.sh",
-    "description": "ELK Security Panel NOT RELEASED DO NOT TRY",
+    "description": "ELK Security Panel NOT RELEASED USE AT YOUR OWN RISK",
     "notice": "Nothing can be blamed on me, use at your own risk",
     "shortPoll": "120",
     "longPoll": "240",
