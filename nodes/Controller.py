@@ -33,7 +33,7 @@ class Controller(Controller):
         self.server_data = self.poly.get_server_data(check_profile=False)
         self.update_profile() # Always for now.
         LOGGER.info(f"{self.lpfx} Version {self.server_data['version']}")
-        self.set_debug_level(10)
+        self.set_debug_level()
         self.setDriver('ST', 1)
         self.heartbeat()
         self.check_params()
@@ -74,8 +74,11 @@ class Controller(Controller):
             st = True
         else:
             st = False
-        # Did connection status change?
         LOGGER.debug(f'{self.lpfx} st={st} elk_st={self.elk_st}')
+        self.set_st(st)
+
+    def set_st(self,val):
+        # Did connection status change?
         if self.elk_st != st:
             # We have been connected, but lost it...
             if self.elk_st is True:
@@ -93,30 +96,13 @@ class Controller(Controller):
         for node in self.nodes:
             self.nodes[node].reportDrivers()
 
-    def callback_area(self, element, changeset):
-        # Are we needed anymore?
-        if self.areas[element.index] is True:
-            return # Nope
-        LOGGER.debug(f'{self.lpfx} el={element} cs={changeset}')
-        i = element.index
-        if self.areas[i] is None:
-            # First changeset is allstatus like:
-            # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
-            self.areas[i] = changeset
-        else:
-            # Keep track of our changes until the node is addded
-            for key in changeset:
-                self.areas[i][key] = changeset[key]
-        # As soon as we get the real name, add the node.
-        if 'name' in self.areas[i]:
-            self.areas[i] = True
-            # Add our zones
-
     def connected(self):
         LOGGER.info(f"{self.lpfx} Connected!!!")
+        self.set_st(True)
 
     def disconnected(self):
         LOGGER.info(f"{self.lpfx} Disconnected!!!")
+        self.set_st(False)
 
     def login(self,succeeded):
         if succeeded:
@@ -131,8 +117,6 @@ class Controller(Controller):
         for an in range(7):
             LOGGER.info(f'{self.lpfx} Area {an}')
             self.addNode(AreaNode(self, self.elk.areas[an]))
-            #self.areas.append(None)
-            #self.elk.areas[number].add_callback(self.callback_area)
         LOGGER.info('areas done')
 
     def timeout(self,msg_code):
@@ -222,38 +206,54 @@ class Controller(Controller):
 
         #self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
 
-    def set_all_logs(self,level):
+    def set_all_logs(self,level,slevel=logging.WARNING):
         LOGGER.setLevel(level)
-        # TODO: Set Kasa query logger level
-        logging.getLogger('elkm1_lib.elk').setLevel(logging.WARNING)
-        logging.getLogger('elkm1_lib.proto').setLevel(logging.WARNING)
+        logging.getLogger('elkm1_lib.elk').setLevel(slevel)
+        logging.getLogger('elkm1_lib.proto').setLevel(slevel)
 
-    def set_debug_level(self,level):
+    def get_driver(self,mdrv,default=None):
+        # Restore from DB for existing nodes
+        try:
+            val = self.getDriver(mdrv)
+            LOGGER.info(f'{self.lpfx} {mdrv}={val}')
+            if val is None:
+                LOGGER.info(f'{self.lpfx} getDriver({mdrv}) returned None which can happen on new nodes, using {default}')
+                val = default
+        except:
+            LOGGER.warning(f'{self.lpfx} getDriver({mdrv}) failed which can happen on new nodes, using {default}')
+            val = default
+        return val
+
+    def set_debug_level(self,level=None):
         LOGGER.info(f'level={level}')
+        mdrv = 'GV2'
         if level is None:
-            level = 20
+            # Restore from DB for existing nodes
+            level = self.get_driver(mdrv,20)
         level = int(level)
         if level == 0:
             level = 20
-        LOGGER.info(f'Seting GV1 to {level}')
-        self.setDriver('GV1', level)
+        LOGGER.info(f'Seting {mdrv} to {level}')
+        self.setDriver(mdrv, level)
         # 0=All 10=Debug are the same because 0 (NOTSET) doesn't show everything.
         slevel = logging.WARNING
         if level <= 10:
-            self.set_all_logs(logging.DEBUG)
+            level = logging.DEBUG
             if level < 10:
                 slevel = logging.DEBUG
         elif level == 20:
-            self.set_all_logs(logging.INFO)
+            level = logging.INFO
         elif level == 30:
-            self.set_all_logs(logging.WARNING)
+            level = logging.WARNING
         elif level == 40:
-            self.set_all_logs(logging.ERROR)
+            level = logging.ERROR
         elif level == 50:
-            self.set_all_logs(logging.CRITICAL)
+            level = logging.CRITICAL
         else:
             LOGGER.error(f"Unknown level {level}")
+        # This didn't work for elkm1lib levels?
         LOG_HANDLER.set_basic_config(True,slevel)
+        self.set_all_logs(level,slevel)
 
     def update_profile(self):
         LOGGER.info(f'{self.lpfx}')
@@ -263,13 +263,20 @@ class Controller(Controller):
         LOGGER.info(f'{self.lpfx}')
         return self.update_profile()
 
+    def cmd_set_debug_mode(self,command):
+        val = int(command.get('value'))
+        LOGGER.debug(f'val={val}')
+        self.set_debug_level(val)
+
     id = 'controller'
     commands = {
         'QUERY': query,
         'DISCOVER': discover,
         'UPDATE_PROFILE': cmd_update_profile,
+        'SET_DM': cmd_set_debug_mode,
     }
     drivers = [
         {'driver': 'ST',   'value': 0, 'uom': 2},
         {'driver': 'GV1',  'value': 0, 'uom': 2},
+        {'driver': 'GV2',  'value': logging.DEBUG, 'uom': 25},
     ]

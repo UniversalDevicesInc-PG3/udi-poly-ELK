@@ -6,6 +6,7 @@
         <sts>
 			<st id="ST" editor="bool" />
       <st id="GV1" editor="bool" />
+      <st id="GV2" editor="I_DEBUG" />
 		</sts>
         <cmds>
             <sends>
@@ -16,6 +17,9 @@
               <cmd id="QUERY" />
               <cmd id="DISCOVER" />
               <cmd id="UPDATE_PROFILE" />
+              <cmd id="SET_DM">
+                <p id="" editor="I_DEBUG" init="GV2" />
+              </cmd>
             </accepts>
         </cmds>
     </nodeDef>

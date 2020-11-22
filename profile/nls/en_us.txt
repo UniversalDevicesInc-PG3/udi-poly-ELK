@@ -5,8 +5,18 @@ ND-controller-ICON = GenericCtl
 CMD-ctl-QUERY-NAME = Query
 CMD-ctl-DISCOVER-NAME = Re-Discover
 CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
+CMD-ctl-SET_DM-NAME = Set Logger Level
 ST-ctl-ST-NAME = NodeServer Online
 ST-ctl-GV1-NAME = ELK M1EXP Connected
+ST-ctl-GV2-NAME = Logger Level
+
+# Debug/Logger Modes
+CDM-9 = Debug + elkm1_lib
+CDM-10 = Debug
+CDM-20 = Info All
+CDM-30 = Warning All
+CDM-40 = Error All
+CDM-50 = Critical All
 
 # area
 ND-area-NAME = Area Node
