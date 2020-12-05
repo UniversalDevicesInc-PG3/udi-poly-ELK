@@ -22,6 +22,7 @@ if __name__ == "__main__":
         polyglot = polyinterface.Interface('ELK')
         polyglot.start()
         control = Controller(polyglot)
+        control.updateNode()
         control.runForever()
     except (KeyboardInterrupt, SystemExit):
         polyglot.stop()

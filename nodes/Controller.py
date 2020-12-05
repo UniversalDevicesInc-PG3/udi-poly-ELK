@@ -16,6 +16,8 @@ mainloop = asyncio.get_event_loop()
 
 class Controller(Controller):
     def __init__(self, polyglot):
+        # We track our drsiver values because we need the value before it's been pushed.
+        super(Controller, self).__init__(polyglot)
         self.name = 'ELK Controller'
         self.hb = 0
         self.elk = None
@@ -25,8 +27,6 @@ class Controller(Controller):
         self.lpfx = self.name + ':'
         #Not using because it's called to many times
         #self.poly.onConfig(self.process_config)
-        # We track our drsiver values because we need the value before it's been pushed.
-        super(Controller, self).__init__(polyglot)
 
     def start(self):
         LOGGER.info(f'{self.lpfx} start')

@@ -17,4 +17,5 @@ No info yet
 
 ## Version History
 
+0.1.2: Only send DON/DOFF when status actually changes
 0.1.0: Update to work with elkm1_lib 0.8.8 and more code cleanup.

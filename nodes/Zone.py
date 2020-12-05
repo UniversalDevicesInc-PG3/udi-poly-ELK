@@ -63,38 +63,44 @@ class ZoneNode(Node):
         ZDCONF-6 = Reverse Off Only
     """
     def set_physical_status(self,val=None,force=False,reportCmd=True):
+        LOGGER.debug(f'{self.lpfx} val={val} onoff={self.onoff}')
         if val is None:
             val = self.elk.physical_status
         else:
             val = int(val)
-        LOGGER.debug(f'{self.lpfx} val={val} onoff={self.onoff}')
-        if force or val != self.physical_status:
-            self._set_physical_status(val)
+        self._set_physical_status(val,force=force)
 
-    def _set_physical_status(self,val):
+    def _set_physical_status(self,val,force=False):
+        if val == self.physical_status and not force:
+            return
+        LOGGER.debug(f'{self.lpfx} val={val} onoff={self.onoff}')
         # Send DON for Violated?
-        if (val == 1 and (self.onoff == 0 or self.onoff == 2)) or (val == 3 and (self.onoff == 4 or self.onoff == 6)):
-            self.reportCmd("DON")
-        elif (val == 3 and (self.onoff == 0 or self.onoff == 3)) or (val == 1 and (self.onoff == 4 or self.onoff == 5)):
-            if self.offnode_obj is None:
-                self.reportCmd("DOF")
-            else:
-                self.offnode_obj.reportCmd("DOF")
+        # Only if we are not farcing the same value
+        if not force:
+            if (val == 1 and (self.onoff == 0 or self.onoff == 2)) or (val == 3 and (self.onoff == 4 or self.onoff == 6)):
+                self.reportCmd("DON")
+            elif (val == 3 and (self.onoff == 0 or self.onoff == 3)) or (val == 1 and (self.onoff == 4 or self.onoff == 5)):
+                if self.offnode_obj is None:
+                    self.reportCmd("DOF")
+                else:
+                    self.offnode_obj.reportCmd("DOF")
         self.setDriver('ST', val)
         self.physical_status = val
         if self.offnode_obj is not None:
             self.offnode_obj.setDriver('ST', val)
 
     def set_logical_status(self,val=None,force=False):
+        LOGGER.debug(f'{self.lpfx} val={val}')
         if val is None:
             val = self.elk.logical_status
         else:
             val = int(val)
-        LOGGER.debug(f'{self.lpfx} val={val}')
-        if force or val != self.logical_status:
-            self._set_logical_status(val)
+        self._set_logical_status(val,force=force)
 
-    def _set_logical_status(self,val):
+    def _set_logical_status(self,val,force=False):
+        if val == self.logical_status and not force:
+            return
+        LOGGER.debug(f'{self.lpfx} val={val}')
         self.setDriver('GV0', val)
         self.logical_status = val
         if self.offnode_obj is not None:
