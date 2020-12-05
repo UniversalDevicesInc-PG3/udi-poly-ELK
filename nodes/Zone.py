@@ -12,7 +12,7 @@ class ZoneNode(Node):
         self.init   = False
         self.physical_status = -2
         self.logical_status = -2
-        self.last_changeset = None
+        self.last_changeset = {}
         self.offnode = None
         self.offnode_obj = None
         self.address   = 'zone_{}'.format(self.elk.index)
@@ -38,7 +38,8 @@ class ZoneNode(Node):
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
-        if changeset == self.last_changeset:
+        # Why does it get called multiple times with same data?
+        if cmp(changeset,self.last_changeset) == 0:
             return
         if 'physical_status' in changeset:
             self._set_physical_status(changeset['physical_status'])
