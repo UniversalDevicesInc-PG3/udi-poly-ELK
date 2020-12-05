@@ -12,6 +12,7 @@ class ZoneNode(Node):
         self.init   = False
         self.physical_status = -2
         self.logical_status = -2
+        self.last_changeset = None
         self.offnode = None
         self.offnode_obj = None
         self.address   = 'zone_{}'.format(self.elk.index)
@@ -37,6 +38,8 @@ class ZoneNode(Node):
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
+        if changeset == self.last_changeset:
+            return
         if 'physical_status' in changeset:
             self._set_physical_status(changeset['physical_status'])
         if 'logical_status' in changeset:
@@ -73,7 +76,7 @@ class ZoneNode(Node):
     def _set_physical_status(self,val,force=False):
         if val == self.physical_status and not force:
             return
-        LOGGER.debug(f'{self.lpfx} val={val} onoff={self.onoff}')
+        LOGGER.debug(f'{self.lpfx} val={val} current={self.physical_status} force={force} onoff={self.onoff}')
         # Send DON for Violated?
         # Only if we are not farcing the same value
         if not force:
