@@ -80,11 +80,14 @@ class ZoneNode(Node):
         # Only if we are not farcing the same value
         if not force:
             if (val == 1 and (self.onoff == 0 or self.onoff == 2)) or (val == 3 and (self.onoff == 4 or self.onoff == 6)):
+                LOGGER.debug(f'{self.lpfx} Send DON')
                 self.reportCmd("DON")
             elif (val == 3 and (self.onoff == 0 or self.onoff == 3)) or (val == 1 and (self.onoff == 4 or self.onoff == 5)):
                 if self.offnode_obj is None:
+                    LOGGER.debug(f'{self.lpfx} Send DOF ')
                     self.reportCmd("DOF")
                 else:
+                    LOGGER.debug(f'{self.lpfx} Send DOF to {self.offnode_obj.name}')
                     self.offnode_obj.reportCmd("DOF")
         self.setDriver('ST', val)
         self.physical_status = val
