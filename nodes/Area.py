@@ -24,7 +24,7 @@ class AreaNode(Node):
         for zn in range(207):
             #LOGGER.debug(f{self.lpfx} i={} n={} area={}'.format(i,ni,self.elk.zones[ni].area))
             if self.controller.elk.zones[zn].area == self.elk.index:
-                LOGGER.debug(f"{self.lpfx} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
+                LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
                 self.controller.addNode(ZoneNode(self.controller,self.controller,self.controller.elk.zones[zn]))
                 time.sleep(.1)
 
