@@ -39,6 +39,8 @@ class ZoneNode(Node):
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
         # Why does it get called multiple times with same data?
+        if changeset == self.last_changeset:
+            return
         if 'physical_status' in changeset:
             self._set_physical_status(changeset['physical_status'])
         if 'logical_status' in changeset:
