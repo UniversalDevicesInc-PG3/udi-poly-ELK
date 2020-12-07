@@ -39,6 +39,7 @@ class AreaNode(Node):
             self.set_arm_up_state(changeset['arm_up_state'])
 
     def set_driver(self,drv,val,force=False,report=True):
+        LOGGER.debug(f'{self.lpfx} {drv},{val},{force},{report}')
         if not drv in self.my_drivers or val != self.my_drivers[drv] or force:
             self.setDriver(drv,val,report=report)
             self.my_drivers[drv] = val
