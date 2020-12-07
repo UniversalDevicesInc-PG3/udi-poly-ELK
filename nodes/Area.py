@@ -12,6 +12,7 @@ class AreaNode(Node):
         self.init   = False
         self.status = None
         self.state  = None
+        self.my_drivers = {}
         address     = 'area_{}'.format(self.elk.index)
         name        = self.elk.name
         super(AreaNode, self).__init__(controller, address, address, name)
@@ -30,8 +31,20 @@ class AreaNode(Node):
 
     def callback(self, element, changeset):
         LOGGER.info(f'{self.lpfx} cs={changeset}')
+        if 'alarm_state' in changeset:
+            self.set_alarm_state(changeset['alarm_state'])
         if 'armed_status' in changeset:
             self.set_armed_status(changeset['armed_status'])
+        if 'arm_up_state' in changeset:
+            self.set_arm_up_state(changeset['arm_up_state'])
+
+    def set_driver(self,drv,val,force=False,report=True):
+        if not drv in self.my_drivers or val != self.my_drivers[drv] or force:
+            self.setDriver(drv,val,report=report)
+            self.my_drivers[drv] = val
+
+    def get_driver(self,drv):
+        return self.my_drivers[drv] if drv in self.my_drivers else None
 
     # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
     # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
@@ -43,34 +56,24 @@ class AreaNode(Node):
         #self.setDriver('GV2', pyelk.chime_mode)
 
     def set_alarm_state(self,val=None,force=False):
-        if val is None:
-            val = self.elk.alarm_state
-        else:
-            val = int(val)
-        if force or val != self.status:
-            self.status = val
-            # Send DON for Violated?
-            #if val == 2:
-            #    self.reportCmd("DON",2)
-            #else:
-            #    self.reportCmd("DOF",2)
-        self.setDriver('ST', val)
-
-    def set_armed_status(self,val=None):
         LOGGER.info(f'{self.lpfx} {val}')
-        if val is None:
-            val = self.elk.armed_status
-        else:
-            val = int(val)
-        self.setDriver('GV0', val)
+        val = self.elk.alarm_state if val is None else int(val)
+        # Send DON for Violated?
+        #if val == 2:
+        #    self.reportCmd("DON",2)
+        #else:
+        #    self.reportCmd("DOF",2)
+        self.set_driver('ST', val, force=force)
+
+    def set_armed_status(self,val=None,force=False):
+        LOGGER.info(f'{self.lpfx} {val}')
+        val = self.elk.armed_status if val is None else int(val)
+        self.set_driver('GV0',val,force=force)
 
     def set_arm_up_state(self,val=None):
         LOGGER.info(f'{self.lpfx} {val}')
-        if val is None:
-            val = self.elk.arm_up_state
-        else:
-            val = int(val)
-        self.setDriver('GV1', val)
+        val = self.elk.arm_up_state if val is None else int(val)
+        self.set_driver('GV1', val)
 
     def query(self):
         LOGGER.info(f'{self.lpfx}')
