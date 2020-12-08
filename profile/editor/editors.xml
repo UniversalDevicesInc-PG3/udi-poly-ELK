@@ -8,13 +8,13 @@
   </editor>
 
   <!-- AREAS -->
-
+  
   <!-- Arm Status -->
   <editor id="astatus">
-      <range uom="25" subset="-1,0-10" nls="ASTATUS" />
+      <range uom="25" min="-1" max="10" nls="ASTATUS" />
   </editor>
   <editor id="astatusc">
-      <range uom="25" subset="0-10" nls="ASTATUS" />
+      <range uom="25" min="0" max="10" nls="ASTATUS" />
   </editor>
   <editor id="armup">
       <range uom="25" subset="-1,0-6" nls="ARMUP" />
