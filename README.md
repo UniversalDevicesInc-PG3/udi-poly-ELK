@@ -1,13 +1,14 @@
 # Polyglot V2 ELK Nodeserver
 
-#### Installation
+## Installation
 
 Install from the Polyglot store.
 
-THIS NODESERVER IS STILL A WORK IN PROGRESS AND IS NOT RELEASED, USE AT YOUR OWN RISK!
-But, I have been using this in production for many months :)
+### Configuration
 
-#### Requirements
+Open the Configuration Page for the Nodeserver in the Polyglot UI and view the [Configuration Help](/POLYGLOT_CONFIG.md) available on that page.
+
+## Requirements
 
 This uses https://github.com/gwww/elkm1 which currently only supports an M1EXP in local non secure mode.
 
@@ -17,5 +18,6 @@ No info yet
 
 ## Version History
 
-0.1.2: Only send DON/DOFF when status actually changes
+0.1.3: Add Area and Zone Bypass commands, don't send DON/DOF on startup.
+0.1.2: Only send DON/DOFF when status actually changes.
 0.1.0: Update to work with elkm1_lib 0.8.8 and more code cleanup.

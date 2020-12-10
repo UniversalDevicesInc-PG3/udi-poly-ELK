@@ -164,6 +164,9 @@ class Controller(Controller):
     def stop(self):
         LOGGER.debug(f'{self.lpfx} NodeServer stopping...')
         self.elk.disconnect()
+        # Wait for actual termination (if needed)
+        self.elk_thread.join()
+        LOGGER.debug(f'{self.lpfx} NodeServer stopping complete...')
 
     def process_config(self, config):
         # this seems to get called twice for every change, why?

@@ -33,6 +33,10 @@
             <st id="GV0" editor="astatus" />
             <st id="GV1" editor="armup" />
             <st id="GV2" editor="chime" />
+            <!-- violated count -->
+            <st id="GV3" editor="integer" />
+            <!-- bypassed count -->
+            <st id="GV4" editor="integer" />
         </sts>
         <cmds>
             <sends>
@@ -41,6 +45,7 @@
             </sends>
             <accepts>
               <cmd id="SET_BYPASS" />
+              <cmd id="CLEAR_BYPASS" />
               <cmd id="SET_ARMED_STATUS">
                 <p id="" editor="astatusc" init="GV0" />
               </cmd>
@@ -77,6 +82,8 @@
               <cmd id="DOF" />
             </sends>
             <accepts>
+              <cmd id="SET_BYPASS" />
+              <!-- <cmd id="CLEAR_BYPASS" /> -->
               <cmd id="SET_ONOFF">
                 <p id="" editor="zdconf" init="GV5" />
               </cmd>

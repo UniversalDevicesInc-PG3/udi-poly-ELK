@@ -6,9 +6,11 @@
   <editor id="I_DEBUG">
     <range uom="25" subset="9,10,20,30,40,50" nls="CDM"/>
   </editor>
-
+  <editor id="integer">
+       <range uom="25" min="0" max="1000" prec="0" />
+  </editor>
   <!-- AREAS -->
-  
+
   <!-- Arm Status -->
   <editor id="astatus">
       <range uom="25" min="-1" max="10" nls="ASTATUS" />

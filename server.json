@@ -8,12 +8,12 @@
     "notice": "Nothing can be blamed on me, use at your own risk",
     "shortPoll": "120",
     "longPoll": "240",
-    "profile_version": "0.1.1",
+    "profile_version": "0.1.3",
     "credits": [
         {
             "title": "ELK: a NodeServer for ELK Security Panel Integration",
             "author": "JimBoCA",
-            "version": "0.1.2",
+            "version": "0.1.3",
             "date": "July 23, 2019",
             "source": "https://github.com/jimboca/udi-poly-elk",
             "license": "https://raw.githubusercontent.com/jimboca/udi-poly-elk/master/LICENSE"

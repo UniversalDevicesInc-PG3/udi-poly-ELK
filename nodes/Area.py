@@ -4,6 +4,11 @@ import time
 #from elkm1_lib import const
 from polyinterface import Node,LOGGER
 from nodes import ZoneNode
+from elkm1_lib.const import (
+    Max,
+    ZoneLogicalStatus,
+    ZonePhysicalStatus,
+)
 
 class AreaNode(Node):
 
@@ -22,12 +27,14 @@ class AreaNode(Node):
         self.elk.add_callback(self.callback)
         self.set_drivers()
         self.reportDrivers()
-        for zn in range(207):
+        # We used zero based number, so zone node name matches the zone number.
+        for zn in range(Max.ZONES.value-1):
             #LOGGER.debug(f{self.lpfx} i={} n={} area={}'.format(i,ni,self.elk.zones[ni].area))
             if self.controller.elk.zones[zn].area == self.elk.index:
-                LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
-                self.controller.addNode(ZoneNode(self.controller,self.controller,self.controller.elk.zones[zn]))
+                LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
+                self.controller.addNode(ZoneNode(self.controller,self,self,self.controller.elk.zones[zn]))
                 time.sleep(.1)
+        self.update_zone_status()
 
     def callback(self, element, changeset):
         LOGGER.info(f'{self.lpfx} cs={changeset}')
@@ -37,6 +44,22 @@ class AreaNode(Node):
             self.set_armed_status(changeset['armed_status'])
         if 'arm_up_state' in changeset:
             self.set_arm_up_state(changeset['arm_up_state'])
+            self.update_zone_status()
+
+    def update_zone_status(self):
+        LOGGER.info(f'{self.lpfx}')
+        bypassed = 0
+        violated = 0
+        for zn in range(Max.ZONES.value-1):
+            #LOGGER.debug(f{self.lpfx} i={} n={} area={}'.format(i,ni,self.elk.zones[ni].area))
+            if self.controller.elk.zones[zn].area == self.elk.index:
+                LOGGER.debug(f'{self.lpfx} {self.controller.elk.zones[zn].name} logical_status={self.controller.elk.zones[zn].logical_status} name={ZoneLogicalStatus(self.controller.elk.zones[zn].logical_status).name}')
+                if ZoneLogicalStatus(self.controller.elk.zones[zn].logical_status).name == 'BYPASSED':
+                    bypassed += 1
+                elif ZoneLogicalStatus(self.controller.elk.zones[zn].logical_status).name == 'VIOLATED':
+                    violated += 1
+        self.set_driver('GV3',violated)
+        self.set_driver('GV4',bypassed)
 
     def set_driver(self,drv,val,force=False,report=True):
         LOGGER.debug(f'{self.lpfx} {drv},{val},{force},{report}')
@@ -87,6 +110,18 @@ class AreaNode(Node):
         # val is a string, not integer :(
         self.elk.arm(val,self.controller.user_code)
 
+    def cmd_set_bypass(self,command):
+        val = command.get('value')
+        LOGGER.info(f'{self.lpfx} Calling bypass...')
+        self.elk.bypass(self.controller.user_code)
+        self.update_zone_status()
+
+    def cmd_clear_bypass(self,command):
+        val = command.get('value')
+        LOGGER.info(f'{self.lpfx} Calling bypass...')
+        self.elk.clear_bypass(self.controller.user_code)
+        self.update_zone_status()
+
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
@@ -95,9 +130,12 @@ class AreaNode(Node):
         {'driver': 'GV0',  'value': 0, 'uom': 25},
         {'driver': 'GV1',  'value': 0, 'uom': 25},
         {'driver': 'GV2',  'value': 0, 'uom': 25},
-
+        {'driver': 'GV3',  'value': 0, 'uom': 25},
+        {'driver': 'GV4',  'value': 0, 'uom': 25},
     ]
     id = 'area'
     commands = {
             'SET_ARMED_STATUS': cmd_set_armed_status,
-}
+            'SET_BYPASS': cmd_set_bypass,
+            'CLEAR_BYPASS': cmd_clear_bypass,
+    }

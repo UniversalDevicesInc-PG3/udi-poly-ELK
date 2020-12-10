@@ -25,12 +25,15 @@ ST-area-ST-NAME = Alarm Status
 ST-area-GV0-NAME = Armed Status
 ST-area-GV1-NAME = Arm Up State
 ST-area-GV2-NAME = Chime Mode
+ST-area-GV3-NAME = Zones Violated
+ST-area-GV4-NAME = Zones Bypassed
 CMD-area-ST-NAME = Alarm Status
 CMD-area-GV0-NAME = Set Armed Status
 CMD-area-GV1-NAME = Set Arm Up State
 CMD-area-GV2-NAME = Set Chime Mode
 CMD-area-SET_ARMED_STATUS-NAME = Set Armed Status
 CMD-area-SET_BYPASS-NAME = Bypass
+CMD-area-CLEAR_BYPASS-NAME = Clear Bypass
 
 # ST = alarm_state
 ALARM--1 = Unknown
@@ -115,6 +118,8 @@ ST-zone-GV6-NAME = Bypassed
 ST-zone-GV7-NAME = Off Node
 CMD-zone-SET_ONOFF-NAME = DON/DOF
 CMD-zone-SET_OFFNODE-NAME = Use Off Node
+CMD-zone-SET_BYPASS-NAME = Bypass
+CMD-zone-CLEAR_BYPASS-NAME = Clear Bypass
 
 # zone off
 ND-zoneoff-NAME = Zone Node

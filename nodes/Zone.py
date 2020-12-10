@@ -5,10 +5,11 @@ from nodes import ZoneOffNode
 
 class ZoneNode(Node):
 
-    def __init__(self, controller, parent, elk):
+    def __init__(self, controller, parent, area, elk):
         self.elk    = elk
         self.controller = controller
         self.parent     = parent
+        self.area       = area
         self.init   = False
         self.physical_status = -2
         self.logical_status = -2
@@ -22,13 +23,13 @@ class ZoneNode(Node):
         self.lpfx = f'{self.name}:'
 
     def start(self):
-        LOGGER.debug(f'{self.lpfx}')
+        LOGGER.debug(f'{self.lpfx} in area={self.area.name}')
         # Set drivers that never change
         # Definition Type
         self.setDriver('GV3',self.elk.definition)
         # Zone Area
         self.setDriver('GV2', self.elk.area)
-        # Set drivers that change
+        # Set drivers, but dont report don/dof
         self.set_drivers(force=True,reportCmd=False)
         self.reportDrivers()
         self.elk.add_callback(self.callback)
@@ -70,15 +71,15 @@ class ZoneNode(Node):
             val = self.elk.physical_status
         else:
             val = int(val)
-        self._set_physical_status(val,force=force)
+        self._set_physical_status(val,force=force,reportCmd=reportCmd)
 
-    def _set_physical_status(self,val,force=False):
+    def _set_physical_status(self,val,force=False,reportCmd=True):
         if val == self.physical_status and not force:
             return
         LOGGER.debug(f'{self.lpfx} val={val} current={self.physical_status} force={force} onoff={self.onoff}')
         # Send DON for Violated?
         # Only if we are not farcing the same value
-        if not force:
+        if (not force) and reportCmd:
             if (val == 1 and (self.onoff == 0 or self.onoff == 2)) or (val == 3 and (self.onoff == 4 or self.onoff == 6)):
                 LOGGER.debug(f'{self.lpfx} Send DON')
                 self.reportCmd("DON")
@@ -185,6 +186,16 @@ class ZoneNode(Node):
         LOGGER.debug(f'{self.lpfx} val={val}')
         self.set_offnode(val)
 
+    def cmd_set_bypass(self,command):
+        LOGGER.info(f'{self.lpfx} Calling bypass...')
+        self.elk.bypass(self.controller.user_code)
+        self.area.update_zone_status()
+
+    def cmd_clear_bypass(self,command):
+        LOGGER.info(f'{self.lpfx} Calling bypass...')
+        self.elk.clear_bypass(self.controller.user_code)
+        self.area.update_zone_status()
+
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
@@ -211,4 +222,6 @@ class ZoneNode(Node):
     commands = {
         'SET_ONOFF': cmd_set_onoff,
         'SET_OFFNODE': cmd_set_offnode,
+        'SET_BYPASS': cmd_set_bypass,
+        'CLEAR_BYPASS': cmd_clear_bypass,
     }
