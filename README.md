@@ -12,6 +12,8 @@ Open the Configuration Page for the Nodeserver in the Polyglot UI and view the [
 
 This uses https://github.com/gwww/elkm1 which currently only supports an M1EXP in local non secure mode.
 
+IF running on Raspberry Pi, you must be on the latest version, Buster with Python 3.6 or above, preferably 3.7.
+
 ## Using this Node Server
 
 No info yet
