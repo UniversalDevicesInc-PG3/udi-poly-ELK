@@ -60,8 +60,8 @@ Current all areas, 0-7 are shown, and the node names should match the names defi
     - Verify Fire
 - Armed Status
   - The current Armed status, can be controlled by the ISY
-    - Unnkown
-      - Only set to this on startup until the status is Knpwn, not settable by user.
+    - Unknown
+      - Only set to this on startup until the status is Known, not settable by user.
     - Disarmed
     - Armed Away
     - Armed Stay
