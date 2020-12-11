@@ -20,6 +20,7 @@ No info yet
 
 ## Version History
 
-0.1.3: Add Area and Zone Bypass commands, don't send DON/DOF on startup.
-0.1.2: Only send DON/DOFF when status actually changes.
-0.1.0: Update to work with elkm1_lib 0.8.8 and more code cleanup.
+- 0.1.4: Add check for Python Version >= 3.6
+- 0.1.3: Add Area and Zone Bypass commands, don't send DON/DOF on startup.
+- 0.1.2: Only send DON/DOFF when status actually changes.
+- 0.1.0: Update to work with elkm1_lib 0.8.8 and more code cleanup.
