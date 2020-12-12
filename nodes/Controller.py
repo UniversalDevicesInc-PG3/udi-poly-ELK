@@ -25,6 +25,7 @@ class Controller(Controller):
         self.hb = 0
         self.elk = None
         self.elk_st = None
+        self.elk_thread = None
         self.config_st = False
         self.driver = {}
         self.logger = LOGGER
@@ -175,9 +176,11 @@ class Controller(Controller):
 
     def stop(self):
         LOGGER.debug(f"{self.lpfx} NodeServer stopping...")
-        self.elk.disconnect()
-        # Wait for actual termination (if needed)
-        self.elk_thread.join()
+        if self.elk is not None:
+            self.elk.disconnect()
+        if self.elk_thread is not None:
+            # Wait for actual termination (if needed)
+            self.elk_thread.join()
         LOGGER.debug(f"{self.lpfx} NodeServer stopping complete...")
 
     def process_config(self, config):
