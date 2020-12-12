@@ -25,6 +25,7 @@ class Controller(Controller):
         self.hb = 0
         self.elk = None
         self.elk_st = None
+        self.config_st = False
         self.driver = {}
         self.logger = LOGGER
         self.lpfx = self.name + ":"
@@ -40,7 +41,8 @@ class Controller(Controller):
         self.setDriver("ST", 1)
         self.heartbeat()
         self.check_params()
-        self.elk_start()
+        if self.config_st:
+            self.elk_start()
 
     def heartbeat(self):
         LOGGER.debug(f"{self.lpfx} hb={self.hb}")
@@ -236,12 +238,14 @@ class Controller(Controller):
                 "Please set proper host in configuration page, and restart this nodeserver",
                 "host",
             )
+            self.config_st = True
         if self.user_code == default_code:
             # This doesn't pass a key to test the old way.
             self.addNotice(
                 "Please set proper user_code in configuration page, and restart this nodeserver",
                 "code",
             )
+            self.config_st = False
 
         # self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
 
