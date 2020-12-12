@@ -147,6 +147,7 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Version History
 
+- 0.1.5: [Add configuration option to say what Area's to add instead of including them all](https://github.com/jimboca/udi-poly-elk/issues/11)
 - 0.1.4: Add check for Python Version >= 3.6
 - 0.1.3: Add Area and Zone Bypass commands, don't send DON/DOF on startup.
 - 0.1.2: Only send DON/DOFF when status actually changes.
