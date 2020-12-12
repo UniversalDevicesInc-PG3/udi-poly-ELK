@@ -43,7 +43,10 @@ class Controller(Controller):
         self.heartbeat()
         self.check_params()
         if self.config_st:
+            LOGGER.info(f"{self.lpfx} Calling elk_start...")
             self.elk_start()
+        else:
+            LOGGER.error(f"{self.lpfx} Not starting ELK since configuration not ready, please fix and restart")
 
     def heartbeat(self):
         LOGGER.debug(f"{self.lpfx} hb={self.hb}")
@@ -194,6 +197,8 @@ class Controller(Controller):
         This is an example if using custom Params for user and password and an example with a Dictionary
         """
         self.removeNoticesAll()
+        # Assume it's good unless it's not
+        self.config_st = True
         # TODO: Only when necessary
         self.update_profile()
         default_host = "Your_ELK_IP_Or_Host:PortNum"
@@ -209,6 +214,7 @@ class Controller(Controller):
             try:
                 self.user_code = int(self.polyConfig["customParams"]["user_code"])
             except:
+                self.user_code = default_code
                 self.addNotice(
                     "ERROR user_code is not an integer, please fix, save and restart this nodeserver",
                     "host",
@@ -229,7 +235,7 @@ class Controller(Controller):
             LOGGER.error(errs)
             self.addNotice(errs,"areas")
             self.use_areas_list = ()
-
+            self.config_st = False
 
         # Make sure they are in the params
         self.addCustomParam({"host": self.host, "user_code": self.user_code, "areas": self.use_areas})
@@ -241,7 +247,7 @@ class Controller(Controller):
                 "Please set proper host in configuration page, and restart this nodeserver",
                 "host",
             )
-            self.config_st = True
+            self.config_st = False
         if self.user_code == default_code:
             # This doesn't pass a key to test the old way.
             self.addNotice(

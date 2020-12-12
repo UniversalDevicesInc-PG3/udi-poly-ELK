@@ -147,6 +147,7 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Version History
 
+- 0.1.7: Fix crash during stop when config is not ready, fix startup when config is ready
 - 0.1.6: [Don't start ELK when Configuration is not setup yet](https://github.com/jimboca/udi-poly-elk/issues/16)
 - 0.1.5: [Add configuration option to say what Area's to add instead of including them all](https://github.com/jimboca/udi-poly-elk/issues/11)
 - 0.1.4: Add check for Python Version >= 3.6
