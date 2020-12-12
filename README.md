@@ -36,7 +36,7 @@ Currently called Controller, but will be changed.  This has the following status
 
 #### Area Node
 
-Current all areas, 0-7 are shown, and the node names should match the names defined on your ELK.  They contain the following:
+By default only the first area, is added, change the areas configuraion if you have more than one.  The areas are 0-7, and the node names will match the names defined on your ELK.  They contain the following:
 - Alarm Status
   - If there is an Alarm
     - No Alarm Active

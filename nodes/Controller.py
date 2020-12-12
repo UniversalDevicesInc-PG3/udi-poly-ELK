@@ -1,3 +1,4 @@
+import sys
 import time
 import logging
 import asyncio
@@ -7,11 +8,11 @@ from node_funcs import *
 from nodes import AreaNode
 from polyinterface import Controller, LOGGER, LOG_HANDLER
 
-import sys
-
 # sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
-
+from elkm1_lib.const import (
+    Max
+)
 # asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
 mainloop = asyncio.get_event_loop()
 
@@ -116,9 +117,12 @@ class Controller(Controller):
         LOGGER.info(f"{self.lpfx} Sync of panel is complete!!!")
         # TODO: Add driver for sync complete status, or put in ST?
         LOGGER.info(f"{self.lpfx} adding areas...")
-        for an in range(7):
-            LOGGER.info(f"{self.lpfx} Area {an}")
-            self.addNode(AreaNode(self, self.elk.areas[an]))
+        for an in range(Max.AREAS.value-1):
+            if is_in_list(an,self.use_areas_list) is False:
+                LOGGER.info(f"{self.lpfx} Skipping Area {an} because it is not in areas range {self.use_areas} in configuration")
+            else:
+                LOGGER.info(f"{self.lpfx} Adding Area {an}")
+                self.addNode(AreaNode(self, self.elk.areas[an]))
         LOGGER.info("areas done")
 
     def timeout(self, msg_code):
@@ -210,8 +214,20 @@ class Controller(Controller):
                 f"{self.lpfx} user_code not defined in customParams, please add it.  Using {self.user_code}"
             )
 
+        self.use_areas = self.getCustomParam('areas')
+        if self.use_areas is None:
+            self.use_areas = "0"
+        try:
+            self.use_areas_list = parse_range(self.use_areas)
+        except:
+            errs = f"ERROR: Failed to parse areas range '{self.use_areas}'  will not add any areas: {sys.exc_info()[1]}"
+            LOGGER.error(errs)
+            self.addNotice(errs,"areas")
+            self.use_areas_list = ()
+
+
         # Make sure they are in the params
-        self.addCustomParam({"host": self.host, "user_code": self.user_code})
+        self.addCustomParam({"host": self.host, "user_code": self.user_code, "areas": self.use_areas})
 
         # Add a notice if they need to change the user/password from the default.
         if self.host == default_host:
