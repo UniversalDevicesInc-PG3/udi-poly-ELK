@@ -10,9 +10,8 @@ from polyinterface import Controller, LOGGER, LOG_HANDLER
 
 # sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
-from elkm1_lib.const import (
-    Max
-)
+from elkm1_lib.const import Max
+
 # asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
 mainloop = asyncio.get_event_loop()
 
@@ -46,7 +45,9 @@ class Controller(Controller):
             LOGGER.info(f"{self.lpfx} Calling elk_start...")
             self.elk_start()
         else:
-            LOGGER.error(f"{self.lpfx} Not starting ELK since configuration not ready, please fix and restart")
+            LOGGER.error(
+                f"{self.lpfx} Not starting ELK since configuration not ready, please fix and restart"
+            )
 
     def heartbeat(self):
         LOGGER.debug(f"{self.lpfx} hb={self.hb}")
@@ -123,9 +124,11 @@ class Controller(Controller):
         LOGGER.info(f"{self.lpfx} Sync of panel is complete!!!")
         # TODO: Add driver for sync complete status, or put in ST?
         LOGGER.info(f"{self.lpfx} adding areas...")
-        for an in range(Max.AREAS.value-1):
-            if is_in_list(an,self.use_areas_list) is False:
-                LOGGER.info(f"{self.lpfx} Skipping Area {an} because it is not in areas range {self.use_areas} in configuration")
+        for an in range(Max.AREAS.value - 1):
+            if is_in_list(an, self.use_areas_list) is False:
+                LOGGER.info(
+                    f"{self.lpfx} Skipping Area {an} because it is not in areas range {self.use_areas} in configuration"
+                )
             else:
                 LOGGER.info(f"{self.lpfx} Adding Area {an}")
                 self.addNode(AreaNode(self, self.elk.areas[an]))
@@ -225,7 +228,7 @@ class Controller(Controller):
                 f"{self.lpfx} user_code not defined in customParams, please add it.  Using {self.user_code}"
             )
 
-        self.use_areas = self.getCustomParam('areas')
+        self.use_areas = self.getCustomParam("areas")
         if self.use_areas is None:
             self.use_areas = "0"
         try:
@@ -233,12 +236,14 @@ class Controller(Controller):
         except:
             errs = f"ERROR: Failed to parse areas range '{self.use_areas}'  will not add any areas: {sys.exc_info()[1]}"
             LOGGER.error(errs)
-            self.addNotice(errs,"areas")
+            self.addNotice(errs, "areas")
             self.use_areas_list = ()
             self.config_st = False
 
         # Make sure they are in the params
-        self.addCustomParam({"host": self.host, "user_code": self.user_code, "areas": self.use_areas})
+        self.addCustomParam(
+            {"host": self.host, "user_code": self.user_code, "areas": self.use_areas}
+        )
 
         # Add a notice if they need to change the user/password from the default.
         if self.host == default_host:
@@ -258,11 +263,6 @@ class Controller(Controller):
 
         # self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
 
-    def set_all_logs(self, level, slevel=logging.WARNING):
-        LOGGER.setLevel(level)
-        logging.getLogger("elkm1_lib.elk").setLevel(slevel)
-        logging.getLogger("elkm1_lib.proto").setLevel(slevel)
-
     def get_driver(self, mdrv, default=None):
         # Restore from DB for existing nodes
         try:
@@ -280,6 +280,17 @@ class Controller(Controller):
             val = default
         return val
 
+    def set_all_logs(self, level, slevel=logging.WARNING):
+        LOGGER.info(
+            f"Setting level={level} sublevel={slevel} CRITICAL={logging.CRITICAL} ERROR={logging.ERROR} WARNING={logging.WARNING},INFO={logging.INFO} DEBUG={logging.DEBUG}"
+        )
+        LOGGER.setLevel(level)
+        #This sets for all modules
+        #LOG_HANDLER.set_basic_config(True, slevel)
+        #but we do each indivudally
+        logging.getLogger("elkm1_lib.elk").setLevel(slevel)
+        logging.getLogger("elkm1_lib.proto").setLevel(slevel)
+
     def set_debug_level(self, level=None):
         LOGGER.info(f"level={level}")
         mdrv = "GV2"
@@ -294,9 +305,9 @@ class Controller(Controller):
         # 0=All 10=Debug are the same because 0 (NOTSET) doesn't show everything.
         slevel = logging.WARNING
         if level <= 10:
-            level = logging.DEBUG
             if level < 10:
                 slevel = logging.DEBUG
+            level = logging.DEBUG
         elif level == 20:
             level = logging.INFO
         elif level == 30:
@@ -307,8 +318,7 @@ class Controller(Controller):
             level = logging.CRITICAL
         else:
             LOGGER.error(f"Unknown level {level}")
-        # This didn't work for elkm1lib levels?
-        LOG_HANDLER.set_basic_config(True, slevel)
+        #LOG_HANDLER.set_basic_config(True,logging.DEBUG)
         self.set_all_logs(level, slevel)
 
     def update_profile(self):

@@ -53,7 +53,7 @@ class AreaNode(Node):
         for zn in range(Max.ZONES.value-1):
             #LOGGER.debug(f{self.lpfx} i={} n={} area={}'.format(i,ni,self.elk.zones[ni].area))
             if self.controller.elk.zones[zn].area == self.elk.index:
-                LOGGER.debug(f'{self.lpfx} {self.controller.elk.zones[zn].name} logical_status={self.controller.elk.zones[zn].logical_status} name={ZoneLogicalStatus(self.controller.elk.zones[zn].logical_status).name}')
+                #LOGGER.debug(f'{self.lpfx} {self.controller.elk.zones[zn].name} logical_status={self.controller.elk.zones[zn].logical_status} name={ZoneLogicalStatus(self.controller.elk.zones[zn].logical_status).name}')
                 if ZoneLogicalStatus(self.controller.elk.zones[zn].logical_status).name == 'BYPASSED':
                     bypassed += 1
                 elif ZoneLogicalStatus(self.controller.elk.zones[zn].logical_status).name == 'VIOLATED':
