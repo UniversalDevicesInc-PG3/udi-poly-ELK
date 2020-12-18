@@ -27,6 +27,7 @@ class Controller(Controller):
         self.elk_thread = None
         self.config_st = False
         self.driver = {}
+        self._area_nodes = {}
         self.logger = LOGGER
         self.lpfx = self.name + ":"
         # Not using because it's called to many times
@@ -125,13 +126,17 @@ class Controller(Controller):
         # TODO: Add driver for sync complete status, or put in ST?
         LOGGER.info(f"{self.lpfx} adding areas...")
         for an in range(Max.AREAS.value - 1):
-            if is_in_list(an, self.use_areas_list) is False:
+            if an in self._area_nodes:
+                LOGGER.info(
+                    f"{self.lpfx} Skipping Area {an} because it already defined."
+                )
+            elif is_in_list(an, self.use_areas_list) is False:
                 LOGGER.info(
                     f"{self.lpfx} Skipping Area {an} because it is not in areas range {self.use_areas} in configuration"
                 )
             else:
                 LOGGER.info(f"{self.lpfx} Adding Area {an}")
-                self.addNode(AreaNode(self, self.elk.areas[an]))
+                self._area_nodes[an] = self.addNode(AreaNode(self, self.elk.areas[an]))
         LOGGER.info("areas done")
 
     def timeout(self, msg_code):

@@ -147,6 +147,9 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Version History
 
+- 0.1.9: 12/18/2020
+  - Fix issues caused when sync_complete is called multiple times 
+    - [Multiple changes happening after restarting Nodeserver](https://github.com/jimboca/udi-poly-elk/issues/18)
 - 0.1.8: Fix Logging level for Debug + elkm1_lib so you can see wha the ELK is sending
 - 0.1.7: Fix crash during stop when config is not ready, fix startup when config is ready
 - 0.1.6: [Don't start ELK when Configuration is not setup yet](https://github.com/jimboca/udi-poly-elk/issues/16)
