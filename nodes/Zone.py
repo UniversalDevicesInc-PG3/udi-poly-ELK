@@ -20,8 +20,8 @@ class ZoneNode(Node):
         self.last_changeset = {}
         self.offnode = None
         self.offnode_obj = None
-        self.address   = 'zone_{}'.format(self.elk.index)
-        self.parent_address = 'area_{}'.format(self.elk.area)
+        self.address   = 'zone_{}'.format(self.elk.index + 1)
+        self.parent_address = 'area_{}'.format(self.elk.area + 1)
         self.logger    = controller.logger
         super(ZoneNode, self).__init__(controller, self.parent_address, self.address, self.elk.name)
         self.lpfx = f'{self.name}:'
@@ -32,7 +32,7 @@ class ZoneNode(Node):
         # Definition Type
         self.setDriver('GV3',self.elk.definition)
         # Zone Area
-        self.setDriver('GV2', self.elk.area)
+        self.setDriver('GV2', self.elk.area + 1)
         # Set drivers, but dont report don/dof
         self.set_drivers(force=True,reportCmd=False)
         self.reportDrivers()

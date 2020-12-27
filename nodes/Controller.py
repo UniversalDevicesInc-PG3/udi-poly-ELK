@@ -129,7 +129,7 @@ class Controller(Controller):
                 LOGGER.info(
                     f"{self.lpfx} Skipping Area {an} because it already defined."
                 )
-            elif is_in_list(an, self.use_areas_list) is False:
+            elif is_in_list(an+1, self.use_areas_list) is False:
                 LOGGER.info(
                     f"{self.lpfx} Skipping Area {an} because it is not in areas range {self.use_areas} in configuration"
                 )
@@ -234,7 +234,7 @@ class Controller(Controller):
 
         self.use_areas = self.getCustomParam("areas")
         if self.use_areas is None:
-            self.use_areas = "0"
+            self.use_areas = "1"
         try:
             self.use_areas_list = parse_range(self.use_areas)
         except:

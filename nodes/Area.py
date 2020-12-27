@@ -20,7 +20,7 @@ class AreaNode(Node):
         self.my_drivers = {}
         self.zones_bypassed = 0
         self.zones_violated = 0
-        address     = 'area_{}'.format(self.elk.index)
+        address     = 'area_{}'.format(self.elk.index + 1)
         name        = self.elk.name
         super(AreaNode, self).__init__(controller, address, address, name)
         self.lpfx = f'{self.name}:'
