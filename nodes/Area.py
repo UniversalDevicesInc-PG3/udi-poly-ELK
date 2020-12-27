@@ -18,6 +18,8 @@ class AreaNode(Node):
         self.status = None
         self.state  = None
         self.my_drivers = {}
+        self.zones_bypassed = 0
+        self.zones_violated = 0
         address     = 'area_{}'.format(self.elk.index)
         name        = self.elk.name
         super(AreaNode, self).__init__(controller, address, address, name)
@@ -34,8 +36,7 @@ class AreaNode(Node):
                 LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
                 self.controller.addNode(ZoneNode(self.controller,self,self,self.controller.elk.zones[zn]))
                 time.sleep(.1)
-        self.update_zone_status()
-
+ 
     def callback(self, element, changeset):
         LOGGER.info(f'{self.lpfx} cs={changeset}')
         if 'alarm_state' in changeset:
@@ -44,9 +45,24 @@ class AreaNode(Node):
             self.set_armed_status(changeset['armed_status'])
         if 'arm_up_state' in changeset:
             self.set_arm_up_state(changeset['arm_up_state'])
-            self.update_zone_status()
 
-    def update_zone_status(self):
+    def zone_bypass_add(self):
+        self.zones_bypassed += 1
+        self.set_driver('GV4',self.zones_bypassed)
+
+    def zone_bypass_sub(self):
+        self.zones_bypassed -= 1
+        self.set_driver('GV4',self.zones_bypassed)
+
+    def zone_violated_add(self):
+        self.zones_violated += 1
+        self.set_driver('GV3',self.zones_violated)
+
+    def zone_violated_sub(self):
+        self.zones_violated -= 1
+        self.set_driver('GV3',self.zones_violated)
+
+    def xxupdate_zone_status(self):
         LOGGER.info(f'{self.lpfx}')
         bypassed = 0
         violated = 0
@@ -77,6 +93,8 @@ class AreaNode(Node):
         self.set_alarm_state()
         self.set_armed_status()
         self.set_arm_up_state()
+        self.set_driver('GV3',self.zones_violated)
+        self.set_driver('GV4',self.zones_bypassed)
         #self.setDriver('GV2', pyelk.chime_mode)
 
     def set_alarm_state(self,val=None,force=False):
@@ -114,13 +132,11 @@ class AreaNode(Node):
         val = command.get('value')
         LOGGER.info(f'{self.lpfx} Calling bypass...')
         self.elk.bypass(self.controller.user_code)
-        self.update_zone_status()
 
     def cmd_clear_bypass(self,command):
         val = command.get('value')
         LOGGER.info(f'{self.lpfx} Calling bypass...')
         self.elk.clear_bypass(self.controller.user_code)
-        self.update_zone_status()
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]

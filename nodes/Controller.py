@@ -15,7 +15,6 @@ from elkm1_lib.const import Max
 # asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
 mainloop = asyncio.get_event_loop()
 
-
 class Controller(Controller):
     def __init__(self, polyglot):
         # We track our drsiver values because we need the value before it's been pushed.

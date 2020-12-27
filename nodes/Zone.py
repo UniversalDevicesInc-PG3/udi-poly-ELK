@@ -1,7 +1,11 @@
 
 from polyinterface import Node,LOGGER
 from nodes import ZoneOffNode
-
+from elkm1_lib.const import (
+    Max,
+    ZoneLogicalStatus,
+    ZonePhysicalStatus,
+)
 
 class ZoneNode(Node):
 
@@ -75,7 +79,7 @@ class ZoneNode(Node):
 
     def _set_physical_status(self,val,force=False,reportCmd=True):
         if val == self.physical_status and not force:
-            return
+            return            
         LOGGER.debug(f'{self.lpfx} val={val} current={self.physical_status} force={force} onoff={self.onoff}')
         # Send DON for Violated?
         # Only if we are not farcing the same value
@@ -108,6 +112,22 @@ class ZoneNode(Node):
             return
         LOGGER.debug(f'{self.lpfx} val={val}')
         self.setDriver('GV0', val)
+        if ZoneLogicalStatus(val).name == 'BYPASSED':
+            # Already set?
+            if self.logical_status < 0 or ZoneLogicalStatus(self.logical_status).name != 'BYPASSED':
+                self.area.zone_bypass_add()
+        else:
+            # Already set?
+            if self.logical_status >= 0 and ZoneLogicalStatus(self.logical_status).name == 'BYPASSED':
+                self.area.zone_bypass_sub()
+        if ZoneLogicalStatus(val).name == 'VIOLATED':
+            # Already set?
+            if self.logical_status < 0 or ZoneLogicalStatus(self.logical_status).name != 'VIOLATED':
+                self.area.zone_violated_add()
+        else:
+            # Already set?
+            if self.logical_status >= 0 and ZoneLogicalStatus(self.logical_status).name == 'VIOLATED':
+                self.area.zone_violated_sub()
         self.logical_status = val
         if self.offnode_obj is not None:
             self.offnode_obj.setDriver('GV0', val)
@@ -189,12 +209,10 @@ class ZoneNode(Node):
     def cmd_set_bypass(self,command):
         LOGGER.info(f'{self.lpfx} Calling bypass...')
         self.elk.bypass(self.controller.user_code)
-        self.area.update_zone_status()
 
     def cmd_clear_bypass(self,command):
         LOGGER.info(f'{self.lpfx} Calling bypass...')
         self.elk.clear_bypass(self.controller.user_code)
-        self.area.update_zone_status()
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
