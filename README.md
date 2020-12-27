@@ -147,6 +147,12 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Version History
 
+- 0.2.0: 12/26/2020
+  - __IMPORTANT__ All Area and Zone node address will change, either delete them all in Polyglot UI or delete the nodeserver and add again
+    - [Area and Zone numbers should match ELK numbers](https://github.com/jimboca/udi-poly-elk/issues/21)
+    - Make sure to re-sync the ISY UDMobile App as well after re-adding
+  - Fix [https://github.com/jimboca/udi-poly-elk/issues/26](Bypass button on zone node screen)
+  - Fix [https://github.com/jimboca/udi-poly-elk/issues/25](Tracking of number of bypassed zones in area inconsisten)
 - 0.1.9: 12/18/2020
   - Fix issues caused when sync_complete is called multiple times 
     - [Multiple changes happening after restarting Nodeserver](https://github.com/jimboca/udi-poly-elk/issues/18)
