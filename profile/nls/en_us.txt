@@ -118,8 +118,7 @@ ST-zone-GV6-NAME = Bypassed
 ST-zone-GV7-NAME = Off Node
 CMD-zone-SET_ONOFF-NAME = DON/DOF
 CMD-zone-SET_OFFNODE-NAME = Use Off Node
-CMD-zone-SET_BYPASS-NAME = Bypass
-CMD-zone-CLEAR_BYPASS-NAME = Clear Bypass
+CMD-zone-SET_BYPASS-NAME = Toggle Bypass
 
 # zone off
 ND-zoneoff-NAME = Zone Node
