@@ -4,8 +4,6 @@
 
 I am not responsible for any issues related to this nodeserver including missing an alarm!
 
-Currently I have not fully tested the Alarm Status for when an alarm is active, I need to find the time to tell Alarm Relay I will be testing things, but I haven't done that yet...
-
 ## Installation
 
 Install from the Polyglot store.
