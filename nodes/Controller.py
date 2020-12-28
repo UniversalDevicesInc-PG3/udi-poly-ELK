@@ -127,11 +127,11 @@ class Controller(Controller):
         for an in range(Max.AREAS.value - 1):
             if an in self._area_nodes:
                 LOGGER.info(
-                    f"{self.lpfx} Skipping Area {an} because it already defined."
+                    f"{self.lpfx} Skipping Area {an+1} because it already defined."
                 )
             elif is_in_list(an+1, self.use_areas_list) is False:
                 LOGGER.info(
-                    f"{self.lpfx} Skipping Area {an} because it is not in areas range {self.use_areas} in configuration"
+                    f"{self.lpfx} Skipping Area {an+1} because it is not in areas range {self.use_areas} in configuration"
                 )
             else:
                 LOGGER.info(f"{self.lpfx} Adding Area {an}")
