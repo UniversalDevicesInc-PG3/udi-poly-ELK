@@ -1,7 +1,8 @@
 
-from polyinterface import Node,LOGGER
+from polyinterface import LOGGER
+from nodes import BaseNode
 
-class ZoneOffNode(Node):
+class ZoneOffNode(BaseNode):
 
     def __init__(self, controller, parent_address, address, name, physical_status, logical_status):
         LOGGER.debug("ZoneOff:__init__: {} {}".format(address,name))
@@ -15,8 +16,8 @@ class ZoneOffNode(Node):
         LOGGER.debug(f'{self.lpfx}')
         super(ZoneOffNode, self).start()
         # Init values from Zone node
-        self.setDriver('ST',self.physical_status)
-        self.setDriver('GV0',self.logical_status)
+        self.set_driver('ST',self.physical_status)
+        self.set_driver('GV0',self.logical_status)
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]

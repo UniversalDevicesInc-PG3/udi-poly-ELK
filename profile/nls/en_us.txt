@@ -119,7 +119,7 @@ ST-zone-GV7-NAME = Off Node
 CMD-zone-SET_ONOFF-NAME = DON/DOF
 CMD-zone-SET_OFFNODE-NAME = Use Off Node
 CMD-zone-SET_BYPASS-NAME = Toggle Bypass
-
+ 
 # zone off
 ND-zoneoff-NAME = Zone Node
 ND-zoneoff-ICON = Input

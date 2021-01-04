@@ -1,13 +1,13 @@
 
-from polyinterface import Node,LOGGER
-from nodes import ZoneOffNode
+from polyinterface import LOGGER
+from nodes import BaseNode,ZoneOffNode
 from elkm1_lib.const import (
     Max,
     ZoneLogicalStatus,
     ZonePhysicalStatus,
 )
 
-class ZoneNode(Node):
+class ZoneNode(BaseNode):
 
     def __init__(self, controller, parent, area, elk):
         self.elk    = elk
@@ -30,9 +30,9 @@ class ZoneNode(Node):
         LOGGER.debug(f'{self.lpfx} in area={self.area.name}')
         # Set drivers that never change
         # Definition Type
-        self.setDriver('GV3',self.elk.definition)
+        self.set_driver('GV3',self.elk.definition)
         # Zone Area
-        self.setDriver('GV2', self.elk.area + 1)
+        self.set_driver('GV2', self.elk.area + 1)
         # Set drivers, but dont report don/dof
         self.set_drivers(force=True,reportCmd=False)
         self.reportDrivers()
@@ -94,10 +94,10 @@ class ZoneNode(Node):
                 else:
                     LOGGER.debug(f'{self.lpfx} Send DOF to {self.offnode_obj.name}')
                     self.offnode_obj.reportCmd("DOF")
-        self.setDriver('ST', val)
+        self.set_driver('ST', val)
         self.physical_status = val
         if self.offnode_obj is not None:
-            self.offnode_obj.setDriver('ST', val)
+            self.offnode_obj.set_driver('ST', val)
 
     def set_logical_status(self,val=None,force=False):
         LOGGER.debug(f'{self.lpfx} val={val}')
@@ -111,7 +111,7 @@ class ZoneNode(Node):
         if val == self.logical_status and not force:
             return
         LOGGER.debug(f'{self.lpfx} val={val}')
-        self.setDriver('GV0', val)
+        self.set_driver('GV0', val)
         if ZoneLogicalStatus(val).name == 'BYPASSED':
             # Already set?
             if self.logical_status < 0 or ZoneLogicalStatus(self.logical_status).name != 'BYPASSED':
@@ -130,7 +130,7 @@ class ZoneNode(Node):
                 self.area.zone_violated_sub()
         self.logical_status = val
         if self.offnode_obj is not None:
-            self.offnode_obj.setDriver('GV0', val)
+            self.offnode_obj.set_driver('GV0', val)
 
     def set_triggered(self,val=None,force=False):
         if val is None:
@@ -145,36 +145,18 @@ class ZoneNode(Node):
         else:
             val = int(val)
         LOGGER.debug(f'{self.lpfx} val={val}')
-        self.setDriver('GV1', val)
+        self.set_driver('GV1', val)
 
 
     def setOn(self, command):
-        self.setDriver('ST', 1)
+        self.set_driver('ST', 1)
 
     def setOff(self, command):
-        self.setDriver('ST', 0)
+        self.set_driver('ST', 0)
 
     def query(self):
         self.set_drivers()
         self.reportDrivers()
-
-    def set_driver(self,mdrv,val,default=0):
-        if val is None:
-            # Restore from DB for existing nodes
-            try:
-                val = self.getDriver(mdrv)
-                LOGGER.info(f'{self.lpfx} {val}')
-            except:
-                LOGGER.warning(f'{self.lpfx} getDriver({mdrv}) failed which can happen on new nodes, using {default}')
-                val = default
-        val = default if val is None else int(val)
-        try:
-            LOGGER.debug(f'{self.lpfx} setDriver({mdrv},{val})')
-            self.setDriver(mdrv, val)
-        except:
-            LOGGER.error(f'{self.lpfx} setDriver({mdrv},{val}) failed')
-            return None
-        return val
 
     def set_onoff(self,val=None):
         LOGGER.info(f'{self.lpfx} {val}')

@@ -145,6 +145,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Version History
 
+- 0.2.1: 01/04/2021
+  - Add BaseNode so all nodes use common set/get driver methods for consistency and debugging aid
 - 0.2.0: 12/26/2020
   - __IMPORTANT__ All Area and Zone node address will change, either delete them all in Polyglot UI or delete the nodeserver and add again
     - [Area and Zone numbers should match ELK numbers](https://github.com/jimboca/udi-poly-elk/issues/21)

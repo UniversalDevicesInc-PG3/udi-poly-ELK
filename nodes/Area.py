@@ -1,29 +1,26 @@
 
 
 import time
-#from elkm1_lib import const
-from polyinterface import Node,LOGGER
-from nodes import ZoneNode
+from polyinterface import LOGGER
+from nodes import BaseNode,ZoneNode
 from elkm1_lib.const import (
     Max,
     ZoneLogicalStatus,
     ZonePhysicalStatus,
 )
 
-class AreaNode(Node):
+class AreaNode(BaseNode):
 
     def __init__(self, controller, elk):
         self.elk    = elk
         self.init   = False
         self.status = None
         self.state  = None
-        self.my_drivers = {}
         self.zones_bypassed = 0
         self.zones_violated = 0
         address     = 'area_{}'.format(self.elk.index + 1)
         name        = self.elk.name
         super(AreaNode, self).__init__(controller, address, address, name)
-        self.lpfx = f'{self.name}:'
 
     def start(self):
         self.elk.add_callback(self.callback)
@@ -77,15 +74,6 @@ class AreaNode(Node):
         self.set_driver('GV3',violated)
         self.set_driver('GV4',bypassed)
 
-    def set_driver(self,drv,val,force=False,report=True):
-        LOGGER.debug(f'{self.lpfx} {drv},{val},{force},{report}')
-        if not drv in self.my_drivers or val != self.my_drivers[drv] or force:
-            self.setDriver(drv,val,report=report)
-            self.my_drivers[drv] = val
-
-    def get_driver(self,drv):
-        return self.my_drivers[drv] if drv in self.my_drivers else None
-
     # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
     # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
     def set_drivers(self):
@@ -135,7 +123,7 @@ class AreaNode(Node):
 
     def cmd_clear_bypass(self,command):
         val = command.get('value')
-        LOGGER.info(f'{self.lpfx} Calling bypass...')
+        LOGGER.info(f'{self.lpfx} Calling clear bypass...')
         self.elk.clear_bypass(self.controller.user_code)
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
