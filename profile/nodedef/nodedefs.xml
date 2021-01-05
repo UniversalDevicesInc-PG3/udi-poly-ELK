@@ -34,7 +34,7 @@
             <st id="GV0" editor="astatus" />
             <!-- Arm Up State -->
             <st id="GV1" editor="armup" />
-            <!----> Chime Mode -->
+            <!-- Chime Mode -->
             <st id="GV2" editor="chime" />
             <!-- violated count -->
             <st id="GV3" editor="integer" />

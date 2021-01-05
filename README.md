@@ -145,6 +145,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Version History
 
+- 0.2.3: 01/05/2021
+  - Fix profile
 - 0.2.2: 01/04/2021
   - Add better logging to see what is happening
 - 0.2.1: 01/04/2021
