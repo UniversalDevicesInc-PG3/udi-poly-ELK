@@ -145,6 +145,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Version History
 
+- 0.2.2: 01/04/2021
+  - Add better logging to see what is happening
 - 0.2.1: 01/04/2021
   - Add BaseNode so all nodes use common set/get driver methods for consistency and debugging aid
 - 0.2.0: 12/26/2020

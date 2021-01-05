@@ -13,7 +13,7 @@
         {
             "title": "ELK: a NodeServer for ELK Security Panel Integration",
             "author": "JimBoCA",
-            "version": "0.2.1",
+            "version": "0.2.2",
             "date": "July 23, 2019",
             "source": "https://github.com/jimboca/udi-poly-elk",
             "license": "https://raw.githubusercontent.com/jimboca/udi-poly-elk/master/LICENSE"

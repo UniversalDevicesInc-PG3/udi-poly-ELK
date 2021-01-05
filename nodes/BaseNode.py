@@ -3,6 +3,7 @@
 """
 
 from polyinterface import Node,LOGGER
+from const import NODE_DEF_MAP
 
 class BaseNode(Node):
 
@@ -22,9 +23,13 @@ class BaseNode(Node):
             except:
                 LOGGER.warning(f'{self.lpfx} getDriver({mdrv}) failed which can happen on new nodes, using {default}')
         val = default if val is None else int(val)
+        info = ''
+        if self.id in NODE_DEF_MAP and mdrv in NODE_DEF_MAP[self.id]:
+            info += f"'{NODE_DEF_MAP[self.id][mdrv]['name']}' = "
+            info += f"'{NODE_DEF_MAP[self.id][mdrv]['keys'][val]}'" if val in NODE_DEF_MAP[self.id][mdrv]['keys'] else "'NOT IN NODE_DEF_MAP'"            
         try:
             if not mdrv in self.__my_drivers or val != self.__my_drivers[mdrv] or force:
-                LOGGER.debug(f'{self.lpfx} set_driver({mdrv},{val})')
+                LOGGER.debug(f'{self.lpfx} set_driver({mdrv},{val}) {info}')
                 self.setDriver(mdrv,val,report=report)
                 self.__my_drivers[mdrv] = val
             else:
