@@ -148,6 +148,7 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 - 0.2.4: 01/14/2021
   - Fix [Illegal characters or empty zone name issues](https://github.com/jimboca/udi-poly-elk/issues/35)
   - Change logical and physical status [Logical vs Physical State](https://github.com/jimboca/udi-poly-elk/issues/34)
+  - Fix [Don't print Unknown message EM errors](https://github.com/jimboca/udi-poly-elk/issues/30)
 - 0.2.3: 01/05/2021
   - Fix profile
 - 0.2.2: 01/04/2021
