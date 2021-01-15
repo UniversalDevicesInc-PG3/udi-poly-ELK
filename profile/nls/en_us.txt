@@ -212,7 +212,7 @@ ZALARM-24 = Police No Indication
 ZALARM-25 = Water Alarm
 
 ZDCONF-0 = Send Both
-ZDCONF-1 = Sond None
+ZDCONF-1 = Send None
 ZDCONF-2 = ON Only
 ZDCONF-3 = OFF Only
 ZDCONF-4 = Reverse Send Both
