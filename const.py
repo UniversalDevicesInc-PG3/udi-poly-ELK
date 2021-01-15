@@ -34,6 +34,14 @@ NODE_DEF_MAP = {
                  5:  'Force Armed with a force arm zone violated',
                  6:  'Armed with a bypass'
             }
+        },
+        'GV3': {
+            'name':   'Violated Count',
+            'uom':    56,
+        },
+        'GV4': {
+            'name':   'Bypassed Count',
+            'uom':    56,
         }
     },
     'zone': {

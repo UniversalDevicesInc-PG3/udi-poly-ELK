@@ -2,6 +2,7 @@
 
 import time
 from polyinterface import LOGGER
+from node_funcs import get_valid_node_name
 from nodes import BaseNode,ZoneNode
 from elkm1_lib.const import (
     Max,
@@ -18,8 +19,10 @@ class AreaNode(BaseNode):
         self.state  = None
         self.zones_bypassed = 0
         self.zones_violated = 0
-        address     = 'area_{}'.format(self.elk.index + 1)
-        name        = self.elk.name
+        address     = f'area_{self.elk.index + 1}'
+        name        = get_valid_node_name(self.elk.name)
+        if name == "":
+            name = f'Zone_{self.elk.index + 1}'
         super(AreaNode, self).__init__(controller, address, address, name)
 
     def start(self):
