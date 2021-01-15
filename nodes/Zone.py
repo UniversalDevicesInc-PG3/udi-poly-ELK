@@ -94,10 +94,10 @@ class ZoneNode(BaseNode):
                 else:
                     LOGGER.debug(f'{self.lpfx} Send DOF to {self.offnode_obj.name}')
                     self.offnode_obj.reportCmd("DOF")
-        self.set_driver('ST', val)
+        self.set_driver('GV0', val)
         self.physical_status = val
         if self.offnode_obj is not None:
-            self.offnode_obj.set_driver('ST', val)
+            self.offnode_obj.set_driver('GV0', val)
 
     def set_logical_status(self,val=None,force=False):
         LOGGER.debug(f'{self.lpfx} val={val}')
@@ -111,7 +111,7 @@ class ZoneNode(BaseNode):
         if val == self.logical_status and not force:
             return
         LOGGER.debug(f'{self.lpfx} val={val}')
-        self.set_driver('GV0', val)
+        self.set_driver('ST', val)
         if ZoneLogicalStatus(val).name == 'BYPASSED':
             # Already set?
             if self.logical_status < 0 or ZoneLogicalStatus(self.logical_status).name != 'BYPASSED':
@@ -130,7 +130,7 @@ class ZoneNode(BaseNode):
                 self.area.zone_violated_sub()
         self.logical_status = val
         if self.offnode_obj is not None:
-            self.offnode_obj.set_driver('GV0', val)
+            self.offnode_obj.set_driver('ST', val)
 
     def set_triggered(self,val=None,force=False):
         if val is None:
@@ -146,13 +146,6 @@ class ZoneNode(BaseNode):
             val = int(val)
         LOGGER.debug(f'{self.lpfx} val={val}')
         self.set_driver('GV1', val)
-
-
-    def setOn(self, command):
-        self.set_driver('ST', 1)
-
-    def setOff(self, command):
-        self.set_driver('ST', 0)
 
     def query(self):
         self.set_drivers()
@@ -199,9 +192,9 @@ class ZoneNode(BaseNode):
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
-        # physical status
-        {'driver': 'ST',  'value': 0, 'uom': 25},
         # logical status
+        {'driver': 'ST',  'value': 0, 'uom': 25},
+        # physcial status
         {'driver': 'GV0', 'value': 0, 'uom': 25},
         # triggered
         {'driver': 'GV1', 'value': 0, 'uom': 2},

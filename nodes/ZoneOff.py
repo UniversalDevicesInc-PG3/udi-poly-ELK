@@ -16,15 +16,15 @@ class ZoneOffNode(BaseNode):
         LOGGER.debug(f'{self.lpfx}')
         super(ZoneOffNode, self).start()
         # Init values from Zone node
-        self.set_driver('ST',self.physical_status)
-        self.set_driver('GV0',self.logical_status)
+        self.set_driver('GV0',self.physical_status)
+        self.set_driver('ST',self.logical_status)
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
-        # physical status
-        {'driver': 'ST',  'value': 0, 'uom': 25},
         # logical status
+        {'driver': 'ST',  'value': 0, 'uom': 25},
+        # physical status
         {'driver': 'GV0', 'value': 0, 'uom': 25},
     ]
     id = 'zoneoff'

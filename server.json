@@ -8,7 +8,7 @@
     "notice": "Nothing can be blamed on me, use at your own risk",
     "shortPoll": "120",
     "longPoll": "240",
-    "profile_version": "0.2.3",
+    "profile_version": "0.2.4",
     "credits": [
         {
             "title": "ELK: a NodeServer for ELK Security Panel Integration",

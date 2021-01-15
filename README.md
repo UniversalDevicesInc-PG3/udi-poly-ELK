@@ -145,6 +145,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Version History
 
+- 0.2.4: 01/14/2021
+  - Fix [Illegal characters or empty zone name issues](https://github.com/jimboca/udi-poly-elk/issues/35)
 - 0.2.3: 01/05/2021
   - Fix profile
 - 0.2.2: 01/04/2021

@@ -107,8 +107,8 @@ CHIME-7 = Single Chime with Single Beep and Constantly Beeping
 # zone
 ND-zone-NAME = Zone Node
 ND-zone-ICON = Output
-ST-zone-ST-NAME = Physical Status
-ST-zone-GV0-NAME = Logical Status
+ST-zone-ST-NAME = Logical Status
+ST-zone-GV0-NAME = Physical Status
 ST-zone-GV1-NAME = Triggered
 ST-zone-GV2-NAME = Area
 ST-zone-GV3-NAME = Type
@@ -123,8 +123,8 @@ CMD-zone-SET_BYPASS-NAME = Toggle Bypass
 # zone off
 ND-zoneoff-NAME = Zone Node
 ND-zoneoff-ICON = Input
-ST-zoneoff-ST-NAME = Physical Status
-ST-zoneoff-GV0-NAME = Logical Status
+ST-zoneoff-ST-NAME = Logical Status
+ST-zoneoff-GV0-NAME = Physical Status
 
 # pyElk: State
 # ISY-ELK: Physical Status

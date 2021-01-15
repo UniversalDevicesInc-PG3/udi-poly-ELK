@@ -60,10 +60,10 @@
     <nodeDef id="zone" nls="zone">
         <editors />
         <sts>
-            <!-- status -->
-            <st id="ST" editor="zpst" />
-            <!-- input state -->
-            <st id="GV0" editor="zlst" />
+            <!-- logical status -->
+            <st id="ST" editor="zlst" />
+            <!-- physical status -->
+            <st id="GV0" editor="zpst" />
             <!-- Triggered -->
             <st id="GV1" editor="bool" />
             <!-- Bypassed -->
@@ -101,10 +101,10 @@
     <nodeDef id="zoneoff" nls="zone">
         <editors />
         <sts>
-            <!-- status -->
-            <st id="ST" editor="zpst" />
-            <!-- input state -->
-            <st id="GV0" editor="zlst" />
+            <!-- logical status -->
+            <st id="ST" editor="zlst" />
+            <!-- pysical status -->
+            <st id="GV0" editor="zpst" />
         </sts>
         <cmds>
             <sends>
