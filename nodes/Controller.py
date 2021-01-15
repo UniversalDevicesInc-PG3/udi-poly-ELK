@@ -11,7 +11,7 @@ from polyinterface import Controller, LOGGER, LOG_HANDLER
 # sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
 from elkm1_lib.const import Max
-
+ 
 # asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
 mainloop = asyncio.get_event_loop()
 
@@ -142,6 +142,8 @@ class Controller(Controller):
         LOGGER.error(f"{self.lpfx} Timeout sending message {msg_code}!!!")
 
     def unknown(self, msg_code, data):
+        if msg_code == 'Unknown message EM':
+            return
         LOGGER.error(f"{self.lpfx} Unknown message {msg_code}: {data}!!!")
 
     def elk_start(self):
