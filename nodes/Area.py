@@ -22,7 +22,7 @@ class AreaNode(BaseNode):
         address     = f'area_{self.elk.index + 1}'
         name        = get_valid_node_name(self.elk.name)
         if name == "":
-            name = f'Zone_{self.elk.index + 1}'
+            name = f'Area_{self.elk.index + 1}'
         super(AreaNode, self).__init__(controller, address, address, name)
 
     def start(self):

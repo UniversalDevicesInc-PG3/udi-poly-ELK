@@ -1,6 +1,8 @@
 
 from polyinterface import LOGGER
 from nodes import BaseNode,ZoneOffNode
+from node_funcs import get_valid_node_name
+
 from elkm1_lib.const import (
     Max,
     ZoneLogicalStatus,
@@ -23,7 +25,10 @@ class ZoneNode(BaseNode):
         self.address   = 'zone_{}'.format(self.elk.index + 1)
         self.parent_address = 'area_{}'.format(self.elk.area + 1)
         self.logger    = controller.logger
-        super(ZoneNode, self).__init__(controller, self.parent_address, self.address, self.elk.name)
+        name        = get_valid_node_name(self.elk.name)
+        if name == "":
+            name = f'Zone_{self.elk.index + 1}'
+        super(ZoneNode, self).__init__(controller, self.parent_address, self.address, name)
         self.lpfx = f'{self.name}:'
 
     def start(self):
