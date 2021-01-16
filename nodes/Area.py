@@ -33,7 +33,7 @@ class AreaNode(BaseNode):
         for zn in range(Max.ZONES.value-1):
             LOGGER.debug(f'{self.lpfx} index={ni} area={self.elk.zones[ni].area} definition={self.controller.elk.zones[zn].definition}')
             # Add zones that are in my area, and are defined.
-            if self.controller.elk.zones[zn].definition > 0 self.controller.elk.zones[zn].area == self.elk.index:
+            if self.controller.elk.zones[zn].definition > 0 and self.controller.elk.zones[zn].area == self.elk.index:
                 LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
                 self.controller.addNode(ZoneNode(self.controller,self,self,self.controller.elk.zones[zn]))
                 time.sleep(.1)
