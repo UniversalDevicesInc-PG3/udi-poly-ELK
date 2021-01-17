@@ -24,7 +24,7 @@ IF running on Raspberry Pi, you must be on the latest version, Buster with Pytho
 
 #### ELK Controller
 
-Currently called Controller, but will be changed.  This has the following status:
+This has the following status:
 - NodeServer Online
   - Nodeserver up and running
 - ELK M1EXP Connected
@@ -34,7 +34,7 @@ Currently called Controller, but will be changed.  This has the following status
 
 #### Area Node
 
-By default only the first area, is added, change the areas configuraion if you have more than one.  The areas are 0-7, and the node names will match the names defined on your ELK.  They contain the following:
+By default only the area one, is added, change the areas configuraion if you have more than one.  The areas are 1-8, and the node names will match the names defined on your ELK.  They contain the following:
 - Alarm Status
   - If there is an Alarm
     - No Alarm Active
@@ -118,13 +118,13 @@ Currently every Zone in the Area will be added as a Node.  They contain the foll
   - The Area number the Zone is part of.
 - Type
   - The Zone Type configured in the ELK, 37 different choices
-- DON/DOF
-  - Allow configuring of DON/DOF are sent when the Zone Physical Status changes, this allows you to put the Node in a Scene and by default a DON is sent when the Zone changes to Open, and DOF is sent when Zone changes to SHORT.  But this can be changed with these options:
+- Send On/Off
+  - Allow configuring of when the On and/or Off control signals are sent for the Zone Physical Status changes. This allows you to put the Node in a Scene and by default an On is sent when the Zone changes to Open, and an Off is sent when Zone changes to SHORT or EOL.  But this can be changed with these options:
     - Send Both (The default)
     - Sond None
     - ON Only
     - OFF Only
-    - Reverse Send Both (Send DON for SHORT and DOF for Open)
+    - Reverse Send Both (Send On for SHORT/EOL and Off for Open)
     - Reverse On Only
     - Reverse Off Only
 - Use Off Node
