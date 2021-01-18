@@ -45,9 +45,9 @@ NODE_DEF_MAP = {
         }
     },
     'zone': {
-        'ST': {
+        'GV0': {
             'name': 'Physical Status',
-            'nls':  'ZPST',
+            'nls':  'ZLST',
             'keys': {
                 -1:  'Unknown',
                  0:  'Unconfigured',
@@ -56,9 +56,9 @@ NODE_DEF_MAP = {
                  3:  'SHORT',
             }
         },
-        'GV0': {
+        'ST': {
             'name': 'Logical Status',
-            'nls':  'ZLST',
+            'nls':  'ZPST',
             'keys': {
                 -1:  'Unknown',
                 0:  'Normal',
