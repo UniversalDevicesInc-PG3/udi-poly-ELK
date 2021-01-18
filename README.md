@@ -145,7 +145,7 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Version History
 
-- 0.2.6: 01/21/2010
+- 0.2.7: 01/21/2010
   - Fix logging when setting Zone ST & GV0
   - Change DON/DOF to Send On / Send Off in documentation and in nodeserver nls
   - For [DOF not sent for EOL](https://github.com/jimboca/udi-poly-elk/issues/42)
