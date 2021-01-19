@@ -55,6 +55,7 @@ class AreaNode(BaseNode):
             self.set_arm_up_state(changeset['arm_up_state'])
 
     def set_zone_logical_status(self, zn, st):
+        LOGGER.info(f'{self.lpfx} zn={zn} st={st}')
         self.zones_logical_status[zn] = st
         self.zones_bypassed = 0
         self.zones_violated = 0
