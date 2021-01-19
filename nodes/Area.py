@@ -53,7 +53,7 @@ class AreaNode(BaseNode):
         if 'arm_up_state' in changeset:
             self.set_arm_up_state(changeset['arm_up_state'])
 
-    def set_zone_logical_status(zn,st):
+    def set_zone_logical_status(self, zn, st):
         self.zones_logical_status[zn] = st
         self.zones_bypassed = 0
         self.zones_violated = 0
