@@ -33,7 +33,7 @@ class ZoneNode(BaseNode):
         self.lpfx = f'{self.name}:'
 
     def start(self):
-        LOGGER.debug(f'{self.lpfx} in area={self.area.name}')
+        LOGGER.debug(f'{self.lpfx} {self.elk}')
         # Set drivers that never change
         # Definition Type
         self.set_driver('GV3',self.elk.definition)
