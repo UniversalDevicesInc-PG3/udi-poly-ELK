@@ -120,25 +120,10 @@ class ZoneNode(BaseNode):
             return
         LOGGER.debug(f'{self.lpfx} val={val}')
         self.set_driver('ST', val)
-        if ZoneLogicalStatus(val).name == 'BYPASSED':
-            # Already set?
-            if self.logical_status < 0 or ZoneLogicalStatus(self.logical_status).name != 'BYPASSED':
-                self.area.zone_bypass_add()
-        else:
-            # Already set?
-            if self.logical_status >= 0 and ZoneLogicalStatus(self.logical_status).name == 'BYPASSED':
-                self.area.zone_bypass_sub()
-        if ZoneLogicalStatus(val).name == 'VIOLATED':
-            # Already set?
-            if self.logical_status < 0 or ZoneLogicalStatus(self.logical_status).name != 'VIOLATED':
-                self.area.zone_violated_add()
-        else:
-            # Already set?
-            if self.logical_status >= 0 and ZoneLogicalStatus(self.logical_status).name == 'VIOLATED':
-                self.area.zone_violated_sub()
         self.logical_status = val
         if self.offnode_obj is not None:
             self.offnode_obj.set_driver('ST', val)
+        self.area.set_logical_status(self.elk.index,val)
 
     def set_voltage(self,val=None,force=False):
         LOGGER.debug(f'{self.lpfx} val={val}')
