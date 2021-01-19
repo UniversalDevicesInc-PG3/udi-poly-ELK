@@ -10,11 +10,11 @@ from elkm1_lib.const import (
     ZonePhysicalStatus,
 )
 
-# For faster lookups
-__bypassed = ZoneLogicalStatus['BYPASSED'].value
-__violated = ZoneLogicalStatus['VIOLATED'].value
-
 class AreaNode(BaseNode):
+
+    # For faster lookups
+    __bypassed = ZoneLogicalStatus['BYPASSED'].value
+    __violated = ZoneLogicalStatus['VIOLATED'].value
 
     def __init__(self, controller, elk):
         self.elk    = elk
