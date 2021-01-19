@@ -123,7 +123,7 @@ class ZoneNode(BaseNode):
         self.logical_status = val
         if self.offnode_obj is not None:
             self.offnode_obj.set_driver('ST', val)
-        self.area.set_logical_status(self.elk.index,val)
+        self.area.set_zone_logical_status(self.elk.index,val)
 
     def set_voltage(self,val=None,force=False):
         LOGGER.debug(f'{self.lpfx} val={val}')
