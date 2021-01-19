@@ -10,11 +10,12 @@ from elkm1_lib.const import (
     ZonePhysicalStatus,
 )
 
-class AreaNode(BaseNode):
+# For faster lookups
+BYPASSED = ZoneLogicalStatus['BYPASSED'].value
+VIOLATED = ZoneLogicalStatus['VIOLATED'].value
 
-    # For faster lookups
-    __bypassed = ZoneLogicalStatus['BYPASSED'].value
-    __violated = ZoneLogicalStatus['VIOLATED'].value
+
+class AreaNode(BaseNode):
 
     def __init__(self, controller, elk):
         self.elk    = elk
@@ -59,9 +60,9 @@ class AreaNode(BaseNode):
         self.zones_violated = 0
         for val in self.zones_logical_status:
             if val is not None:
-                if val == __bypassed:
+                if val == BYPASSED:
                     self.zones_bypassed += 1
-                elif val == __violated:
+                elif val == VIOLATED:
                     self.zones_violated += 1
         self.set_driver('GV3',self.zones_violated)
         self.set_driver('GV4',self.zones_bypassed)
