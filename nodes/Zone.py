@@ -1,7 +1,7 @@
 
 from polyinterface import LOGGER
 from nodes import BaseNode,ZoneOffNode
-from node_funcs import get_valid_node_name
+from node_funcs import get_valid_node_name,myfloat
 
 from elkm1_lib.const import (
     Max,
@@ -19,6 +19,7 @@ class ZoneNode(BaseNode):
         self.init   = False
         self.physical_status = -2
         self.logical_status = -2
+        self.voltage = None
         self.last_changeset = {}
         self.offnode = None
         self.offnode_obj = None
@@ -53,6 +54,8 @@ class ZoneNode(BaseNode):
             self._set_physical_status(changeset['physical_status'])
         if 'logical_status' in changeset:
             self._set_logical_status(changeset['logical_status'])
+        if 'voltage' in changeset:
+            self._set_voltage(changeset['voltage'])
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
@@ -137,6 +140,20 @@ class ZoneNode(BaseNode):
         if self.offnode_obj is not None:
             self.offnode_obj.set_driver('ST', val)
 
+    def set_voltage(self,val=None,force=False):
+        LOGGER.debug(f'{self.lpfx} val={val}')
+        if val is None:
+            val = self.elk.voltage
+        else:
+            val = myfloat(val,2)
+        self._set_voltage(val,force=force)
+
+    def _set_voltage(self,val,force=False):
+        if val == self.voltage and not force:
+            return
+        LOGGER.debug(f'{self.lpfx} val={val}')
+        self.set_driver('CV', val)
+
     def set_triggered(self,val=None,force=False):
         if val is None:
             val = self.elk.triggered_alarm
@@ -215,6 +232,8 @@ class ZoneNode(BaseNode):
         #{'driver': 'GV6', 'value': 0, 'uom': 2},
         # off node
         {'driver': 'GV7', 'value': 0, 'uom': 2},
+        # Voltage
+        {'driver': 'CV',  'value': 0, 'uom': 72},
     ]
     id = 'zone'
     commands = {

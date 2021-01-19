@@ -64,6 +64,8 @@
             <st id="ST" editor="zlst" />
             <!-- physical status -->
             <st id="GV0" editor="zpst" />
+            <!-- Zone Voltage -->
+            <st id="CV" editor="zvolt" />
             <!-- Triggered -->
             <st id="GV1" editor="bool" />
             <!-- Bypassed -->
@@ -78,8 +80,6 @@
             <st id="GV5" editor="zdconf" />
             <!-- Off Node -->
             <st id="GV7" editor="bool" />
-            <!-- Zone Voltage -->
-            <st id="CV" editor="zvolt" />
         </sts>
         <cmds>
             <sends>

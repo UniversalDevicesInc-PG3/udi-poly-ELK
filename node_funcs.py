@@ -1,6 +1,10 @@
 
 import re
 
+def myfloat(value, prec=4):
+    """ round and return float """
+    return round(float(value), prec)
+    
 # Removes invalid charaters for ISY Node description
 def get_valid_node_address(name):
     # Only allow utf-8 characters
