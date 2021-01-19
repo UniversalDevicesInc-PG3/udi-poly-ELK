@@ -67,6 +67,7 @@ class ZoneNode(BaseNode):
         self.set_logical_status(force=force)
         self.set_offnode()
         self.set_triggered()
+        self.set_voltage()
 
     """
         ZDCONF-0 = Send Both
