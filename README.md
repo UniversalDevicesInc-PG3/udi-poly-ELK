@@ -145,10 +145,10 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Version History
 
-- 0.2.7: 01/21/2010
+- 0.2.7: 01/21/2021
   - Fix logging when setting Zone ST & GV0
   - Change DON/DOF to Send On / Send Off in documentation and in nodeserver nls
-  - For [DOF not sent for EOL](https://github.com/jimboca/udi-poly-elk/issues/42)
+  - [DOF not sent for EOL](https://github.com/jimboca/udi-poly-elk/issues/42)
     - Always send DOF for EOL and Short
 - 0.2.6: 01/16/2021
   - Fix [All Zones in an Area are being added to ISY](https://github.com/jimboca/udi-poly-elk/issues/37)
