@@ -21,6 +21,8 @@ class AreaNode(BaseNode):
         self.init   = False
         self.status = None
         self.state  = None
+        self.zones_bypassed = 0
+        self.zones_violated = 0
         self.zones_logical_status = []
         self.zones_phyiscal_status = []
         address     = f'area_{self.elk.index + 1}'
@@ -55,15 +57,15 @@ class AreaNode(BaseNode):
 
     def set_zone_logical_status(zn,st):
         self.zones_logical_status[zn] = st
-        c_bypassed = 0
-        c_violated = 0
+        self.zones_bypassed = 0
+        self.zones_violated = 0
         for val in self.zones_logical_status:
             if val == __bypassed:
-                c_bypassed += 1
+                self.zones_bypassed += 1
             elif val == __violated:
-                c_violated += 1
-        self.set_driver('GV3',self.c_violated)
-        self.set_driver('GV4',self.c_bypassed)
+                self.zones_violated += 1
+        self.set_driver('GV3',self.zones_violated)
+        self.set_driver('GV4',self.zones_bypassed)
 
     # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
     # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
