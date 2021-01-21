@@ -17,8 +17,8 @@ class AreaNode(BaseNode):
         self.init   = False
         self.status = None
         self.state  = None
-        self.zones_bypassed = 0
-        self.zones_violated = 0
+        self.zones_logical_status = []
+        self.zones_phyiscal_status = []
         address     = f'area_{self.elk.index + 1}'
         name        = get_valid_node_name(self.elk.name)
         if name == "":
@@ -32,6 +32,8 @@ class AreaNode(BaseNode):
         # elkm1_lib uses zone numbers starting at zero.
         for zn in range(Max.ZONES.value-1):
             LOGGER.debug(f'{self.lpfx} index={zn} area={self.controller.elk.zones[zn].area} definition={self.controller.elk.zones[zn].definition}')
+            self.zones_physical_status[zn] = 0 # Normal
+            self.zones_logical_status[zn] = 0 # Unconfigured
             # Add zones that are in my area, and are defined.
             if self.controller.elk.zones[zn].definition > 0 and self.controller.elk.zones[zn].area == self.elk.index:
                 LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
@@ -47,36 +49,17 @@ class AreaNode(BaseNode):
         if 'arm_up_state' in changeset:
             self.set_arm_up_state(changeset['arm_up_state'])
 
-    def zone_bypass_add(self):
-        self.zones_bypassed += 1
-        self.set_driver('GV4',self.zones_bypassed)
-
-    def zone_bypass_sub(self):
-        self.zones_bypassed -= 1
-        self.set_driver('GV4',self.zones_bypassed)
-
-    def zone_violated_add(self):
-        self.zones_violated += 1
-        self.set_driver('GV3',self.zones_violated)
-
-    def zone_violated_sub(self):
-        self.zones_violated -= 1
-        self.set_driver('GV3',self.zones_violated)
-
-    def xxupdate_zone_status(self):
-        LOGGER.info(f'{self.lpfx}')
-        bypassed = 0
-        violated = 0
-        for zn in range(Max.ZONES.value-1):
-            #LOGGER.debug(f{self.lpfx} i={} n={} area={}'.format(i,ni,self.elk.zones[ni].area))
-            if self.controller.elk.zones[zn].area == self.elk.index:
-                #LOGGER.debug(f'{self.lpfx} {self.controller.elk.zones[zn].name} logical_status={self.controller.elk.zones[zn].logical_status} name={ZoneLogicalStatus(self.controller.elk.zones[zn].logical_status).name}')
-                if ZoneLogicalStatus(self.controller.elk.zones[zn].logical_status).name == 'BYPASSED':
-                    bypassed += 1
-                elif ZoneLogicalStatus(self.controller.elk.zones[zn].logical_status).name == 'VIOLATED':
-                    violated += 1
-        self.set_driver('GV3',violated)
-        self.set_driver('GV4',bypassed)
+    def set_zone_logical_status(zn,st):
+        self.zones_logical_status[zn] = st
+        c_bypassed = 0
+        c_violated = 0
+        for val in self.zones_logical_status:
+            if ZoneLogicalStatus(val).name == 'BYPASSED':
+                c_bypassed += 1
+            elif ZoneLogicalStatus(val).name == 'VIOLATED':
+                c_violated += 1
+        self.set_driver('GV3',self.c_violated)
+        self.set_driver('GV4',self.c_bypassed)
 
     # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
     # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
