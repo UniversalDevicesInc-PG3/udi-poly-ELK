@@ -23,8 +23,8 @@ class AreaNode(BaseNode):
         self.state  = None
         self.zones_bypassed = 0
         self.zones_violated = 0
-        self.zones_logical_status = []
-        self.zones_physical_status = []
+        self.zones_logical_status = [0] * Max.ZONES.value-1
+        self.zones_physical_status = [0] * Max.ZONES.value-1
         address     = f'area_{self.elk.index + 1}'
         name        = get_valid_node_name(self.elk.name)
         if name == "":
