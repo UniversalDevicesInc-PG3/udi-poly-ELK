@@ -23,8 +23,8 @@ class AreaNode(BaseNode):
         self.state  = None
         self.zones_bypassed = 0
         self.zones_violated = 0
-        self.zones_logical_status = [0] * Max.ZONES.value-1
-        self.zones_physical_status = [0] * Max.ZONES.value-1
+        self.zones_logical_status = [None] * (Max.ZONES.value-1)
+        self.zones_physical_status = [None] * (Max.ZONES.value-1)
         address     = f'area_{self.elk.index + 1}'
         name        = get_valid_node_name(self.elk.name)
         if name == "":
@@ -38,8 +38,6 @@ class AreaNode(BaseNode):
         # elkm1_lib uses zone numbers starting at zero.
         for zn in range(Max.ZONES.value-1):
             LOGGER.debug(f'{self.lpfx} index={zn} area={self.controller.elk.zones[zn].area} definition={self.controller.elk.zones[zn].definition}')
-            self.zones_physical_status[zn] = 0 # Normal
-            self.zones_logical_status[zn] = 0 # Unconfigured
             # Add zones that are in my area, and are defined.
             if self.controller.elk.zones[zn].definition > 0 and self.controller.elk.zones[zn].area == self.elk.index:
                 LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
@@ -60,10 +58,11 @@ class AreaNode(BaseNode):
         self.zones_bypassed = 0
         self.zones_violated = 0
         for val in self.zones_logical_status:
-            if val == __bypassed:
-                self.zones_bypassed += 1
-            elif val == __violated:
-                self.zones_violated += 1
+            if val is not None:
+                if val == __bypassed:
+                    self.zones_bypassed += 1
+                elif val == __violated:
+                    self.zones_violated += 1
         self.set_driver('GV3',self.zones_violated)
         self.set_driver('GV4',self.zones_bypassed)
 
