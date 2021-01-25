@@ -116,6 +116,7 @@ ST-zone-GV4-NAME = Alarm
 ST-zone-GV5-NAME = Send On/Off
 ST-zone-GV6-NAME = Bypassed
 ST-zone-GV7-NAME = Off Node
+ST-zone-CV-NAME = Voltage
 CMD-zone-SET_ONOFF-NAME = Set Send On/Off Mode
 CMD-zone-SET_OFFNODE-NAME = Use Off Node
 CMD-zone-SET_BYPASS-NAME = Toggle Bypass

@@ -54,4 +54,8 @@
   <editor id="zdconf">
       <range uom="25" subset="0-6" nls="ZDCONF" />
   </editor>
+  <!-- Zone Voltage -->
+  <editor id="zvolt">
+    <range uom="72" min="0" max="13.8" step="0.1" prec="1"/>
+  </editor>
 </editors>

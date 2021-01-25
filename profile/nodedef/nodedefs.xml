@@ -78,6 +78,8 @@
             <st id="GV5" editor="zdconf" />
             <!-- Off Node -->
             <st id="GV7" editor="bool" />
+            <!-- Zone Voltage -->
+            <st id="CV" editor="zvolt" />
         </sts>
         <cmds>
             <sends>
