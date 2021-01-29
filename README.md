@@ -145,6 +145,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Version History
 
+- 0.2.8: 01/29/2021
+  - Update polyinterface requirement to latest.
 - 0.2.7: 01/21/2021
   - Fix logging when setting Zone ST & GV0
   - Change DON/DOF to Send On / Send Off in documentation and in nodeserver nls
