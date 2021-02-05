@@ -1,7 +1,7 @@
 
 from polyinterface import LOGGER
 from nodes import BaseNode,ZoneOffNode
-from node_funcs import get_valid_node_name,myfloat
+from node_funcs import get_valid_node_name
 
 from elkm1_lib.const import (
     Max,
@@ -127,18 +127,16 @@ class ZoneNode(BaseNode):
         self.area.set_zone_logical_status(self.elk.index,val)
 
     def set_voltage(self,val=None,force=False):
-        LOGGER.debug(f'{self.lpfx} val={val}')
+        LOGGER.debug(f'{self.lpfx} val={val} elk.voltage={self.elk.voltage}')
         if val is None:
             val = self.elk.voltage
-        else:
-            val = myfloat(val,2)
         self._set_voltage(val,force=force)
 
     def _set_voltage(self,val,force=False):
         if val == self.voltage and not force:
             return
         LOGGER.debug(f'{self.lpfx} val={val}')
-        self.set_driver('CV', val)
+        self.set_driver('CV', val, prec=1)
 
     def set_triggered(self,val=None,force=False):
         if val is None:
