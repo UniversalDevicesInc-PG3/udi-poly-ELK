@@ -4,6 +4,12 @@
 
 I am not responsible for any issues related to this nodeserver including missing an alarm!
 
+## Why use this when ISY has the ELK module?
+
+The ELK Module will not be available on Polisy, the node server will be the supported method.
+
+The node server also has advantages.  It creates a node for Areas, Zones, ... So you can put those nodes in scenes, or use them in programs just like any other node.
+
 ## Installation
 
 Install from the Polyglot store.
@@ -12,6 +18,8 @@ Install from the Polyglot store.
 
 Open the Configuration Page for the Nodeserver in the Polyglot UI and view the [Configuration Help](/POLYGLOT_CONFIG.md) available on that page.
 
+After setting configuration then restart the nodeserver and all configured areas will be added.   There is a Node for each Area, and the Zone's for that area are grouped under it.  Sometimes the ISY fails to actually group some of the nodes, if you notices Zone's not grouped, then right click on it and select Group, which will fix them all.
+
 ## Requirements
 
 This uses https://github.com/gwww/elkm1 which currently only supports an M1EXP in local non secure mode.
@@ -19,6 +27,14 @@ This uses https://github.com/gwww/elkm1 which currently only supports an M1EXP i
 IF running on Raspberry Pi, you must be on the latest version, Buster with Python 3.6 or above, preferably 3.7.
 
 ## Using this Node Server
+
+### General notes
+
+If the Elk objects have characters in the name which are not allowed in ISY Node Names, those charcters will be stripped.
+
+If you change a Elk object name it will not be automatically reflected on the ISY (currently).  You will have to delete the node in the Polyglot UI Node's page for the node server, then restart the node server.
+
+If there is an alarm event, sending a "disarm" with the node server turns off the alarm, but does not reset it, just like when you do it at the Elk keypad.  You will have to send another "disarm" to reset it.  This is mentioned for users of UD Mobile who may want to disarm reset the sytem after an alarm.
 
 ### Nodes
 
@@ -98,7 +114,7 @@ By default only the area one, is added, change the areas configuraion if you hav
 
 #### Zone Node
 
-Currently every Zone in the Area will be added as a Node.  They contain the following:
+Currently every Zone in the Area will be added as a Node if the Zone Definition is greater than Zero.  Nodes contain the following:
 - Physical Status
   - UNKNOWN
   - Unconfigured
@@ -111,7 +127,7 @@ Currently every Zone in the Area will be added as a Node.  They contain the foll
   - Trouble
   - Violated
   - Bypassed
-- Triggered
+- Triggered (What is this?  Is is the Zone that Triggered an Alarm?  Need to test.)
   - True
   - False
 - Area
@@ -128,11 +144,11 @@ Currently every Zone in the Area will be added as a Node.  They contain the foll
     - Reverse On Only
     - Reverse Off Only
 - Use Off Node
-  - Setting this to True will create the Zone Off Node for this Zone
+  - Setting this to True will create the Zone Off Node for this Zone, see Zone Off Node below for more information.
 
 #### Zone Off Node
 
-This node is created for a Zone when "Use Off Node" is set to True.  This allows you to have separate nodes for On and Off so they can be in different Scenes if desired.
+By default only a Zone node is created.  When you enable a Zone "Use Off Node" this will create another node for that Zone which is sent the "Off" commands.   This allows you to have separate nodes for On and Off so they can be in different Scenes if desired.
 
 ## TODO and issues
 

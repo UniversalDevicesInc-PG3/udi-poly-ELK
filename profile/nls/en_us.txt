@@ -87,11 +87,11 @@ ASTATUS-10 = Force Arm to Stay Mode
 ARMUP--1 = Unknown
 ARMUP-0 = Not Ready To Arm
 ARMUP-1 = Ready To Arm
-ARMUP-2 = Ready To Arm, but a zone violated and can be Force Armed
-ARMUP-3 = Armed with Exit Timer working
+ARMUP-2 = Ready To Force Arm 
+ARMUP-3 = Armed With Exit Timer
 ARMUP-4 = Armed Fully
-ARMUP-5 = Force Armed with a force arm zone violated
-ARMUP-6 = Armed with a bypass
+ARMUP-5 = Force Armed
+ARMUP-6 = Armed With Bypass
 
 CHIME--1 = Unknown
 CHIME-0 = Silent
