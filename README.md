@@ -92,11 +92,11 @@ By default only the area one, is added, change the areas configuraion if you hav
     - Unknown (Only on startup)
     - Not Ready To Arm
     - Ready To Arm
-    - Ready To Arm, but a zone violated and can be Force Armed (Never seen this happen?)
-    - Armed with Exit Timer working
+    - Ready To Force Arm 
+    - Armed With Exit Timer
     - Armed Fully
-    - Force Armed with a force arm zone violated
-    - Armed with a bypass
+    - Force Armed
+    - Armed With Bypass
 - Chime Mode
   - Unknown
   - Silent
