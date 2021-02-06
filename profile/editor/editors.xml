@@ -50,9 +50,13 @@
   <editor id="zalarm">
       <range uom="25" subset="0-25" nls="ZALARM" />
   </editor>
-  <!-- Status -->
-  <editor id="zdconf">
+  <!-- ON Off Config -->
+  <!-- <editor id="zdconf">
       <range uom="25" subset="0-6" nls="ZDCONF" />
+  </editor>-->
+  <!-- Send On/Off -->
+  <editor id="zsonoff">
+      <range uom="25" subset="0-3" nls="ZSONOFF" />
   </editor>
   <!-- Zone Voltage -->
   <editor id="zvolt">

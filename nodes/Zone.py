@@ -62,7 +62,8 @@ class ZoneNode(BaseNode):
         #LOGGER.debug('_set_drivers: Zone:{} description:"{}" state:{}={} status:{}={} enabled:{} area:{} definition:{}={} alarm:{}={}'
         #            .format(pyelk.number, pyelk.description, pyelk.state, pyelk.state_pretty(), pyelk.status, pyelk.status_pretty(), pyelk.enabled,
         #                    pyelk.area, pyelk.definition, pyelk.definition_pretty(), pyelk.alarm, pyelk.alarm_pretty()))
-        self.set_onoff()
+        self.set_son()
+        self.set_soff()
         self.set_physical_status(force=force,reportCmd=reportCmd)
         self.set_logical_status(force=force)
         self.set_offnode()
@@ -79,7 +80,7 @@ class ZoneNode(BaseNode):
         ZDCONF-6 = Reverse Off Only
     """
     def set_physical_status(self,val=None,force=False,reportCmd=True):
-        LOGGER.debug(f'{self.lpfx} val={val} onoff={self.onoff}')
+        LOGGER.debug(f'{self.lpfx} val={val}')
         if val is None:
             val = self.elk.physical_status
         else:
@@ -89,14 +90,13 @@ class ZoneNode(BaseNode):
     def _set_physical_status(self,val,force=False,reportCmd=True):
         if val == self.physical_status and not force:
             return            
-        LOGGER.debug(f'{self.lpfx} val={val} current={self.physical_status} force={force} onoff={self.onoff}')
-        # Send DON for Violated?
+        LOGGER.debug(f'{self.lpfx} val={val} current={self.physical_status} force={force} son={self.son} son={self.soff}')
         # Only if we are not farcing the same value
         if (not force) and reportCmd:
-            if (val == 1 and (self.onoff == 0 or self.onoff == 2)) or ((val == 3 or val == 2) and (self.onoff == 4 or self.onoff == 6)):
+            if val == self.son:
                 LOGGER.debug(f'{self.lpfx} Send DON')
                 self.reportCmd("DON")
-            elif ((val == 3 or val == 2) and (self.onoff == 0 or self.onoff == 3)) or (val == 1 and (self.onoff == 4 or self.onoff == 5)):
+            elif val == self.soff:
                 if self.offnode_obj is None:
                     LOGGER.debug(f'{self.lpfx} Send DOF ')
                     self.reportCmd("DOF")
@@ -157,9 +157,13 @@ class ZoneNode(BaseNode):
         self.set_drivers()
         self.reportDrivers()
 
-    def set_onoff(self,val=None):
+    def set_son(self,val=None):
         LOGGER.info(f'{self.lpfx} {val}')
-        self.onoff = self.set_driver('GV5',val)
+        self.son = self.set_driver('GV8',val,default=1)
+
+    def set_soff(self,val=None):
+        LOGGER.info(f'{self.lpfx} {val}')
+        self.soff = self.set_driver('GV9',val,default=2)
 
     def set_offnode(self,val=None):
         LOGGER.info(f'{self.lpfx} val={val} offnode={self.offnode} offnode_obj={self.offnode_obj}')
@@ -177,10 +181,15 @@ class ZoneNode(BaseNode):
                 self.offnode_obj = self.controller.addNode(ZoneOffNode(self.controller,self.parent_address,self.address+'_off',self.elk.name+" - Off",
                 self.physical_status, self.logical_status))
 
-    def cmd_set_onoff(self,command):
+    def cmd_set_son(self,command):
         val = int(command.get('value'))
         LOGGER.debug(f'{self.lpfx} val={val}')
-        self.set_onoff(val)
+        self.set_son(val)
+
+    def cmd_set_soff(self,command):
+        val = int(command.get('value'))
+        LOGGER.debug(f'{self.lpfx} val={val}')
+        self.set_soff(val)
 
     def cmd_set_offnode(self,command):
         val = int(command.get('value'))
@@ -211,18 +220,22 @@ class ZoneNode(BaseNode):
         # alarm configuration
         {'driver': 'GV4', 'value': 0, 'uom': 25},
         # DON/DOF Config
-        {'driver': 'GV5', 'value': 0, 'uom': 25},
+        #{'driver': 'GV5', 'value': 0, 'uom': 25},
         # bypassed
         #{'driver': 'GV6', 'value': 0, 'uom': 2},
         # off node
         {'driver': 'GV7', 'value': 0, 'uom': 2},
+        # off node
+        {'driver': 'GV8', 'value': 1, 'uom': 25},
+        # off node
+        {'driver': 'GV9', 'value': 2, 'uom': 25},
         # Voltage
         {'driver': 'CV',  'value': 0, 'uom': 72},
     ]
     id = 'zone'
     commands = {
-        'SET_ONOFF': cmd_set_onoff,
-        'SET_OFFNODE': cmd_set_offnode,
+        'SET_SON': cmd_set_son,
+        'SET_SOFF': cmd_set_soff,
         'SET_BYPASS': cmd_set_bypass,
         'CLEAR_BYPASS': cmd_clear_bypass,
     }

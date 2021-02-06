@@ -113,14 +113,17 @@ ST-zone-GV1-NAME = Triggered
 ST-zone-GV2-NAME = Area
 ST-zone-GV3-NAME = Definition
 ST-zone-GV4-NAME = Alarm
-ST-zone-GV5-NAME = Send On/Off
+# ST-zone-GV5-NAME = Send On/Off
 ST-zone-GV6-NAME = Bypassed
 ST-zone-GV7-NAME = Off Node
+ST-zone-GV8-NAME = Send On For
+ST-zone-GV9-NAME = Send Off For
 ST-zone-CV-NAME = Voltage
 CMD-zone-SET_ONOFF-NAME = Set Send On/Off Mode
 CMD-zone-SET_OFFNODE-NAME = Use Off Node
 CMD-zone-SET_BYPASS-NAME = Toggle Bypass
- 
+CMD-zone-SET_SON-NAME = Set Send On For
+CMD-zone-SET_SOFF-NAME = Set Send Off For 
 # zone off
 ND-zoneoff-NAME = Zone Node
 ND-zoneoff-ICON = Input
@@ -211,6 +214,11 @@ ZALARM-22 = Medical Alarm
 ZALARM-23 = Police Alarm
 ZALARM-24 = Police No Indication
 ZALARM-25 = Water Alarm
+
+ZSONOFF-0 = None
+ZSONOFF-1 = Open
+ZSONOFF-2 = EOL
+ZSONOFF-3 = Short
 
 ZDCONF-0 = Send Both
 ZDCONF-1 = Send None

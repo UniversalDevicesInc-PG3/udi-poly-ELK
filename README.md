@@ -160,7 +160,10 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
-
+- 0.3.2: 02/05/2021
+  - [DOF not sent for EOL](https://github.com/jimboca/udi-poly-elk/issues/42)
+    - Removed Send On/Off functionality
+    - Added 'Send On For' default=Open 'Send Off For' default=EOL so users can control
 - 0.3.1: 02/05/2021
   - Only wording changes for Arm Up State [Word Wrap Text Box](https://github.com/jimboca/udi-poly-elk/issues/44)
 - 0.3.0: 02/04/2021

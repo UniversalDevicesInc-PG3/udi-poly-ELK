@@ -77,7 +77,11 @@
             <!-- alarm configuration -->
             <!--<st id="GV4" editor="zalarm" />-->
             <!-- DON/DOF Config -->
-            <st id="GV5" editor="zdconf" />
+            <!-- No longer used <st id="GV5" editor="zdconf" /> -->
+            <!-- Send On -->
+            <st id="GV8" editor="zsonoff" />
+            <!-- Send Off -->
+            <st id="GV9" editor="zsonoff" />
             <!-- Off Node -->
             <st id="GV7" editor="bool" />
         </sts>
@@ -89,8 +93,14 @@
             <accepts>
               <cmd id="SET_BYPASS" />
               <!-- <cmd id="CLEAR_BYPASS" /> -->
-              <cmd id="SET_ONOFF">
+              <!--- <cmd id="SET_ONOFF">
                 <p id="" editor="zdconf" init="GV5" />
+              </cmd> -->
+              <cmd id="SET_SON">
+                <p id="" editor="zsonoff" init="GV8" />
+              </cmd>
+              <cmd id="SET_SOFF">
+                <p id="" editor="zsonoff" init="GV9" />
               </cmd>
               <cmd id="SET_OFFNODE">
                 <p id="" editor="bool" init="GV7" />
