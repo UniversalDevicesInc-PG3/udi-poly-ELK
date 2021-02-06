@@ -162,7 +162,7 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 ## Version History
 
 - 0.3.1: 02/05/2021
-  - Only wording changes for Arm Up State
+  - Only wording changes for Arm Up State [Word Wrap Text Box](https://github.com/jimboca/udi-poly-elk/issues/44)
 - 0.3.0: 02/04/2021
   - [Improve how violated/bypassed zones are counted](https://github.com/jimboca/udi-poly-elk/issues/40)
   - [Add support for Zone voltage](https://github.com/jimboca/udi-poly-elk/issues/38)
