@@ -166,6 +166,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
   - [Add support for Zone voltage](https://github.com/jimboca/udi-poly-elk/issues/38)
     - But currently on startup the voltage is always zero, it only updates occasionally when panel sync is done.
     - Asked on the elkm1_lib if this is a know issue [Voltage is not initialized on startup](https://github.com/gwww/elkm1/issues/40)
+- 0.2.8: 01/29/2021
+  - Update polyinterface requirement to latest.
 - 0.2.7: 01/21/2021
   - Fix logging when setting Zone ST & GV0
   - Change DON/DOF to Send On / Send Off in documentation and in nodeserver nls
