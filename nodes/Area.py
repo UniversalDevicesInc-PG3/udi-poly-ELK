@@ -26,6 +26,7 @@ class AreaNode(BaseNode):
         self.zones_violated = 0
         self.zones_logical_status = [None] * (Max.ZONES.value-1)
         self.zones_physical_status = [None] * (Max.ZONES.value-1)
+        self._zone_nodes = {}
         address     = f'area_{self.elk.index + 1}'
         name        = get_valid_node_name(self.elk.name)
         if name == "":
@@ -42,9 +43,16 @@ class AreaNode(BaseNode):
             # Add zones that are in my area, and are defined.
             if self.controller.elk.zones[zn].definition > 0 and self.controller.elk.zones[zn].area == self.elk.index:
                 LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
-                self.controller.addNode(ZoneNode(self.controller,self,self,self.controller.elk.zones[zn]))
+                self._zone_nodes[zn] = self.controller.addNode(ZoneNode(self.controller,self,self,self.controller.elk.zones[zn]))
                 time.sleep(.1)
- 
+
+    def shortPoll(self):
+        for zn in self._zone_nodes:
+            self._zone_nodes[zn].shortPoll()
+
+    def longPoll(self):
+        pass
+
     def callback(self, element, changeset):
         LOGGER.info(f'{self.lpfx} cs={changeset}')
         if 'alarm_state' in changeset:

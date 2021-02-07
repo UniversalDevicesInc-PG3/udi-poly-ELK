@@ -2,6 +2,7 @@
     My BaseNode to define common methods all the nodes need
 """
 
+from sys import exc_info
 from polyinterface import Node,LOGGER
 from const import NODE_DEF_MAP
 from node_funcs import myfloat
@@ -36,16 +37,23 @@ class BaseNode(Node):
         try:
             if not mdrv in self.__my_drivers or val != self.__my_drivers[mdrv] or force:
                 self.setDriver(mdrv,val,report=report)
-                info = ''
-                if self.id in NODE_DEF_MAP and mdrv in NODE_DEF_MAP[self.id]:
-                    info += f"'{NODE_DEF_MAP[self.id][mdrv]['name']}' = "
-                    info += f"'{NODE_DEF_MAP[self.id][mdrv]['keys'][val]}'" if val in NODE_DEF_MAP[self.id][mdrv]['keys'] else "'NOT IN NODE_DEF_MAP'"            
-                self.__my_drivers[mdrv] = val
-                LOGGER.debug(f'{self.lpfx} set_driver({mdrv},{val}) {info}')
-            else:
-                LOGGER.debug(f'{self.lpfx} not necessary')
+                try:
+                    info = ''
+                    if self.id in NODE_DEF_MAP and mdrv in NODE_DEF_MAP[self.id]:
+                        info += f"'{NODE_DEF_MAP[self.id][mdrv]['name']}' = "
+                        if 'keys' in NODE_DEF_MAP[self.id][mdrv]:
+                            info += f"'{NODE_DEF_MAP[self.id][mdrv]['keys'][val]}'" if val in NODE_DEF_MAP[self.id][mdrv]['keys'] else "'NOT IN NODE_DEF_MAP'"
+                        else:
+                            info += str(val)
+                    self.__my_drivers[mdrv] = val
+                    LOGGER.debug(f'{self.lpfx} set_driver({mdrv},{val}) {info}')
+                except Exception as err:
+                    LOGGER.error(f'{self.lpfx} Internal error getting node driver info for {mdrv}',exc_info=True)
+                    LOGGER.debug(f'{self.lpfx} set_driver({mdrv},{val})')
+            #else:
+            #    LOGGER.debug(f'{self.lpfx} not necessary')
         except:
-            LOGGER.error(f'{self.lpfx} set_driver({mdrv},{val}) failed')
+            LOGGER.error(f'{self.lpfx} set_driver({mdrv},{val}) failed',exc_info=True)
             return None
         return val
 

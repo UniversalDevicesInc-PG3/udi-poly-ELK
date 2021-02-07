@@ -43,6 +43,11 @@ class ZoneNode(BaseNode):
         self.set_drivers(force=True,reportCmd=False)
         self.reportDrivers()
         self.elk.add_callback(self.callback)
+        # Force get_voltage call
+        self.elk.get_voltage()
+
+    def shortPoll(self):
+        self.elk.get_voltage()
 
     def query(self):
         self.set_drivers(force=False,reportCmd=False)
