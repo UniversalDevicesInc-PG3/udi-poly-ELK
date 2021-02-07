@@ -59,6 +59,7 @@ class Controller(Controller):
             self.hb = 0
 
     def shortPoll(self):
+        LOGGER.debug(f'{self.lpfx}')
         for an in self._area_nodes:
             self._area_nodes[an].shortPoll()
 

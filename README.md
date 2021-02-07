@@ -161,7 +161,7 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
-- 0.3.3: 02/07/2021
+- 0.3.4: 02/07/2021
   - [Add support for Zone voltage](https://github.com/jimboca/udi-poly-elk/issues/38)
     - Poll Voltages for Zones when Area Enables Poll Voltages setting.
 - 0.3.2: 02/05/2021

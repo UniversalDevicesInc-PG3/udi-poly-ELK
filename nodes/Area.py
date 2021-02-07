@@ -28,6 +28,7 @@ class AreaNode(BaseNode):
         self.zones_physical_status = [None] * (Max.ZONES.value-1)
         self._zone_nodes = {}
         self.poll_voltages = False
+        self.ready = False
         address     = f'area_{self.elk.index + 1}'
         name        = get_valid_node_name(self.elk.name)
         if name == "":
@@ -46,9 +47,13 @@ class AreaNode(BaseNode):
                 LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
                 self._zone_nodes[zn] = self.controller.addNode(ZoneNode(self.controller,self,self,self.controller.elk.zones[zn]))
                 time.sleep(.1)
+        self.ready = True
 
     def shortPoll(self):
         # Only Poll Zones if we want voltages
+        LOGGER.debug(f'{self.lpfx} ready={self.ready} poll_voltages={self.poll_voltages}')
+        if not self.ready:
+            return False
         if self.poll_voltages:
             for zn in self._zone_nodes:
                 self._zone_nodes[zn].shortPoll()
@@ -114,6 +119,7 @@ class AreaNode(BaseNode):
     def set_poll_voltages(self,val=None):
         LOGGER.info(f'{self.lpfx} {val}')
         self.set_driver('GV5', val, default=0)
+        self.poll_voltages = False if self.get_driver('GV5') == 0 else True
 
     def query(self):
         LOGGER.info(f'{self.lpfx}')
