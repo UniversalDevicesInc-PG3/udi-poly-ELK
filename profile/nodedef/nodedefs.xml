@@ -36,6 +36,8 @@
             <st id="GV1" editor="armup" />
             <!-- Chime Mode -->
             <st id="GV2" editor="chime" />
+            <!-- Poll Voiltages -->
+            <st id="GV5" editor="bool" />
             <!-- violated count -->
             <st id="GV3" editor="integer" />
             <!-- bypassed count -->
@@ -51,6 +53,9 @@
               <cmd id="CLEAR_BYPASS" />
               <cmd id="SET_ARMED_STATUS">
                 <p id="" editor="astatusc" init="GV0" />
+              </cmd>
+              <cmd id="SET_POLL_VOLTAGES">
+                <p id="" editor="bool" init="GV5" />
               </cmd>
             </accepts>
         </cmds>

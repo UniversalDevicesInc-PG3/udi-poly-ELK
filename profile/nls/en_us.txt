@@ -27,13 +27,16 @@ ST-area-GV1-NAME = Arm Up State
 ST-area-GV2-NAME = Chime Mode
 ST-area-GV3-NAME = Zones Violated
 ST-area-GV4-NAME = Zones Bypassed
+ST-area-GV5-NAME = Poll Voltages
 CMD-area-ST-NAME = Alarm Status
 CMD-area-GV0-NAME = Set Armed Status
 CMD-area-GV1-NAME = Set Arm Up State
 CMD-area-GV2-NAME = Set Chime Mode
+CMD-area-GV5-NAME = Set Poll Voltages
 CMD-area-SET_ARMED_STATUS-NAME = Set Armed Status
 CMD-area-SET_BYPASS-NAME = Bypass
 CMD-area-CLEAR_BYPASS-NAME = Clear Bypass
+CMD-area-SET_POLL_VOLTAGES-NAME = Set Poll Voltages
 
 # ST = alarm_state
 ALARM--1 = Unknown

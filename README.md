@@ -107,6 +107,8 @@ By default only the area one, is added, change the areas configuraion if you hav
   - Single Chime with Single Beep
   - Single Chime with Constantly Beeping
   - Single Chime with Single Beep and Constantly Beeping
+- Poll Voltages
+  - Enabled to poll the voltages on the Area's Zones.
 - Zones Violated
   - The number of Zones currently violated
 - Zones Bypassed
@@ -127,6 +129,8 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
   - Trouble
   - Violated
   - Bypassed
+- Voltage
+  - The current Zone Voltage.  Note this is not updated on change, it must be Polled.  By default this is polling is disabled, to enable set "Poll Voltages" on the Zone's Area.  The values are only updated on Short Poll intervals, which can be set in the Node Server Configuration Page.  It is also updated on a Zone query, so you can write ISY progrmas to force the query if you want faster updates, or just to update a single zone.
 - Triggered (What is this?  Is is the Zone that Triggered an Alarm?  Need to test.)
   - True
   - False
@@ -134,15 +138,12 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
   - The Area number the Zone is part of.
 - Type
   - The Zone Type configured in the ELK, 37 different choices
-- Send On/Off
-  - Allow configuring of when the On and/or Off control signals are sent for the Zone Physical Status changes. This allows you to put the Node in a Scene and by default an On is sent when the Zone changes to Open, and an Off is sent when Zone changes to SHORT or EOL.  But this can be changed with these options:
-    - Send Both (The default)
-    - Sond None
-    - ON Only
-    - OFF Only
-    - Reverse Send Both (Send On for SHORT/EOL and Off for Open)
-    - Reverse On Only
-    - Reverse Off Only
+- Send On For / Send Off For
+  - Allow configuring of when the On and/or Off control signals are sent for the Zone Physical Status changes. This allows you to put the Node in a Scene and by default an On is sent when the Zone changes to Open, and an Off is sent when Zone changes to.  But this can be changed with these options:
+    - Ignore
+    - Open
+    - EOL
+    - Short
 - Use Off Node
   - Setting this to True will create the Zone Off Node for this Zone, see Zone Off Node below for more information.
 
@@ -160,6 +161,9 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.3.3: 02/07/2021
+  - [Add support for Zone voltage](https://github.com/jimboca/udi-poly-elk/issues/38)
+    - Poll Voltages for Zones when Area Enables Poll Voltages setting.
 - 0.3.2: 02/05/2021
   - [DOF not sent for EOL](https://github.com/jimboca/udi-poly-elk/issues/42)
     - Removed Send On/Off functionality

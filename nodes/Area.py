@@ -27,6 +27,7 @@ class AreaNode(BaseNode):
         self.zones_logical_status = [None] * (Max.ZONES.value-1)
         self.zones_physical_status = [None] * (Max.ZONES.value-1)
         self._zone_nodes = {}
+        self.poll_voltages = False
         address     = f'area_{self.elk.index + 1}'
         name        = get_valid_node_name(self.elk.name)
         if name == "":
@@ -47,8 +48,10 @@ class AreaNode(BaseNode):
                 time.sleep(.1)
 
     def shortPoll(self):
-        for zn in self._zone_nodes:
-            self._zone_nodes[zn].shortPoll()
+        # Only Poll Zones if we want voltages
+        if self.poll_voltages:
+            for zn in self._zone_nodes:
+                self._zone_nodes[zn].shortPoll()
 
     def longPoll(self):
         pass
@@ -83,6 +86,7 @@ class AreaNode(BaseNode):
         self.set_alarm_state()
         self.set_armed_status()
         self.set_arm_up_state()
+        self.set_poll_voltages()
         self.set_driver('GV3',self.zones_violated)
         self.set_driver('GV4',self.zones_bypassed)
         #self.setDriver('GV2', pyelk.chime_mode)
@@ -107,6 +111,10 @@ class AreaNode(BaseNode):
         val = self.elk.arm_up_state if val is None else int(val)
         self.set_driver('GV1', val)
 
+    def set_poll_voltages(self,val=None):
+        LOGGER.info(f'{self.lpfx} {val}')
+        self.set_driver('GV5', val, default=0)
+
     def query(self):
         LOGGER.info(f'{self.lpfx}')
         self.set_drivers()
@@ -128,6 +136,11 @@ class AreaNode(BaseNode):
         LOGGER.info(f'{self.lpfx} Calling clear bypass...')
         self.elk.clear_bypass(self.controller.user_code)
 
+    def cmd_set_poll_voltages(self,command):
+        val = command.get('value')
+        LOGGER.info(f'{self.lpfx} {val}')
+        self.set_poll_voltages(val)
+
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
@@ -138,10 +151,12 @@ class AreaNode(BaseNode):
         {'driver': 'GV2',  'value': 0, 'uom': 25},
         {'driver': 'GV3',  'value': 0, 'uom': 25},
         {'driver': 'GV4',  'value': 0, 'uom': 25},
+        {'driver': 'GV5',  'value': 0, 'uom': 2},
     ]
     id = 'area'
     commands = {
             'SET_ARMED_STATUS': cmd_set_armed_status,
+            'SET_POLL_VOLTAGES': cmd_set_poll_voltages,
             'SET_BYPASS': cmd_set_bypass,
             'CLEAR_BYPASS': cmd_clear_bypass,
     }
