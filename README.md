@@ -162,6 +162,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.4.1: 02/08/2021
+  - Add missing OUtput.py file.
 - 0.4.0: 02/07/2021
   - [Support Outputs and Virtual Outputs](https://github.com/jimboca/udi-poly-elk/issues/12)
 - 0.4.0: 02/07/2021
