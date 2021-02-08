@@ -152,6 +152,12 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
 
 By default only a Zone node is created.  When you enable a Zone "Use Off Node" this will create another node for that Zone which is sent the "Off" commands.   This allows you to have separate nodes for On and Off so they can be in different Scenes if desired.
 
+#### Output Node
+
+There will be an Ouput node created for each Output you have listed in the outputs range.  The output is named based on the name in the Elk and has status (ST) showing On, Off, or Unknown.  The Unknown value should only happen when the output is first added until the Elk is queried to get the status.
+
+When an Ouput is turned On or Off, a Control is also sent so you can put the node in a scene, or use Control in a ISY program.
+
 ## TODO and issues
 
 https://github.com/jimboca/udi-poly-elk/issues
@@ -162,8 +168,13 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.4.2: 02/09/2021
+  - [Support Outputs and Virtual Outputs](https://github.com/jimboca/udi-poly-elk/issues/12)
+    - Fixed Output On/Off values
+    - Fix crashed when outputs is null.
 - 0.4.1: 02/08/2021
-  - Add missing OUtput.py file.
+  - [Support Outputs and Virtual Outputs](https://github.com/jimboca/udi-poly-elk/issues/12)
+    - Add missing Output.py file.
 - 0.4.0: 02/07/2021
   - [Support Outputs and Virtual Outputs](https://github.com/jimboca/udi-poly-elk/issues/12)
 - 0.4.0: 02/07/2021

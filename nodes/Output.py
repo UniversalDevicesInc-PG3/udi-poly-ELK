@@ -54,9 +54,9 @@ class OutputNode(BaseNode):
     def set_onoff(self,val=None,force=False,reportCmd=True):
         LOGGER.info(f'{self.lpfx}')
         if val is None:
-            val = 1 if self.elk.output_on else 0
+            val = 100 if self.elk.output_on else 0
         elif val is True:
-            val = 1
+            val = 100
         elif val is False:
             val = 0
         self.set_driver('ST',1 if self.elk.output_on else 0)

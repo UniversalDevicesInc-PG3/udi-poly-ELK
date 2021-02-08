@@ -4,6 +4,7 @@
 - Set host to the host or ip address and port, e.g. 192.168.1.15:2101
 - Set a user code, suggested to create a unique usercode for this NodeServer
 - Set areas to the range of areas you would like to include
+- Set outputs to the range of outputs to include
 
 A range can be comma seperated to include just those numbers, or seperated with a dash to include numbers in between.  For example 1-3,5,7-8 will be 1,2,3,5,7,8
 All ranges start at one just like the numbering the Elk uses.

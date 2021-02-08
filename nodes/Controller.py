@@ -270,11 +270,9 @@ class Controller(Controller):
 
         self.use_outputs = self.getCustomParam("outputs")
         self.use_outputs_list = ()
-        if self.use_outputs == "":
+        if self.use_outputs == "" or self.use_outputs is None:
             LOGGER.warning("No outputs defined in config so none will be added")
         else:
-            if self.use_outputs is None:
-                self.use_outputs = ""
             try:
                 self.use_outputs_list = parse_range(self.use_outputs)
             except:
