@@ -109,6 +109,7 @@ class OutputNode(BaseNode):
         'DON': cmd_set_on,
         'DON_WTIME': cmd_set_on_wtime,
         'DOF': cmd_set_off,
+        'SET_TIME': cmd_set_time,
         'TOGGLE': cmd_toggle,
         'QUERY': cmd_query,
     }
