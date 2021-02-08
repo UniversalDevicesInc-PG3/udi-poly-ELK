@@ -131,7 +131,8 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
   - Bypassed
 - Voltage
   - The current Zone Voltage.  Note this is not updated on change, it must be Polled.  By default this is polling is disabled, to enable set "Poll Voltages" on the Zone's Area.  The values are only updated on Short Poll intervals, which can be set in the Node Server Configuration Page.  It is also updated on a Zone query, so you can write ISY progrmas to force the query if you want faster updates, or just to update a single zone.
-- Triggered (What is this?  Is is the Zone that Triggered an Alarm?  Need to test.)
+- Triggered
+  - The zone has been manually triggered by a 3rd party app, or this app, when support is added.
   - True
   - False
 - Area
