@@ -134,5 +134,31 @@
         </cmds>
     </nodeDef>
 
+    <!-- zone -->
+    <nodeDef id="output" nls="output">
+        <editors />
+        <sts>
+            <st id="ST" editor="onoff" />
+            <st id="TIME" editor="ontime" />
+        </sts>
+        <cmds>
+            <sends>
+              <cmd id="DON" />
+              <cmd id="DOF" />
+            </sends>
+            <accepts>
+              <cmd id="QUERY" />
+              <cmd id="DON" />
+              <cmd id="DOF" />
+              <cmd id="SET_TIME">
+                <p id="" editor="ontime" init="TIME" />
+              </cmd>
+              <cmd id="DON_WTIME">
+                <p id="" editor="ontime" init="TIME" />
+              </cmd>
+          </accepts>
+        </cmds>
+    </nodeDef>
+
 
 </nodeDefs>

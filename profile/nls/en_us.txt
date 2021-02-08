@@ -18,9 +18,17 @@ CDM-30 = Warning All
 CDM-40 = Error All
 CDM-50 = Critical All
 
+# output
+ND-output-NAME = ELK Output
+ND-output-ICON = Output
+ST-output-TIME = Default On Time
+CMD-output-SET_TIME-NAME = Set Default On Time
+CMD-output-DON_WTIME-NAME = Turn On With Time
+CMDP-output-onTime-NAME = Seconds
+
 # area
 ND-area-NAME = Area Node
-ND-area-ICON = Input
+ND-area-ICON = Alarm
 ST-area-ST-NAME = Alarm Status
 ST-area-GV0-NAME = Armed Status
 ST-area-GV1-NAME = Arm Up State
@@ -109,7 +117,7 @@ CHIME-7 = Single Chime with Single Beep and Constantly Beeping
 
 # zone
 ND-zone-NAME = Zone Node
-ND-zone-ICON = Output
+ND-zone-ICON = Arm
 ST-zone-ST-NAME = Logical Status
 ST-zone-GV0-NAME = Physical Status
 ST-zone-GV1-NAME = Triggered

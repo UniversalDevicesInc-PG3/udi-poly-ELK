@@ -3,12 +3,22 @@
   <editor id="bool">
       <range uom="2" subset="0,1" />
   </editor>
+  <editor id="onoff">
+      <range uom="78" subset="0,100,101" />
+  </editor>
   <editor id="I_DEBUG">
     <range uom="25" subset="9,10,20,30,40,50" nls="CDM"/>
   </editor>
   <editor id="integer">
        <range uom="25" min="0" max="1000" prec="0" />
   </editor>
+  <editor id="ontime">
+       <range uom="58" min="0" max="65535" prec="0" />
+  </editor>
+  <editor id="onoff">
+       <range uom="78" subset="0,100,101" prec="0" />
+  </editor>
+
   <!-- AREAS -->
 
   <!-- Arm Status -->

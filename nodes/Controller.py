@@ -5,7 +5,7 @@ import asyncio
 import os
 from threading import Thread
 from node_funcs import *
-from nodes import AreaNode
+from nodes import AreaNode,OutputNode
 from polyinterface import Controller, LOGGER, LOG_HANDLER
 
 # sys.path.insert(0, "../elkm1")
@@ -27,6 +27,7 @@ class Controller(Controller):
         self.config_st = False
         self.driver = {}
         self._area_nodes = {}
+        self._output_nodes = {}
         self.logger = LOGGER
         self.lpfx = self.name + ":"
         # Not using because it's called to many times
@@ -138,7 +139,21 @@ class Controller(Controller):
             else:
                 LOGGER.info(f"{self.lpfx} Adding Area {an}")
                 self._area_nodes[an] = self.addNode(AreaNode(self, self.elk.areas[an]))
-        LOGGER.info("areas done")
+        LOGGER.info("adding areas done, adding outputs...")
+        # elkm1_lib uses zone numbers starting at zero.
+        for n in range(Max.OUTPUTS.value - 1):
+            if n in self._output_nodes:
+                LOGGER.info(
+                    f"{self.lpfx} Skipping Output {n+1} because it already defined."
+                )
+            elif is_in_list(n+1, self.use_outputs_list) is False:
+                LOGGER.info(
+                    f"{self.lpfx} Skipping Output {n+1} because it is not in outputs range {self.use_outputs} in configuration"
+                )
+            else:
+                LOGGER.info(f"{self.lpfx} Adding Output {an}")
+                self._output_nodes[an] = self.addNode(OutputNode(self, self.elk.outputs[n]))
+        LOGGER.info("adding outputs done")
 
     def timeout(self, msg_code):
         LOGGER.error(f"{self.lpfx} Timeout sending message {msg_code}!!!")
@@ -237,20 +252,45 @@ class Controller(Controller):
             )
 
         self.use_areas = self.getCustomParam("areas")
-        if self.use_areas is None:
-            self.use_areas = "1"
-        try:
-            self.use_areas_list = parse_range(self.use_areas)
-        except:
-            errs = f"ERROR: Failed to parse areas range '{self.use_areas}'  will not add any areas: {sys.exc_info()[1]}"
+        self.use_areas_list = ()
+        if self.use_areas == "":
+            errs = "No areas defined in config so none will be added"
             LOGGER.error(errs)
             self.addNotice(errs, "areas")
-            self.use_areas_list = ()
-            self.config_st = False
+        else:
+            if self.use_areas is None:
+                self.use_areas = "1"
+            try:
+                self.use_areas_list = parse_range(self.use_areas)
+            except:
+                errs = f"ERROR: Failed to parse areas range '{self.use_areas}'  will not add any areas: {sys.exc_info()[1]}"
+                LOGGER.error(errs)
+                self.addNotice(errs, "areas")
+                self.config_st = False
+
+        self.use_outputs = self.getCustomParam("outputs")
+        self.use_outputs_list = ()
+        if self.use_outputs == "":
+            LOGGER.warning("No outputs defined in config so none will be added")
+        else:
+            if self.use_outputs is None:
+                self.use_outputs = ""
+            try:
+                self.use_outputs_list = parse_range(self.use_outputs)
+            except:
+                errs = f"ERROR: Failed to parse outputs range '{self.use_outputs}'  will not add any outputs: {sys.exc_info()[1]}"
+                LOGGER.error(errs)
+                self.addNotice(errs, "outputs")
+                self.config_st = False
 
         # Make sure they are in the params
         self.addCustomParam(
-            {"host": self.host, "user_code": self.user_code, "areas": self.use_areas}
+            {
+                "host": self.host, 
+                "user_code": self.user_code, 
+                "areas": self.use_areas,
+                "outputs": self.use_outputs
+            }
         )
 
         # Add a notice if they need to change the user/password from the default.
