@@ -52,14 +52,14 @@ class OutputNode(BaseNode):
         self.on_time = int(val)
 
     def set_onoff(self,val=None,force=False,reportCmd=True):
-        LOGGER.info(f'{self.lpfx}')
+        LOGGER.info(f'{self.lpfx} {val}')
         if val is None:
             val = 100 if self.elk.output_on else 0
         elif val is True:
             val = 100
         elif val is False:
             val = 0
-        self.set_driver('ST',1 if self.elk.output_on else 0)
+        self.set_driver('ST',val)
         if (not force) and reportCmd:
             if self.elk.output_on:
                 LOGGER.debug(f'{self.lpfx} Send DON')
