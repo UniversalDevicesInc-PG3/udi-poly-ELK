@@ -158,7 +158,7 @@ There will be an Ouput node created for each Output you have listed in the outpu
 
 When an Ouput is turned On or Off, a Control is also sent so you can put the node in a scene, or use Control in a ISY program.
 
-When turning on an ELK output you can specify a time of zero which will keep the output on, or set the On Time to the number of seconds to wait before turning off.
+When turning on an ELK output you can specify a time of zero which will keep the output on, or set the On Time to the number of seconds to wait before turning off.  You can set the 'Default' time which will be used ever time you turn it on, or you can Turn on With Time for a one time execution.
 
 ## TODO and issues
 
