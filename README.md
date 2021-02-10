@@ -158,6 +158,12 @@ There will be an Ouput node created for each Output you have listed in the outpu
 
 When an Ouput is turned On or Off, a Control is also sent so you can put the node in a scene, or use Control in a ISY program.
 
+It has these options/commands:
+- Default On Seconds
+  - The default time the output stays on when turned on, zero means latching so it stays on until turned off
+- Turn On for ... Seconds
+  - This is one command to turn on for the specified seconds, or zero for latching
+
 ## TODO and issues
 
 https://github.com/jimboca/udi-poly-elk/issues
@@ -168,7 +174,10 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
-- 0.4.2: 02/09/2021
+- 0.4.3: 02/09/2021
+  - [Support Outputs and Virtual Outputs](https://github.com/jimboca/udi-poly-elk/issues/12)
+    - Change wording from Time to Seconds, profile and doc change only.
+- 0.4.2: 02/08/2021
   - [Support Outputs and Virtual Outputs](https://github.com/jimboca/udi-poly-elk/issues/12)
     - Fixed Output On/Off values
     - Fix crashed when outputs is null.

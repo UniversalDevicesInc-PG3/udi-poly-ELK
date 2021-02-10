@@ -21,9 +21,9 @@ CDM-50 = Critical All
 # output
 ND-output-NAME = ELK Output
 ND-output-ICON = Output
-ST-output-TIME = Default On Time
-CMD-output-SET_TIME-NAME = Set Default On Time
-CMD-output-DON_WTIME-NAME = Turn On With Time
+ST-output-TIME-NAME = Default On Seconds
+CMD-output-SET_TIME-NAME = Set Default On 
+CMD-output-DON_WTIME-NAME = Turn On For
 CMDP-output-onTime-NAME = Seconds
 
 # area
