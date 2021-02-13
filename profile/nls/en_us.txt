@@ -26,6 +26,10 @@ CMD-output-SET_TIME-NAME = Set Default On
 CMD-output-DON_WTIME-NAME = Turn On For
 CMDP-output-onTime-NAME = Seconds
 
+# keypad
+ND-keypad-NAME = ELK Keypad
+ND-keypad-ICON = Arm
+
 # area
 ND-area-NAME = Area Node
 ND-area-ICON = Alarm
@@ -117,7 +121,7 @@ CHIME-7 = Single Chime with Single Beep and Constantly Beeping
 
 # zone
 ND-zone-NAME = Zone Node
-ND-zone-ICON = Arm
+ND-zone-ICON = Sensor
 ST-zone-ST-NAME = Logical Status
 ST-zone-GV0-NAME = Physical Status
 ST-zone-GV1-NAME = Triggered

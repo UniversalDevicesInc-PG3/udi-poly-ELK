@@ -28,6 +28,7 @@ class Controller(Controller):
         self.driver = {}
         self._area_nodes = {}
         self._output_nodes = {}
+        self._keypad_nodes = {}
         self.logger = LOGGER
         self.lpfx = self.name + ":"
         # Not using because it's called to many times
@@ -124,7 +125,7 @@ class Controller(Controller):
             LOGGER.error(f"{self.lpfx} Login Failed!!!")
 
     def sync_complete(self):
-        LOGGER.info(f"{self.lpfx} Sync of panel is complete!!!")
+        LOGGER.info(f"{self.lpfx} Sync of keypad is complete!!!")
         # TODO: Add driver for sync complete status, or put in ST?
         LOGGER.info(f"{self.lpfx} adding areas...")
         for an in range(Max.AREAS.value - 1):
@@ -154,6 +155,19 @@ class Controller(Controller):
                 LOGGER.info(f"{self.lpfx} Adding Output {an}")
                 self._output_nodes[an] = self.addNode(OutputNode(self, self.elk.outputs[n]))
         LOGGER.info("adding outputs done")
+#        for n in range(Max.KEYPADS.value - 1):
+#            if n in self._keypad_nodes:
+#                LOGGER.info(
+#                    f"{self.lpfx} Skipping Keypad {n+1} because it already defined."
+#                )
+#            elif is_in_list(n+1, self.use_keypads_list) is False:
+#                LOGGER.info(
+#                    f"{self.lpfx} Skipping Keypad {n+1} because it is not in keypads range {self.use_keypads} in configuration"
+#                )
+#            else:
+#                LOGGER.info(f"{self.lpfx} Adding Keypad {an}")
+#                self._keypad_nodes[an] = self.addNode(KeypadNode(self, self.elk.keypads[n]))
+#        LOGGER.info("adding keypads done")
 
     def timeout(self, msg_code):
         LOGGER.error(f"{self.lpfx} Timeout sending message {msg_code}!!!")
@@ -165,7 +179,7 @@ class Controller(Controller):
 
     def elk_start(self):
         self.elk_config = {
-            # TODO: Support secure which would use elks: and add 'userid': 'xxx', 'password': 'xxx'
+            # TODO: Support secure which would use elks: and add 'keypadid': 'xxx', 'password': 'xxx'
             "url": "elk://"
             + self.host,
         }
@@ -220,7 +234,7 @@ class Controller(Controller):
 
     def check_params(self):
         """
-        This is an example if using custom Params for user and password and an example with a Dictionary
+        This is an example if using custom Params for keypad and password and an example with a Dictionary
         """
         self.removeNoticesAll()
         # Assume it's good unless it's not
@@ -235,20 +249,20 @@ class Controller(Controller):
             LOGGER.error(
                 f"{self.lpfx} host not defined in customParams, please add it.  Using {self.host}"
             )
-        default_code = "Your_ELK_User_Code_for_Polyglot"
-        if "user_code" in self.polyConfig["customParams"]:
+        default_code = "Your_ELK_Keypad_Code_for_Polyglot"
+        if "keypad_code" in self.polyConfig["customParams"]:
             try:
-                self.user_code = int(self.polyConfig["customParams"]["user_code"])
+                self.keypad_code = int(self.polyConfig["customParams"]["keypad_code"])
             except:
-                self.user_code = default_code
+                self.keypad_code = default_code
                 self.addNotice(
-                    "ERROR user_code is not an integer, please fix, save and restart this nodeserver",
+                    "ERROR keypad_code is not an integer, please fix, save and restart this nodeserver",
                     "host",
                 )
         else:
-            self.user_code = default_code
+            self.keypad_code = default_code
             LOGGER.error(
-                f"{self.lpfx} user_code not defined in customParams, please add it.  Using {self.user_code}"
+                f"{self.lpfx} keypad_code not defined in customParams, please add it.  Using {self.keypad_code}"
             )
 
         self.use_areas = self.getCustomParam("areas")
@@ -281,17 +295,31 @@ class Controller(Controller):
                 self.addNotice(errs, "outputs")
                 self.config_st = False
 
+        #self.use_keypads = self.getCustomParam("keypads")
+        #self.use_keypads_list = ()
+        #if self.use_keypads == "" or self.use_keypads is None:
+        #    LOGGER.warning("No keypads defined in config so none will be added")
+        #else:
+        #    try:
+        #        self.use_keypads_list = parse_range(self.use_keypads)
+        #    except:
+        #        errs = f"ERROR: Failed to parse keypads range '{self.use_keypads}'  will not add any keypads: {sys.exc_info()[1]}"
+        #        LOGGER.error(errs)
+        #        self.addNotice(errs, "keypads")
+        #        self.config_st = False
+
         # Make sure they are in the params
         self.addCustomParam(
             {
                 "host": self.host, 
-                "user_code": self.user_code, 
+                "keypad_code": self.keypad_code, 
                 "areas": self.use_areas,
-                "outputs": self.use_outputs
+                "outputs": self.use_outputs,
+                #"keypads": self.use_keypads
             }
         )
 
-        # Add a notice if they need to change the user/password from the default.
+        # Add a notice if they need to change the keypad/password from the default.
         if self.host == default_host:
             # This doesn't pass a key to test the old way.
             self.addNotice(
@@ -299,10 +327,10 @@ class Controller(Controller):
                 "host",
             )
             self.config_st = False
-        if self.user_code == default_code:
+        if self.keypad_code == default_code:
             # This doesn't pass a key to test the old way.
             self.addNotice(
-                "Please set proper user_code in configuration page, and restart this nodeserver",
+                "Please set proper keypad_code in configuration page, and restart this nodeserver",
                 "code",
             )
             self.config_st = False

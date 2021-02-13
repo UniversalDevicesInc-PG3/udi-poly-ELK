@@ -3,7 +3,7 @@
 import time
 from polyinterface import LOGGER
 from node_funcs import get_valid_node_name
-from nodes import BaseNode,ZoneNode
+from nodes import BaseNode,ZoneNode,KeypadNode
 from elkm1_lib.const import (
     Max,
     ZoneLogicalStatus,
@@ -27,6 +27,7 @@ class AreaNode(BaseNode):
         self.zones_logical_status = [None] * (Max.ZONES.value-1)
         self.zones_physical_status = [None] * (Max.ZONES.value-1)
         self._zone_nodes = {}
+        self._keypad_nodes = {}
         self.poll_voltages = False
         self.ready = False
         address     = f'area_{self.elk.index + 1}'
@@ -44,9 +45,14 @@ class AreaNode(BaseNode):
             LOGGER.debug(f'{self.lpfx} index={zn} area={self.controller.elk.zones[zn].area} definition={self.controller.elk.zones[zn].definition}')
             # Add zones that are in my area, and are defined.
             if self.controller.elk.zones[zn].definition > 0 and self.controller.elk.zones[zn].area == self.elk.index:
-                LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
-                self._zone_nodes[zn] = self.controller.addNode(ZoneNode(self.controller,self,self,self.controller.elk.zones[zn]))
+                LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
+                self._zone_nodes[zn] = self.controller.addNode(ZoneNode(self.controller, self, self, self.controller.elk.zones[zn]))
                 time.sleep(.1)
+        for n in range(Max.KEYPADS.value - 1):
+            if self.controller.elk.keypads[n].area == self.elk.index:
+                LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding keypad node {n} '{self.controller.elk.keypads[n]}'")
+                self._keypad_nodes[n] = self.controller.addNode(KeypadNode(self.controller, self, self, self.controller.elk.keypads[n]))
+
         self.ready = True
 
     def shortPoll(self):

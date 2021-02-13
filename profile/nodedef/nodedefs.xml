@@ -134,7 +134,7 @@
         </cmds>
     </nodeDef>
 
-    <!-- zone -->
+    <!-- output -->
     <nodeDef id="output" nls="output">
         <editors />
         <sts>
@@ -156,6 +156,21 @@
               <cmd id="DON_WTIME">
                 <p id="" editor="ontime" init="TIME" />
               </cmd>
+          </accepts>
+        </cmds>
+    </nodeDef>
+
+    <!-- keypad -->
+    <nodeDef id="keypad" nls="keypad">
+        <editors />
+        <sts>
+            <st id="ST" editor="onoff" />
+        </sts>
+        <cmds>
+            <sends>
+            </sends>
+            <accepts>
+              <cmd id="QUERY" />
           </accepts>
         </cmds>
     </nodeDef>
