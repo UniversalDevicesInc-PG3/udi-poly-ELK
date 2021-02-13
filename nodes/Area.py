@@ -67,6 +67,8 @@ class AreaNode(BaseNode):
     def longPoll(self):
         pass
 
+    # Area:callback: area_1:Home: cs={'last_log': {'event': 1174, 'number': 1, 'index': 0, 'timestamp': '2021-02-06T14:47:00+00:00', 'user_number': 1}}
+    # user_number=1 was me
     def callback(self, element, changeset):
         LOGGER.info(f'{self.lpfx} cs={changeset}')
         if 'alarm_state' in changeset:
