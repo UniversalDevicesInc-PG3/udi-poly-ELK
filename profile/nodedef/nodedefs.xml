@@ -164,7 +164,9 @@
     <nodeDef id="keypad" nls="keypad">
         <editors />
         <sts>
-            <st id="ST" editor="onoff" />
+            <st id="ST" editor="bool" />
+            <st id="GV1" editor="I_LASTUSER" />
+            <st id="GV2" editor="I_TEMP_F" />
         </sts>
         <cmds>
             <sends>

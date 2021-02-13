@@ -38,6 +38,21 @@
       <range uom="25" subset="-1,0-7" nls="CHIME" />
   </editor>
 
+  <!-- KeyPads -->
+
+  <!-- Temperature -->
+  <editor id="I_TEMP_C">
+    <range uom="4" min="-50" max="75" step="0.5" prec="1" />
+  </editor>
+  <editor id="I_TEMP_F">
+    <range uom="17" min="-50" max="150" step="0.5" prec="1" />
+  </editor>
+  <!-- Status -->
+  <editor id="I_LAST_USER">
+      <range uom="25" subset="-1-203" nls="USER" />
+  </editor>
+
+I_LASTUSER
   <!-- ZONES -->
 
   <!-- Status -->

@@ -45,53 +45,25 @@ class KeypadNode(BaseNode):
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
+        self.set_driver('ST',1)
+        self.set_user()
+        self.set_temperature()
 
-    def set_time(self,val=0,force=False,reportCmd=True):
+    def set_user(self,val=None,force=False,reportCmd=True):
         LOGGER.info(f'{self.lpfx}')
-        self.set_driver('TIME',val)
-        self.on_time = int(val)
-
-    def set_onoff(self,val=None,force=False,reportCmd=True):
-        LOGGER.info(f'{self.lpfx} {val}')
         if val is None:
-            val = 100 if self.elk.keypad_on else 0
-        elif val is True:
-            val = 100
-        elif val is False:
-            val = 0
-        self.set_driver('ST',val)
-        if (not force) and reportCmd:
-            if self.elk.keypad_on:
-                LOGGER.debug(f'{self.lpfx} Send DON')
-                self.reportCmd("DON")
-            else:
-                LOGGER.debug(f'{self.lpfx} Send DOF')
-                self.reportCmd("DOF")
+            val = self.elk.last_user
+        self.set_driver('GV1',val)
+
+    def set_temperature(self,val=None,force=False,reportCmd=True):
+        LOGGER.info(f'{self.lpfx}')
+        if val is None:
+            val = self.elk.temperature
+        self.set_driver('GV2',val)
 
     def query(self):
         self.set_drivers()
         self.reportDrivers()
-
-    def cmd_set_time(self,command):
-        val = int(command.get('value'))
-        LOGGER.debug(f'{self.lpfx} {val}')
-        self.set_time(val)
-
-    def cmd_set_on_wtime(self,command):
-        LOGGER.debug(f'{self.lpfx} {command}')
-        self.elk.turn_on(int(command.get('value')))
-
-    def cmd_set_on(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.elk.turn_on(self.on_time)
-
-    def cmd_set_off(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.elk.turn_off()
-
-    def cmd_toggle(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.elk.toggle()
 
     def cmd_query(self,command):
         LOGGER.debug(f'{self.lpfx}')
@@ -101,15 +73,11 @@ class KeypadNode(BaseNode):
     hint = [1,2,3,4]
     drivers = [
         # On/Off
-        {'driver': 'ST',  'value': 101, 'uom': 78},
-        {'driver': 'TIME',  'value': 0, 'uom': 58},
+        {'driver': 'ST',  'value':  0, 'uom': 2},
+        {'driver': 'GV1', 'value': -1, 'uom': 25},
+        {'driver': 'GV2', 'value': -1, 'uom': 17}
     ]
     id = 'keypad'
     commands = {
-        'DON': cmd_set_on,
-        'DON_WTIME': cmd_set_on_wtime,
-        'DOF': cmd_set_off,
-        'SET_TIME': cmd_set_time,
-        'TOGGLE': cmd_toggle,
         'QUERY': cmd_query,
     }
