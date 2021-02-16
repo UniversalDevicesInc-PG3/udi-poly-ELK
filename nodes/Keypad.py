@@ -50,7 +50,7 @@ class KeypadNode(BaseNode):
         self.set_temperature()
 
     def set_user(self,val=None,force=False,reportCmd=True):
-        LOGGER.info(f'{self.lpfx}')
+        LOGGER.info(f'{self.lpfx} val={val}')
         if val is None:
             val = self.elk.last_user + 1
         self.set_driver('GV1',val)
