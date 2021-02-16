@@ -77,6 +77,24 @@ class AreaNode(BaseNode):
             self.set_armed_status(changeset['armed_status'])
         if 'arm_up_state' in changeset:
             self.set_arm_up_state(changeset['arm_up_state'])
+        if 'last_log' in changest:
+            if 'user_number' in changesset['last_log']:
+                self.set_last_user(changeset['last_log']['last_user'])
+
+    def set_last_user(self,unum):
+        LOGGER.info(f'{self.lpfx} zn={zn} st={st}')
+
+    # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
+    # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
+    def set_drivers(self):
+        LOGGER.info(f'{self.lpfx} Area:{self.elk.index} {self.elk.name}')
+        self.set_alarm_state()
+        self.set_armed_status()
+        self.set_arm_up_state()
+        self.set_poll_voltages()
+        self.set_driver('GV3',self.zones_violated)
+        self.set_driver('GV4',self.zones_bypassed)
+        #self.setDriver('GV2', pyelk.chime_mode)
 
     def set_zone_logical_status(self, zn, st):
         LOGGER.info(f'{self.lpfx} zn={zn} st={st}')
@@ -91,18 +109,6 @@ class AreaNode(BaseNode):
                     self.zones_violated += 1
         self.set_driver('GV3',self.zones_violated)
         self.set_driver('GV4',self.zones_bypassed)
-
-    # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
-    # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
-    def set_drivers(self):
-        LOGGER.info(f'{self.lpfx} Area:{self.elk.index} {self.elk.name}')
-        self.set_alarm_state()
-        self.set_armed_status()
-        self.set_arm_up_state()
-        self.set_poll_voltages()
-        self.set_driver('GV3',self.zones_violated)
-        self.set_driver('GV4',self.zones_bypassed)
-        #self.setDriver('GV2', pyelk.chime_mode)
 
     def set_alarm_state(self,val=None,force=False):
         LOGGER.info(f'{self.lpfx} {val}')
