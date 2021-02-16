@@ -39,9 +39,9 @@ class KeypadNode(BaseNode):
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
-        # Why does it get called multiple times with same data?
-        if 'keypad_on' in changeset:
-            self.set_onoff(changeset['keypad_on'])
+        if 'last_log' in changest:
+            if 'user_number' in changesset['last_log']:
+                self.set_user(int(changeset['last_log']['last_user']) + 1)
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
@@ -52,7 +52,7 @@ class KeypadNode(BaseNode):
     def set_user(self,val=None,force=False,reportCmd=True):
         LOGGER.info(f'{self.lpfx}')
         if val is None:
-            val = self.elk.last_user
+            val = self.elk.last_user + 1
         self.set_driver('GV1',val)
 
     def set_temperature(self,val=None,force=False,reportCmd=True):
@@ -74,8 +74,8 @@ class KeypadNode(BaseNode):
     drivers = [
         # On/Off
         {'driver': 'ST',  'value':  0, 'uom': 2},
-        {'driver': 'GV1', 'value': -1, 'uom': 25},
-        {'driver': 'GV2', 'value': -1, 'uom': 17}
+        {'driver': 'GV1', 'value': -1, 'uom': 25}, # Last User
+        {'driver': 'GV2', 'value': -1, 'uom': 17}  # Temperature
     ]
     id = 'keypad'
     commands = {

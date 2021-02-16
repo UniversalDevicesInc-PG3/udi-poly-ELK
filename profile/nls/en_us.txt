@@ -246,7 +246,7 @@ ZDCONF-4 = Reverse Send Both
 ZDCONF-5 = Reverse On Only
 ZDCONF-6 = Reverse Off Only
 
-USER--1 = Unknown
+USER-0 = Unknown
 USER-1 = User 001
 USER-2 = User 002
 USER-3 = User 003
