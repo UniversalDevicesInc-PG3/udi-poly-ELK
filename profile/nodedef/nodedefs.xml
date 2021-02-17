@@ -35,7 +35,7 @@
             <!-- Arm Up State -->
             <st id="GV1" editor="armup" />
             <!-- Last User -->
-            <st id="GV6" editor="I_LASTUSER" />
+            <st id="GV6" editor="I_LAST_USER" />
             <!-- Chime Mode -->
             <st id="GV2" editor="chime" />
             <!-- Poll Voiltages -->
@@ -167,7 +167,7 @@
         <editors />
         <sts>
             <st id="ST" editor="bool" />
-            <st id="GV1" editor="I_LASTUSER" />
+            <st id="GV1" editor="I_LAST_USER" />
             <st id="GV2" editor="I_TEMP_F" />
         </sts>
         <cmds>
