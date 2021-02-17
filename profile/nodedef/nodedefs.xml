@@ -34,6 +34,8 @@
             <st id="GV0" editor="astatus" />
             <!-- Arm Up State -->
             <st id="GV1" editor="armup" />
+            <!-- Last User -->
+            <st id="GV6" editor="I_LASTUSER" />
             <!-- Chime Mode -->
             <st id="GV2" editor="chime" />
             <!-- Poll Voiltages -->

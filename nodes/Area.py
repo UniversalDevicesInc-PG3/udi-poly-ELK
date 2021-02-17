@@ -90,6 +90,11 @@ class AreaNode(BaseNode):
         self.set_driver('GV4',self.zones_bypassed)
         #self.setDriver('GV2', pyelk.chime_mode)
 
+    # This is only called by Keypad's
+    def set_user(self, force=False, reportCmd=True):
+        LOGGER.info(f'{self.lpfx} val={val}')
+        self.set_driver('GV6',val)
+
     def set_zone_logical_status(self, zn, st):
         LOGGER.info(f'{self.lpfx} zn={zn} st={st}')
         self.zones_logical_status[zn] = st
@@ -166,6 +171,7 @@ class AreaNode(BaseNode):
         {'driver': 'GV3',  'value': 0, 'uom': 25},
         {'driver': 'GV4',  'value': 0, 'uom': 25},
         {'driver': 'GV5',  'value': 0, 'uom': 2},
+        {'driver': 'GV6',  'value': 0, 'uom': 25},
     ]
     id = 'area'
     commands = {
