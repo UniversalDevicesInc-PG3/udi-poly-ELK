@@ -155,19 +155,7 @@ class Controller(Controller):
                 LOGGER.info(f"{self.lpfx} Adding Output {an}")
                 self._output_nodes[an] = self.addNode(OutputNode(self, self.elk.outputs[n]))
         LOGGER.info("adding outputs done")
-#        for n in range(Max.KEYPADS.value - 1):
-#            if n in self._keypad_nodes:
-#                LOGGER.info(
-#                    f"{self.lpfx} Skipping Keypad {n+1} because it already defined."
-#                )
-#            elif is_in_list(n+1, self.use_keypads_list) is False:
-#                LOGGER.info(
-#                    f"{self.lpfx} Skipping Keypad {n+1} because it is not in keypads range {self.use_keypads} in configuration"
-#                )
-#            else:
-#                LOGGER.info(f"{self.lpfx} Adding Keypad {an}")
-#                self._keypad_nodes[an] = self.addNode(KeypadNode(self, self.elk.keypads[n]))
-#        LOGGER.info("adding keypads done")
+        self.write_profile()
 
     def timeout(self, msg_code):
         LOGGER.error(f"{self.lpfx} Timeout sending message {msg_code}!!!")
@@ -336,6 +324,12 @@ class Controller(Controller):
             self.config_st = False
 
         # self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
+
+    def write_profile(self):
+        LOGGER.info(f"{self.lpfx} Starting...")
+        for n in range(Max.USERS.value - 1):
+            LOGGER.debug(f"{self.lpfx} user={self.elk.users[n]}")
+        LOGGER.info(f"{self.lpfx} Starting...")
 
     def get_driver(self, mdrv, default=None):
         # Restore from DB for existing nodes
