@@ -36,8 +36,8 @@ class Controller(Controller):
 
     def start(self):
         LOGGER.info(f"{self.lpfx} start")
+        # Don't check profile because we always write it later
         self.server_data = self.poly.get_server_data(check_profile=False)
-        self.update_profile()  # Always for now.
         LOGGER.info(f"{self.lpfx} Version {self.server_data['version']}")
         self.set_debug_level()
         self.setDriver("ST", 1)
@@ -326,10 +326,26 @@ class Controller(Controller):
         # self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
 
     def write_profile(self):
-        LOGGER.info(f"{self.lpfx} Starting...")
-        for n in range(Max.USERS.value - 1):
-            LOGGER.debug(f"{self.lpfx} user={self.elk.users[n]}")
-        LOGGER.info(f"{self.lpfx} Starting...")
+    LOGGER.info(f"{self.lpfx} Starting...")
+    #
+    # Start the nls with the template data.
+    #
+    en_us_txt = "profile/nls/en_us.txt"
+    make_file_dir(en_us_txt)
+    LOGGER.info(f"{self.lpfx} Writing {en_us_txt}")
+    nls_tmpl = open("template/en_us.txt", "r")
+    nls      = open(en_us_txt,  "w")
+    for line in nls_tmpl:
+        nls.write(line)
+    nls_tmpl.close()
+    #
+    # Then write our custom NLS lines.
+    nls.write("\nUSER-0 = Unknown\n")
+    for n in range(Max.USERS.value - 1):
+        LOGGER.debug(f"{self.lpfx} user={self.elk.users[n]}")
+        nls.write(f"USER-{n+1} = {self.elk.users[n].name}")
+    self.update_profile()
+    LOGGER.info(f"{self.lpfx} Done...")
 
     def get_driver(self, mdrv, default=None):
         # Restore from DB for existing nodes
