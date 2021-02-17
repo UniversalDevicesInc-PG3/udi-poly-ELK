@@ -40,7 +40,7 @@ class KeypadNode(BaseNode):
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
-        if 'last_log' in changest:
+        if 'last_log' in changeset:
             if 'user_number' in changesset['last_log']:
                 self.set_user(int(changeset['last_log']['last_user']) + 1)
 
