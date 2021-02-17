@@ -1,5 +1,5 @@
 
-import re
+import re,os
 
 def myfloat(value, prec=4):
     """ round and return float """
