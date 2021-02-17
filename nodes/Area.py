@@ -91,7 +91,7 @@ class AreaNode(BaseNode):
         #self.setDriver('GV2', pyelk.chime_mode)
 
     # This is only called by Keypad's
-    def set_user(self, force=False, reportCmd=True):
+    def set_user(self, val, force=False, reportCmd=True):
         LOGGER.info(f'{self.lpfx} val={val}')
         self.set_driver('GV6',val)
 
