@@ -43,6 +43,7 @@ ST-area-GV2-NAME = Chime Mode
 ST-area-GV3-NAME = Zones Violated
 ST-area-GV4-NAME = Zones Bypassed
 ST-area-GV5-NAME = Poll Voltages
+ST-area-GV6-NAME = Last User
 CMD-area-ST-NAME = Alarm Status
 CMD-area-GV0-NAME = Set Armed Status
 CMD-area-GV1-NAME = Set Arm Up State

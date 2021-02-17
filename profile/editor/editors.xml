@@ -49,10 +49,9 @@
   </editor>
   <!-- Status -->
   <editor id="I_LAST_USER">
-      <range uom="25" subset="-1-203" nls="USER" />
+      <range uom="25" subset="0-203" nls="USER" />
   </editor>
 
-I_LASTUSER
   <!-- ZONES -->
 
   <!-- Status -->
