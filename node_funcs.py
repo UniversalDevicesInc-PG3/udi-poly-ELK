@@ -56,3 +56,11 @@ def is_in_list(el,list_in):
         return list_in.index(el)
     except ValueError:
         return False
+
+def make_file_dir(file_path):
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        # TODO: Trap this?
+        os.makedirs(directory)
+    return True
+
