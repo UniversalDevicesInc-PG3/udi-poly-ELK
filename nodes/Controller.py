@@ -343,7 +343,7 @@ class Controller(Controller):
         nls.write("\nUSER-0 = Unknown\n")
         for n in range(Max.USERS.value - 1):
             LOGGER.debug(f"{self.lpfx} user={self.elk.users[n]}")
-            nls.write(f"USER-{n+1} = {self.elk.users[n].name}")
+            nls.write(f"USER-{n+1} = {self.elk.users[n].name}\n")
         self.update_profile()
         LOGGER.info(f"{self.lpfx} Done...")
 
