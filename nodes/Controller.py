@@ -25,6 +25,7 @@ class Controller(Controller):
         self.elk_st = None
         self.elk_thread = None
         self.config_st = False
+        self.profile_done = False
         self.driver = {}
         self._area_nodes = {}
         self._output_nodes = {}
@@ -155,7 +156,10 @@ class Controller(Controller):
                 LOGGER.info(f"{self.lpfx} Adding Output {an}")
                 self._output_nodes[an] = self.addNode(OutputNode(self, self.elk.outputs[n]))
         LOGGER.info("adding outputs done")
-        self.write_profile()
+        # Only update profile on restart
+        if not self.profile_done:
+            self.write_profile()
+            self.profile_done = True
 
     def timeout(self, msg_code):
         LOGGER.error(f"{self.lpfx} Timeout sending message {msg_code}!!!")

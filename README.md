@@ -36,6 +36,10 @@ If you change a Elk object name it will not be automatically reflected on the IS
 
 If there is an alarm event, sending a "disarm" with the node server turns off the alarm, but does not reset it, just like when you do it at the Elk keypad.  You will have to send another "disarm" to reset it.  This is mentioned for users of UD Mobile who may want to disarm reset the sytem after an alarm.
 
+#### Syncing profile changes
+
+When the Nodeserver starts up and finishes the sync with the Elk Panel it will build a custom profile which currently contains a list of your user names.  This allows showing the real user name instead of user number.  If you change, add or remove user names you must restart the nodeserver to have them reflected on the ISY.  Also, close and re-open the Admin console if it was open while the nodeserver was restarting.
+
 ### Nodes
 
 #### ELK Controller
@@ -97,6 +101,8 @@ By default only the area one, is added, change the areas configuraion if you hav
     - Armed Fully
     - Force Armed
     - Armed With Bypass
+- Last User
+  - The last user to access any keypad with a code.  See "Syncing profile changes" section for more information.
 - Chime Mode
   - Unknown
   - Silent
@@ -108,15 +114,28 @@ By default only the area one, is added, change the areas configuraion if you hav
   - Single Chime with Constantly Beeping
   - Single Chime with Single Beep and Constantly Beeping
 - Poll Voltages
-  - Enabled to poll the voltages on the Area's Zones.
+  - Enabled to poll the voltages on the Area's Zones.  The ELK doesn't push voltages changes, they must be polled.  By default this is False.  Enabling this creates more traffic so this is off by default.  You can query individual zones to get updates in a program, or enable to have then updated with each short poll.
 - Zones Violated
   - The number of Zones currently violated
 - Zones Bypassed
   - The number of Zones currently bypassed
 
+#### Keypad Node
+
+There is a Keypad node for each keypad found and they are by default grouped under the Area Node they are assigned to. Keypads contain the following.
+
+- Keypad Status
+  - Currently always True, may be used in the future
+- Last User
+  - The last user to enter access code at the keyboard, which is also propagated up the the Area Last User
+- Temperature
+  - The temperature from the keypad, or -40F is keypad doesn't report temperature.
+
+
 #### Zone Node
 
-Currently every Zone in the Area will be added as a Node if the Zone Definition is greater than Zero.  Nodes contain the following:
+Currently every Zone in the Area will be added as a Node if the Zone Definition is greater than Zero.  They are grouped under the Area node they are assigned to.  Nodes contain the following:
+
 - Physical Status
   - UNKNOWN
   - Unconfigured
@@ -133,8 +152,8 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
   - The current Zone Voltage.  Note this is not updated on change, it must be Polled.  By default this is polling is disabled, to enable set "Poll Voltages" on the Zone's Area.  The values are only updated on Short Poll intervals, which can be set in the Node Server Configuration Page.  It is also updated on a Zone query, so you can write ISY progrmas to force the query if you want faster updates, or just to update a single zone.
 - Triggered
   - The zone has been manually triggered by a 3rd party app, or this app, when support is added.
-  - True
-  - False
+   - True
+    - False
 - Area
   - The Area number the Zone is part of.
 - Type
@@ -176,6 +195,11 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.0: 02/17/2021
+  - [Add Elk Keypads](https://github.com/jimboca/udi-poly-elk/issues/48)
+    - Added, but can't do function keys yet, need to add support to Python elkm1 library
+  - [Add support for last user](https://github.com/jimboca/udi-poly-elk/issues/48)
+    - Added for Keypads and Area
 - 0.4.3: 02/09/2021
   - [Support Outputs and Virtual Outputs](https://github.com/jimboca/udi-poly-elk/issues/12)
     - Change wording from Time to Seconds, profile and doc change only.
