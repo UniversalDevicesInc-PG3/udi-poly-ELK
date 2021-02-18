@@ -222,7 +222,7 @@ class Controller(Controller):
 
     def check_params(self):
         """
-        This is an example if using custom Params for keypad and password and an example with a Dictionary
+        Check all user params are available and valid
         """
         self.removeNoticesAll()
         # Assume it's good unless it's not
@@ -237,20 +237,23 @@ class Controller(Controller):
             LOGGER.error(
                 f"{self.lpfx} host not defined in customParams, please add it.  Using {self.host}"
             )
-        default_code = "Your_ELK_Keypad_Code_for_Polyglot"
+        default_code = "Your_ELK_User_Code_for_Polyglot"
+        # Fix messed up code
         if "keypad_code" in self.polyConfig["customParams"]:
+            self.user_code = int(self.polyConfig["customParams"]["user_code"])
+        elif "user_code" in self.polyConfig["customParams"]:
             try:
-                self.keypad_code = int(self.polyConfig["customParams"]["keypad_code"])
+                self.user_code = int(self.polyConfig["customParams"]["user_code"])
             except:
-                self.keypad_code = default_code
+                self.user_code = default_code
                 self.addNotice(
-                    "ERROR keypad_code is not an integer, please fix, save and restart this nodeserver",
+                    "ERROR user_code is not an integer, please fix, save and restart this nodeserver",
                     "host",
                 )
         else:
-            self.keypad_code = default_code
+            self.user_code = default_code
             LOGGER.error(
-                f"{self.lpfx} keypad_code not defined in customParams, please add it.  Using {self.keypad_code}"
+                f"{self.lpfx} user_code not defined in customParams, please add it.  Using {self.user_code}"
             )
 
         self.use_areas = self.getCustomParam("areas")
@@ -300,7 +303,7 @@ class Controller(Controller):
         self.addCustomParam(
             {
                 "host": self.host, 
-                "keypad_code": self.keypad_code, 
+                "user_code": self.user_code, 
                 "areas": self.use_areas,
                 "outputs": self.use_outputs,
                 #"keypads": self.use_keypads
@@ -315,10 +318,10 @@ class Controller(Controller):
                 "host",
             )
             self.config_st = False
-        if self.keypad_code == default_code:
+        if self.user_code == default_code:
             # This doesn't pass a key to test the old way.
             self.addNotice(
-                "Please set proper keypad_code in configuration page, and restart this nodeserver",
+                "Please set proper user_code in configuration page, and restart this nodeserver",
                 "code",
             )
             self.config_st = False
