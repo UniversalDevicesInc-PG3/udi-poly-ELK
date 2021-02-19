@@ -47,9 +47,13 @@
   <editor id="I_TEMP_F">
     <range uom="17" min="-50" max="150" step="0.5" prec="1" />
   </editor>
-  <!-- Status -->
+  <!-- Last User -->
   <editor id="I_LAST_USER">
       <range uom="25" subset="0-203" nls="USER" />
+  </editor>
+  <!-- Last User -->
+  <editor id="I_LAST_KEYPAD">
+      <range uom="25" subset="0-16" nls="USER" />
   </editor>
 
   <!-- ZONES -->

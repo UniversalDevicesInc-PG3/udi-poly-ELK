@@ -195,6 +195,10 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.1: 02/19/2021
+  - [Add Elk Keypads](https://github.com/jimboca/udi-poly-elk/issues/48)
+    - Added debug when keypad is not added for debugging
+  - [Keypad: Add last keypad to Area](https://github.com/jimboca/udi-poly-elk/issues/54)
 - 0.5.0: 02/17/2021
   - [Add Elk Keypads](https://github.com/jimboca/udi-poly-elk/issues/48)
     - Added, but can't do function keys yet, need to add support to Python elkm1 library

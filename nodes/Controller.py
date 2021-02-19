@@ -346,11 +346,20 @@ class Controller(Controller):
             nls.write(line)
         nls_tmpl.close()
         #
-        # Then write our custom NLS lines.
+        # Then write our custom NLS lines
         nls.write("\nUSER-0 = Unknown\n")
         for n in range(Max.USERS.value - 1):
             LOGGER.debug(f"{self.lpfx} user={self.elk.users[n]}")
             nls.write(f"USER-{n+1} = {self.elk.users[n].name}\n")
+        nls.write(f"\nUSER-{Max.USERS.value} = No Code User\n")
+        #
+        # Now the keypad names
+        nls.write("\nKEYPAD-0 = Unknown\n")
+        for n in range(Max.KEYPADS.value):
+            LOGGER.debug(f"{self.lpfx} keypad={self.elk.keypads[n]}")
+            nls.write(f"KEYPAD-{n+1} = {self.elk.keypad[n].name}\n")
+        #
+        # And update the ISY
         self.update_profile()
         LOGGER.info(f"{self.lpfx} Done...")
 

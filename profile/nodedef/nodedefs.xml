@@ -36,6 +36,8 @@
             <st id="GV1" editor="armup" />
             <!-- Last User -->
             <st id="GV6" editor="I_LAST_USER" />
+            <!-- Last User Keypad -->
+            <st id="GV7" editor="I_LAST_KEYPAD" />
             <!-- Chime Mode -->
             <st id="GV2" editor="chime" />
             <!-- Poll Voiltages -->

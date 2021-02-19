@@ -52,6 +52,8 @@ class AreaNode(BaseNode):
             if self.controller.elk.keypads[n].area == self.elk.index:
                 LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding keypad node {n} '{self.controller.elk.keypads[n]}'")
                 self._keypad_nodes[n] = self.controller.addNode(KeypadNode(self.controller, self, self, self.controller.elk.keypads[n]))
+            else:
+                LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} skipping keypad node {n} '{self.controller.elk.keypads[n]}'")
 
         self.ready = True
 
@@ -93,10 +95,15 @@ class AreaNode(BaseNode):
         self.set_driver('GV4',self.zones_bypassed)
         #self.setDriver('GV2', pyelk.chime_mode)
 
-    # This is only called by Keypad's
+    # This is called by Keypad or callback
     def set_user(self, val, force=False, reportCmd=True):
         LOGGER.info(f'{self.lpfx} val={val}')
         self.set_driver('GV6',val)
+
+    # This is only called by Keypad's
+    def set_keypad(self, val, force=False, reportCmd=True):
+        LOGGER.info(f'{self.lpfx} val={val}')
+        self.set_driver('GV7',val)
 
     def set_zone_logical_status(self, zn, st):
         LOGGER.info(f'{self.lpfx} zn={zn} st={st}')
@@ -175,6 +182,7 @@ class AreaNode(BaseNode):
         {'driver': 'GV4',  'value': 0, 'uom': 25},
         {'driver': 'GV5',  'value': 0, 'uom': 2},
         {'driver': 'GV6',  'value': 0, 'uom': 25},
+        {'driver': 'GV7',  'value': 0, 'uom': 25},
     ]
     id = 'area'
     commands = {
