@@ -351,7 +351,7 @@ class Controller(Controller):
         for n in range(Max.USERS.value - 1):
             LOGGER.debug(f"{self.lpfx} user={self.elk.users[n]}")
             nls.write(f"USER-{n+1} = {self.elk.users[n].name}\n")
-        nls.write(f"\nUSER-{Max.USERS.value} = No Code User\n")
+        nls.write(f"USER-{Max.USERS.value} = No Code User\n")
         #
         # Now the keypad names
         nls.write("\nKEYPAD-0 = Unknown\n")
@@ -359,7 +359,8 @@ class Controller(Controller):
             LOGGER.debug(f"{self.lpfx} keypad={self.elk.keypads[n]}")
             nls.write(f"KEYPAD-{n+1} = {self.elk.keypad[n].name}\n")
         #
-        # And update the ISY
+        # Close it and update the ISY
+        nls.close()
         self.update_profile()
         LOGGER.info(f"{self.lpfx} Done...")
 
