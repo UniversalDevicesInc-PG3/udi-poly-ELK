@@ -357,7 +357,7 @@ class Controller(Controller):
         nls.write("\nKEYPAD-0 = Unknown\n")
         for n in range(Max.KEYPADS.value):
             LOGGER.debug(f"{self.lpfx} keypad={self.elk.keypads[n]}")
-            nls.write(f"KEYPAD-{n+1} = {self.elk.keypad[n].name}\n")
+            nls.write(f"KEYPAD-{n+1} = {self.elk.keypads[n].name}\n")
         #
         # Close it and update the ISY
         nls.close()
