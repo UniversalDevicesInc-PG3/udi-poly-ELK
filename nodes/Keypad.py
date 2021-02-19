@@ -40,9 +40,12 @@ class KeypadNode(BaseNode):
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
-        if 'last_log' in changeset:
+        if 'last_user' in changeset:
+            self.set_user(int(changeset['last_user']) + 1)
+            self.area.set_keypad(self.elk.index + 1)
+        elif 'last_log' in changeset:
             if 'user_number' in changesset['last_log']:
-                self.set_user(int(changeset['last_log']['last_user']) + 1)
+                self.set_user(int(changeset['last_log']['user_number']) + 1)
                 self.area.set_keypad(self.elk.index + 1)
 
     def set_drivers(self,force=False,reportCmd=True):
