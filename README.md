@@ -198,11 +198,13 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 - 0.5.1: 02/19/2021
   - [Add Elk Keypads](https://github.com/jimboca/udi-poly-elk/issues/48)
     - Added debug when keypad is not added for debugging
+  - [Add support for last user](https://github.com/jimboca/udi-poly-elk/issues/47)
+    - Set User 203 name to "No Code User"
   - [Keypad: Add last keypad to Area](https://github.com/jimboca/udi-poly-elk/issues/54)
 - 0.5.0: 02/17/2021
   - [Add Elk Keypads](https://github.com/jimboca/udi-poly-elk/issues/48)
     - Added, but can't do function keys yet, need to add support to Python elkm1 library
-  - [Add support for last user](https://github.com/jimboca/udi-poly-elk/issues/48)
+  - [Add support for last user](https://github.com/jimboca/udi-poly-elk/issues/47)
     - Added for Keypads and Area
 - 0.4.3: 02/09/2021
   - [Support Outputs and Virtual Outputs](https://github.com/jimboca/udi-poly-elk/issues/12)
