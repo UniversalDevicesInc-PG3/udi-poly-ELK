@@ -82,6 +82,7 @@ class AreaNode(BaseNode):
         if 'last_log' in changeset:
             if 'user_number' in changeset['last_log']:
                 self.set_user(int(changeset['last_log']['user_number']))
+                self.set_keypad(0)
 
     # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
     # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
