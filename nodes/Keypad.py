@@ -43,6 +43,7 @@ class KeypadNode(BaseNode):
         if 'last_log' in changeset:
             if 'user_number' in changesset['last_log']:
                 self.set_user(int(changeset['last_log']['last_user']) + 1)
+                self.area.set_keypad(self.elk.index + 1)
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
@@ -56,7 +57,6 @@ class KeypadNode(BaseNode):
             val = self.elk.last_user + 1
         self.set_driver('GV1',val)
         self.area.set_user(val)
-        self.area.set_keypad(self.elk.index + 1)
 
     def set_temperature(self,val=None,force=False,reportCmd=True):
         LOGGER.info(f'{self.lpfx}')
