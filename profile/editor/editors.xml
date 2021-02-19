@@ -53,7 +53,7 @@
   </editor>
   <!-- Last User -->
   <editor id="I_LAST_KEYPAD">
-      <range uom="25" subset="0-16" nls="USER" />
+      <range uom="25" subset="0-16" nls="KEYPAD" />
   </editor>
 
   <!-- ZONES -->
