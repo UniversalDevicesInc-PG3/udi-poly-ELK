@@ -54,7 +54,7 @@ class AreaNode(BaseNode):
     def keypad_thread(self):
         LOGGER.debug('Setting up Thread')
         self.keypad_event = Event()
-        self.keypad_thread = Thread(name='shortPoll',target=self._keypad_thread)
+        self.keypad_thread = Thread(name='Keypad',target=self._keypad_thread)
         self.keypad_thread.daemon = True
         LOGGER.debug('Starting Thread')
         st = self.keypad_thread.start()
