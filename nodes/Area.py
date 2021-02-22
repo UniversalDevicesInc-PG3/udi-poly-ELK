@@ -1,6 +1,7 @@
 
 
 import time
+from threading import Thread,Event
 from polyinterface import LOGGER
 from node_funcs import get_valid_node_name
 from nodes import BaseNode,ZoneNode,KeypadNode
@@ -48,14 +49,26 @@ class AreaNode(BaseNode):
                 LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
                 self._zone_nodes[zn] = self.controller.addNode(ZoneNode(self.controller, self, self, self.controller.elk.zones[zn]))
                 time.sleep(.1)
+        self.ready = True
+
+    def keypad_thread(self):
+        LOGGER.debug('Setting up Thread')
+        self.keypad_event = Event()
+        self.keypad_thread = Thread(name='shortPoll',target=self._keypad_thread)
+        self.keypad_thread.daemon = True
+        LOGGER.debug('Starting Thread')
+        st = self.keypad_thread.start()
+        LOGGER.debug(f'Thread start st={st}')
+
+    def _keypad_thread(self):
         for n in range(Max.KEYPADS.value - 1):
             if self.controller.elk.keypads[n].area == self.elk.index:
                 LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding keypad node {n} '{self.controller.elk.keypads[n]}'")
                 self._keypad_nodes[n] = self.controller.addNode(KeypadNode(self.controller, self, self, self.controller.elk.keypads[n]))
             else:
                 LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} skipping keypad node {n} '{self.controller.elk.keypads[n]}'")
-
-        self.ready = True
+        # Keep the thread alive to handle keypad events.
+        self.short_event.wait()
 
     def shortPoll(self):
         # Only Poll Zones if we want voltages

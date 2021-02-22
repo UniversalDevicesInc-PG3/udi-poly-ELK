@@ -3,7 +3,7 @@ import time
 import logging
 import asyncio
 import os
-from threading import Thread
+from threading import Thread,Event
 from node_funcs import *
 from nodes import AreaNode,OutputNode
 from polyinterface import Controller, LOGGER, LOG_HANDLER
