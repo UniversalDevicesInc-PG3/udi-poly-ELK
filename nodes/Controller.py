@@ -18,6 +18,7 @@ mainloop = asyncio.get_event_loop()
 
 class Controller(Controller):
     def __init__(self, polyglot):
+        self.ready = False
         # We track our drsiver values because we need the value before it's been pushed.
         super(Controller, self).__init__(polyglot)
         self.name = "ELK Controller"
@@ -67,8 +68,8 @@ class Controller(Controller):
             self.hb = 0
 
     def shortPoll(self):
-        if not self.discover_done:
-            LOGGER.info('waiting for discover to complete')
+        if not self.ready:
+            LOGGER.info('waiting for sync to complete')
             return
         if self.short_event is False:
             LOGGER.debug('Setting up Thread')
@@ -97,8 +98,8 @@ class Controller(Controller):
 
     def longPoll(self):
         self.heartbeat()
-        if not self.discover_done:
-            LOGGER.info('waiting for discover to complete')
+        if not self.ready:
+            LOGGER.info('waiting for sync to complete')
             return
         if self.long_event is False:
             LOGGER.debug('Setting up Thread')
@@ -216,6 +217,7 @@ class Controller(Controller):
         if not self.profile_done:
             self.write_profile()
             self.profile_done = True
+        self.ready = True
 
     def timeout(self, msg_code):
         LOGGER.error(f"{self.lpfx} Timeout sending message {msg_code}!!!")
