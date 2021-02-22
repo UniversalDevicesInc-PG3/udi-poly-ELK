@@ -49,6 +49,7 @@ class AreaNode(BaseNode):
                 LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
                 self._zone_nodes[zn] = self.controller.addNode(ZoneNode(self.controller, self, self, self.controller.elk.zones[zn]))
                 time.sleep(.1)
+        self.keypad_thread()
         self.ready = True
 
     def keypad_thread(self):
