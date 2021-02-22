@@ -7,6 +7,7 @@ from threading import Thread
 from node_funcs import *
 from nodes import AreaNode,OutputNode
 from polyinterface import Controller, LOGGER, LOG_HANDLER
+from threading import Thread,Event
 
 # sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
@@ -32,6 +33,10 @@ class Controller(Controller):
         self._keypad_nodes = {}
         self.logger = LOGGER
         self.lpfx = self.name + ":"
+        # For the short/long poll threads, we run them in threads so the main
+        # process is always available for controlling devices
+        self.short_event = False
+        self.long_event  = False
         # Not using because it's called to many times
         # self.poly.onConfig(self.process_config)
 
@@ -62,13 +67,64 @@ class Controller(Controller):
             self.hb = 0
 
     def shortPoll(self):
-        LOGGER.debug(f'{self.lpfx}')
-        for an in self._area_nodes:
-            self._area_nodes[an].shortPoll()
+        if not self.discover_done:
+            LOGGER.info('waiting for discover to complete')
+            return
+        if self.short_event is False:
+            LOGGER.debug('Setting up Thread')
+            self.short_event = Event()
+            self.short_thread = Thread(name='shortPoll',target=self._shortPoll)
+            self.short_thread.daemon = True
+            LOGGER.debug('Starting Thread')
+            st = self.short_thread.start()
+            LOGGER.debug(f'Thread start st={st}')
+        # Tell the thread to run
+        LOGGER.debug(f'thread={self.short_thread} event={self.short_event}')
+        if self.short_event is not None:
+            LOGGER.debug('calling event.set')
+            self.short_event.set()
+        else:
+            LOGGER.error(f'event is gone? thread={self.short_thread} event={self.short_event}')
+
+    def _shortPoll(self):
+        while (True):
+            self.short_event.wait()
+            LOGGER.debug('start')
+            for an in self._area_nodes:
+                self._area_nodes[an].shortPoll()
+            self.short_event.clear()
+            LOGGER.debug('done')
 
     def longPoll(self):
         self.heartbeat()
-        self.check_connection()
+        if not self.discover_done:
+            LOGGER.info('waiting for discover to complete')
+            return
+        if self.long_event is False:
+            LOGGER.debug('Setting up Thread')
+            self.long_event = Event()
+            self.long_thread = Thread(name='longPoll',target=self._longPoll)
+            self.long_thread.daemon = True
+            LOGGER.debug('Starting Thread')
+            st = self.long_thread.start()
+            LOGGER.debug('Thread start st={st}')
+        # Tell the thread to run
+        LOGGER.debug(f'thread={self.long_thread} event={self.long_event}')
+        if self.long_event is not None:
+            LOGGER.debug('calling event.set')
+            self.long_event.set()
+        else:
+            LOGGER.error(f'event is gone? thread={self.long_thread} event={self.long_event}')
+
+    def _longPoll(self):
+        while (True):
+            self.long_event.wait()
+            LOGGER.debug('start')
+            self.heartbeat()
+            self.check_connection()
+            self.long_event.clear()
+            LOGGER.debug('done')
+
 
     def setDriver(self, driver, value):
         LOGGER.debug(f"{self.lpfx} {driver}={value}")
