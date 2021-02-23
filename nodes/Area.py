@@ -79,10 +79,10 @@ class AreaNode(BaseNode):
             self.set_armed_status(changeset['armed_status'])
         if 'arm_up_state' in changeset:
             self.set_arm_up_state(changeset['arm_up_state'])
+        # Need to investigate this more, do we really need this if keypad callback is setting it?
         if 'last_log' in changeset:
             if 'user_number' in changeset['last_log']:
                 self.set_user(int(changeset['last_log']['user_number']))
-                self.set_keypad(0)
 
     # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
     # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}

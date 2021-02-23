@@ -195,6 +195,9 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.2: 02/22/2021
+  - Put short/long poll in their own threads so they don't block others
+  - Do not set last user keypad in area last_log
 - 0.5.1: 02/19/2021
   - [Add Elk Keypads](https://github.com/jimboca/udi-poly-elk/issues/48)
     - Added debug when keypad is not added for debugging
