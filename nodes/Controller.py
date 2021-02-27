@@ -412,10 +412,16 @@ class Controller(Controller):
         nls.write(f"USER-{Max.USERS.value} = No Code User\n")
         #
         # Now the keypad names
-        nls.write("\nKEYPAD-0 = Unknown\n")
+        nls.write("\n\nKEYPAD-0 = Unknown\n")
         for n in range(Max.KEYPADS.value):
             LOGGER.debug(f"{self.lpfx} keypad={self.elk.keypads[n]}")
             nls.write(f"KEYPAD-{n+1} = {self.elk.keypads[n].name}\n")
+        #
+        # Now the zones names
+        nls.write("\n\nZONE-0 = Unknown\n")
+        for n in range(Max.ZONES.value):
+            LOGGER.debug(f"{self.lpfx} zone={self.elk.zones[n]}")
+            nls.write(f"ZONE-{n+1} = {self.elk.zones[n].name}\n")
         #
         # Close it and update the ISY
         nls.close()

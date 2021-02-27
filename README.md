@@ -195,6 +195,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.3: 02/27/2021
+  - [Area: Add Last Violated Zone](https://github.com/jimboca/udi-poly-elk/issues/55)
 - 0.5.2: 02/22/2021
   - Put short/long poll in their own threads so they don't block others
   - Do not set last user keypad in area last_log

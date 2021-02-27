@@ -106,6 +106,11 @@ class AreaNode(BaseNode):
         LOGGER.info(f'{self.lpfx} val={val}')
         self.set_driver('GV7',val)
 
+    # This is only called by Zones's
+    def set_last_voilated_zone(self, val, force=False, reportCmd=True):
+        LOGGER.info(f'{self.lpfx} val={val}')
+        self.set_driver('GV8',val)
+
     def set_zone_logical_status(self, zn, st):
         LOGGER.info(f'{self.lpfx} zn={zn} st={st}')
         self.zones_logical_status[zn] = st
@@ -184,6 +189,7 @@ class AreaNode(BaseNode):
         {'driver': 'GV5',  'value': 0, 'uom': 2},
         {'driver': 'GV6',  'value': 0, 'uom': 25},
         {'driver': 'GV7',  'value': 0, 'uom': 25},
+        {'driver': 'GV8',  'value': 0, 'uom': 25},
     ]
     id = 'area'
     commands = {

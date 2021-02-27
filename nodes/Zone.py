@@ -127,6 +127,8 @@ class ZoneNode(BaseNode):
         LOGGER.debug(f'{self.lpfx} val={val}')
         self.set_driver('ST', val)
         self.logical_status = val
+        if val == 2:
+            self.area.set_last_voilated_zone(self.elk.index + 1)
         if self.offnode_obj is not None:
             self.offnode_obj.set_driver('ST', val)
         self.area.set_zone_logical_status(self.elk.index,val)
