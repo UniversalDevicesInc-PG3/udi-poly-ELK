@@ -46,10 +46,10 @@ class BaseNode(Node):
                         else:
                             info += str(val)
                     self.__my_drivers[mdrv] = val
-                    LOGGER.debug(f'{self.lpfx} set_driver({mdrv},{val}) {info}')
+                    LOGGER.info(f'{self.lpfx} set_driver({mdrv},{val}) {info}')
                 except Exception as err:
                     LOGGER.error(f'{self.lpfx} Internal error getting node driver info for {mdrv}',exc_info=True)
-                    LOGGER.debug(f'{self.lpfx} set_driver({mdrv},{val})')
+                    LOGGER.info(f'{self.lpfx} set_driver({mdrv},{val})')
             #else:
             #    LOGGER.debug(f'{self.lpfx} not necessary')
         except:
