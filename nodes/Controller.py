@@ -406,7 +406,7 @@ class Controller(Controller):
         #
         # Then write our custom NLS lines
         nls.write("\nUSER-0 = Unknown\n")
-        for n in range(Max.USERS.value - 3:
+        for n in range(Max.USERS.value - 3):
             LOGGER.debug(f"{self.lpfx} user={self.elk.users[n]}")
             nls.write(f"USER-{n+1} = {self.elk.users[n].name}\n")
         # Version 4.4.2 and later, user code 201 = Program Code, 202 = ELK RP Code, 203 = Quick Arm, no code.
