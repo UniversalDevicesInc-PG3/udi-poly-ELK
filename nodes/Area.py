@@ -25,8 +25,8 @@ class AreaNode(BaseNode):
         self.state  = None
         self.zones_bypassed = 0
         self.zones_violated = 0
-        self.zones_logical_status = [None] * (Max.ZONES.value-1)
-        self.zones_physical_status = [None] * (Max.ZONES.value-1)
+        self.zones_logical_status = [None] * Max.ZONES.value
+        self.zones_physical_status = [None] * Max.ZONES.value
         self._zone_nodes = {}
         self._keypad_nodes = {}
         self.poll_voltages = False
@@ -42,14 +42,14 @@ class AreaNode(BaseNode):
         self.set_drivers()
         self.reportDrivers()
         # elkm1_lib uses zone numbers starting at zero.
-        for zn in range(Max.ZONES.value-1):
+        for zn in range(Max.ZONES.value):
             LOGGER.debug(f'{self.lpfx} index={zn} area={self.controller.elk.zones[zn].area} definition={self.controller.elk.zones[zn].definition}')
             # Add zones that are in my area, and are defined.
             if self.controller.elk.zones[zn].definition > 0 and self.controller.elk.zones[zn].area == self.elk.index:
                 LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
                 self._zone_nodes[zn] = self.controller.addNode(ZoneNode(self.controller, self, self, self.controller.elk.zones[zn]))
                 time.sleep(.1)
-        for n in range(Max.KEYPADS.value - 1):
+        for n in range(Max.KEYPADS.value):
             if self.controller.elk.keypads[n].area == self.elk.index:
                 LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding keypad node {n} '{self.controller.elk.keypads[n]}'")
                 self._keypad_nodes[n] = self.controller.addNode(KeypadNode(self.controller, self, self, self.controller.elk.keypads[n]))

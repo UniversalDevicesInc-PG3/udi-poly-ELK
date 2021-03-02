@@ -186,7 +186,7 @@ class Controller(Controller):
         LOGGER.info(f"{self.lpfx} Sync of keypad is complete!!!")
         # TODO: Add driver for sync complete status, or put in ST?
         LOGGER.info(f"{self.lpfx} adding areas...")
-        for an in range(Max.AREAS.value - 1):
+        for an in range(Max.AREAS.value):
             if an in self._area_nodes:
                 LOGGER.info(
                     f"{self.lpfx} Skipping Area {an+1} because it already defined."
@@ -200,7 +200,7 @@ class Controller(Controller):
                 self._area_nodes[an] = self.addNode(AreaNode(self, self.elk.areas[an]))
         LOGGER.info("adding areas done, adding outputs...")
         # elkm1_lib uses zone numbers starting at zero.
-        for n in range(Max.OUTPUTS.value - 1):
+        for n in range(Max.OUTPUTS.value):
             if n in self._output_nodes:
                 LOGGER.info(
                     f"{self.lpfx} Skipping Output {n+1} because it already defined."

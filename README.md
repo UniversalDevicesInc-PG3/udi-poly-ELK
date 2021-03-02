@@ -198,6 +198,7 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 - 0.5.3: 02/27/2021
   - [Area: Add Last Violated Zone](https://github.com/jimboca/udi-poly-elk/issues/55)
   - Set user names for Version 4.4.2 and later, user code 201 = Program Code, 202 = ELK RP Code, 203 = Quick Arm, no code
+  - Fix Max values to correct max, not minus 1
 - 0.5.2: 02/22/2021
   - Put short/long poll in their own threads so they don't block others
   - Do not set last user keypad in area last_log
