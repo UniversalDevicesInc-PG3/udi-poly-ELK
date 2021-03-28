@@ -245,4 +245,5 @@ class ZoneNode(BaseNode):
         'SET_SOFF': cmd_set_soff,
         'SET_BYPASS': cmd_set_bypass,
         'CLEAR_BYPASS': cmd_clear_bypass,
+        'SET_OFFNODE': cmd_set_offnode
     }
