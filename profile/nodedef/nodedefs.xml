@@ -172,6 +172,22 @@
         <sts>
             <st id="ST" editor="bool" />
             <st id="GV1" editor="I_LAST_USER" />
+        </sts>
+        <cmds>
+            <sends>
+            </sends>
+            <accepts>
+              <cmd id="QUERY" />
+          </accepts>
+        </cmds>
+    </nodeDef>
+
+    <!-- keypad with Temperature -->
+    <nodeDef id="keypad" nls="keypad_T">
+        <editors />
+        <sts>
+            <st id="ST" editor="bool" />
+            <st id="GV1" editor="I_LAST_USER" />
             <st id="GV2" editor="TEMPERATURE" />
         </sts>
         <cmds>
@@ -182,6 +198,7 @@
           </accepts>
         </cmds>
     </nodeDef>
+
 
 
 </nodeDefs>

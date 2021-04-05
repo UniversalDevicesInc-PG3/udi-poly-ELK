@@ -24,7 +24,10 @@ class KeypadNode(BaseNode):
         self.init   = False
         self.address   = f'keypad_{self.elk.index + 1}'
         self.on_time = 0
+        self.has_temperature = False if self.elk.temperature == -40 else True
         name        = get_valid_node_name(self.elk.name)
+        if self.has_temperature:
+            self.id = 'keypad_T'
         if name == "":
             name = f'Keypad_{self.elk.index + 1}'
         self.set_uoms()
@@ -49,9 +52,10 @@ class KeypadNode(BaseNode):
         self.uom = {
             DNAMES['status']:       2,
             DNAMES['user']:        25,
-            # Temperature 17=F 4=C
-            DNAMES['temperature']:  4 if self.controller.temperature_uom
         }
+        # Temperature 17=F 4=C
+        if self.has_temperature:
+            DNAMES['temperature']:  4 if self.controller.temperature_uom
 
     def shortPoll(self):
         pass
