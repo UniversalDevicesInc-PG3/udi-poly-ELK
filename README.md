@@ -116,7 +116,7 @@ By default only the area one, is added, change the areas configuraion if you hav
 - Poll Voltages
   - Enabled to poll the voltages on the Area's Zones.  The ELK doesn't push voltages changes, they must be polled.  By default this is False.  Enabling this creates more traffic so this is off by default.  You can query individual zones to get updates in a program, or enable to have then updated with each short poll.
 - Zones Violated
-  - The number of Zones currently in Logical Status of Violated. This does not meant the zone caused an Alarm, it only means the zone logical status is Violated
+  - The number of Zones currently in Logical Status of Violated, regardless of the Armed Status. This does not mean the zone caused an Alarm, it only means the zone logical status is Violated
 - Zones Bypassed
   - The number of Zones currently in Logical Status of bypassed
 
@@ -147,7 +147,7 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
   - Normal
   - Trouble
   - Violated
-    - Note: This does not meant the zone caused an Alarm, it only means the zone logical status is Violated
+    - Note: This does not meant the zone caused an Alarm, it only means the zone logical status is Violated regardless of the Armed Status.
   - Bypassed
 - Voltage
   - The current Zone Voltage.  Note this is not updated on change, it must be Polled.  By default this is polling is disabled, to enable set "Poll Voltages" on the Zone's Area.  The values are only updated on Short Poll intervals, which can be set in the Node Server Configuration Page.  It is also updated on a Zone query, so you can write ISY progrmas to force the query if you want faster updates, or just to update a single zone.
