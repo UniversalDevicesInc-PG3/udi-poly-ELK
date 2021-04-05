@@ -11,3 +11,5 @@ A range can be comma seperated to include just those numbers, or seperated with 
 All ranges start at one just like the numbering the Elk uses.
 
 Note that if you remove an Area, it will not be removed from the ISY or Polyglot.  This is intentional just in case it's an accident and you scenes or programs the reference the nodes.  You can go to the Nodes Page in the Polyglot UI and delete them using the X to the right of the node.
+
+When any value is changed you must restart the nodeserver for it to take affect.

@@ -300,6 +300,8 @@ class Controller(Controller):
             LOGGER.error(
                 f"{self.lpfx} temperature unit not defined in customParams, Using default {self.temperature_unit}"
             )
+        self.temperature_uom = 4 if self.controller.temperature_unit = "C" else "F"
+
         # Host
         default_host = "Your_ELK_IP_Or_Host:PortNum"
         if "host" in self.polyConfig["customParams"]:

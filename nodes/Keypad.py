@@ -27,11 +27,7 @@ class KeypadNode(BaseNode):
         name        = get_valid_node_name(self.elk.name)
         if name == "":
             name = f'Keypad_{self.elk.index + 1}'
-        self.uom = {
-            'ST': 2,
-            'GV1': 25,
-            'GV2': 17, # Temperature 17=F 4=C
-        }
+        self.set_uoms()
         self.drivers = [
             # On/Off
             {'driver': DNAMES['status'],      'value':  0,  'uom': self.uom[DNAMES['status']]},
@@ -48,6 +44,14 @@ class KeypadNode(BaseNode):
         self.set_drivers(force=True,reportCmd=False)
         self.reportDrivers()
         self.elk.add_callback(self.callback)
+
+    def set_uoms(self):
+        self.uom = {
+            DNAMES['status']:       2,
+            DNAMES['user']:        25,
+            # Temperature 17=F 4=C
+            DNAMES['temperature']:  4 if self.controller.temperature_uom
+        }
 
     def shortPoll(self):
         pass
@@ -67,7 +71,6 @@ class KeypadNode(BaseNode):
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
-        self.uom[DNAMES['temperature']]: = 4 if self.controller.temperature_unit = "C" else "F"
         self.set_driver(DNAMES['status'],1)
         self.set_user()
         self.set_temperature()
