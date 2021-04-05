@@ -12,7 +12,7 @@ from threading import Thread,Event
 # sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
 from elkm1_lib.const import Max
- 
+
 # asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
 mainloop = asyncio.get_event_loop()
 
@@ -291,6 +291,16 @@ class Controller(Controller):
         self.config_st = True
         # TODO: Only when necessary
         self.update_profile()
+        # Temperature Units
+        default_temperature_unit = "F"
+        if "temperature_unit" in self.polyConfig["customParams"]:
+            self.temperature_unit = self.polyConfig["customParams"]["temperature_unit"]
+        else:
+            self.temperature_unit = default_temperature_unit
+            LOGGER.error(
+                f"{self.lpfx} temperature unit not defined in customParams, Using default {self.temperature_unit}"
+            )
+        # Host
         default_host = "Your_ELK_IP_Or_Host:PortNum"
         if "host" in self.polyConfig["customParams"]:
             self.host = self.polyConfig["customParams"]["host"]
@@ -299,6 +309,7 @@ class Controller(Controller):
             LOGGER.error(
                 f"{self.lpfx} host not defined in customParams, please add it.  Using {self.host}"
             )
+        # Code
         default_code = "Your_ELK_User_Code_for_Polyglot"
         # Fix messed up code
         if "keypad_code" in self.polyConfig["customParams"]:
@@ -317,7 +328,7 @@ class Controller(Controller):
             LOGGER.error(
                 f"{self.lpfx} user_code not defined in customParams, please add it.  Using {self.user_code}"
             )
-
+        # Areas
         self.use_areas = self.getCustomParam("areas")
         self.use_areas_list = ()
         if self.use_areas == "":
@@ -334,7 +345,7 @@ class Controller(Controller):
                 LOGGER.error(errs)
                 self.addNotice(errs, "areas")
                 self.config_st = False
-
+        # Outputs
         self.use_outputs = self.getCustomParam("outputs")
         self.use_outputs_list = ()
         if self.use_outputs == "" or self.use_outputs is None:
@@ -364,8 +375,9 @@ class Controller(Controller):
         # Make sure they are in the params
         self.addCustomParam(
             {
-                "host": self.host, 
-                "user_code": self.user_code, 
+                "temperature_unit": self.temperature_unit
+                "host": self.host,
+                "user_code": self.user_code,
                 "areas": self.use_areas,
                 "outputs": self.use_outputs,
                 #"keypads": self.use_keypads
