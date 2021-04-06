@@ -36,7 +36,7 @@ class BaseNode(Node):
             val = myfloat(val,prec)
         try:
             if not mdrv in self.__my_drivers or val != self.__my_drivers[mdrv] or force:
-                self.setDriver(mdrv,val,report=report,uom=uom,prec=prec)
+                self.setDriver(mdrv,val,report=report,uom=uom)
                 try:
                     info = ''
                     if self.id in NODE_DEF_MAP and mdrv in NODE_DEF_MAP[self.id]:
