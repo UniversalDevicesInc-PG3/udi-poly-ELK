@@ -26,8 +26,6 @@ class KeypadNode(BaseNode):
         self.on_time = 0
         self.has_temperature = False if self.elk.temperature == -40 else True
         name        = get_valid_node_name(self.elk.name)
-        if self.has_temperature:
-            self.id = 'keypad_T'
         if name == "":
             name = f'Keypad_{self.elk.index + 1}'
         self.set_uoms()
@@ -35,8 +33,10 @@ class KeypadNode(BaseNode):
             # On/Off
             {'driver': DNAMES['status'],      'value':  0,  'uom': self.uom[DNAMES['status']]},
             {'driver': DNAMES['user'],        'value': -1,  'uom': self.uom[DNAMES['user']]}, # Last User
-            {'driver': DNAMES['temperature'], 'value': -40, 'uom': self.uom[DNAMES['temperature']]}  # Temperature
         ]
+        if self.has_temperature:
+            self.id = 'keypad_T'
+            self.drivers.append[{'driver': DNAMES['temperature'], 'value': -40, 'uom': self.uom[DNAMES['temperature']]}]
         LOGGER.debug(f'KeypadNode:init: {name}')
         super(KeypadNode, self).__init__(controller, parent.address, self.address, name)
         self.lpfx = f'{self.name}:'
@@ -55,7 +55,7 @@ class KeypadNode(BaseNode):
         }
         # Temperature 17=F 4=C
         if self.has_temperature:
-            DNAMES['temperature']:  4 if self.controller.temperature_uom
+            DNAMES['temperature']: self.controller.temperature_uom
 
     def shortPoll(self):
         pass
@@ -87,7 +87,9 @@ class KeypadNode(BaseNode):
         self.area.set_user(val)
 
     def set_temperature(self,val=None,force=False,reportCmd=True):
-        LOGGER.info(f'{self.lpfx}')
+        LOGGER.info(f'{self.lpfx} has_temperature={self.has_temperature}')
+        if not self.has_temperature:
+            return
         driver = DNAMES['temperature']
         if val is None:
             val = self.elk.temperature

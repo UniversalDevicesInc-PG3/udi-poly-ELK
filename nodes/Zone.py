@@ -60,8 +60,8 @@ class ZoneNode(BaseNode):
             self._set_logical_status(changeset['logical_status'])
         if 'voltage' in changeset:
             self._set_voltage(changeset['voltage'])
-        self.controller.elk.send(az_encode())
-        LOGGER.debug(f'{self.lpfx} changeset={changeset} triggered_alarm={self.elk.triggered_alarm}')
+        #self.controller.elk.send(az_encode())
+        #LOGGER.debug(f'{self.lpfx} changeset={changeset} triggered_alarm={self.elk.triggered_alarm}')
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
