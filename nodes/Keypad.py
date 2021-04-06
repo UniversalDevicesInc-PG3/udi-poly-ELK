@@ -7,6 +7,12 @@ from elkm1_lib.const import (
     Max,
 )
 
+DNAMES = {
+    'status':      'ST',
+    'user':        'GV1',
+    'temperature': 'GV2',
+}
+
 class KeypadNode(BaseNode):
 
     def __init__(self, controller, parent, area, elk):
@@ -18,9 +24,19 @@ class KeypadNode(BaseNode):
         self.init   = False
         self.address   = f'keypad_{self.elk.index + 1}'
         self.on_time = 0
+        self.has_temperature = False if self.elk.temperature == -40 else True
         name        = get_valid_node_name(self.elk.name)
+        if self.has_temperature:
+            self.id = 'keypad_T'
         if name == "":
             name = f'Keypad_{self.elk.index + 1}'
+        self.set_uoms()
+        self.drivers = [
+            # On/Off
+            {'driver': DNAMES['status'],      'value':  0,  'uom': self.uom[DNAMES['status']]},
+            {'driver': DNAMES['user'],        'value': -1,  'uom': self.uom[DNAMES['user']]}, # Last User
+            {'driver': DNAMES['temperature'], 'value': -40, 'uom': self.uom[DNAMES['temperature']]}  # Temperature
+        ]
         LOGGER.debug(f'KeypadNode:init: {name}')
         super(KeypadNode, self).__init__(controller, parent.address, self.address, name)
         self.lpfx = f'{self.name}:'
@@ -31,6 +47,15 @@ class KeypadNode(BaseNode):
         self.set_drivers(force=True,reportCmd=False)
         self.reportDrivers()
         self.elk.add_callback(self.callback)
+
+    def set_uoms(self):
+        self.uom = {
+            DNAMES['status']:       2,
+            DNAMES['user']:        25,
+        }
+        # Temperature 17=F 4=C
+        if self.has_temperature:
+            DNAMES['temperature']:  4 if self.controller.temperature_uom
 
     def shortPoll(self):
         pass
@@ -50,7 +75,7 @@ class KeypadNode(BaseNode):
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
-        self.set_driver('ST',1)
+        self.set_driver(DNAMES['status'],1)
         self.set_user()
         self.set_temperature()
 
@@ -58,14 +83,15 @@ class KeypadNode(BaseNode):
         LOGGER.info(f'{self.lpfx} val={val}')
         if val is None:
             val = self.elk.last_user + 1
-        self.set_driver('GV1',val)
+        self.set_driver(DNAMES['user'],val)
         self.area.set_user(val)
 
     def set_temperature(self,val=None,force=False,reportCmd=True):
         LOGGER.info(f'{self.lpfx}')
+        driver = DNAMES['temperature']
         if val is None:
             val = self.elk.temperature
-        self.set_driver('GV2',val)
+        self.set_driver(driver, self.uom[driver])
 
     def query(self):
         self.set_drivers()
@@ -77,12 +103,6 @@ class KeypadNode(BaseNode):
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
-    drivers = [
-        # On/Off
-        {'driver': 'ST',  'value':  0, 'uom': 2},
-        {'driver': 'GV1', 'value': -1, 'uom': 25}, # Last User
-        {'driver': 'GV2', 'value': -1, 'uom': 17}  # Temperature
-    ]
     id = 'keypad'
     commands = {
         'QUERY': cmd_query,

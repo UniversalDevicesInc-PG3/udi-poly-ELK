@@ -96,7 +96,7 @@ By default only the area one, is added, change the areas configuraion if you hav
     - Unknown (Only on startup)
     - Not Ready To Arm
     - Ready To Arm
-    - Ready To Force Arm 
+    - Ready To Force Arm
     - Armed With Exit Timer
     - Armed Fully
     - Force Armed
@@ -116,9 +116,9 @@ By default only the area one, is added, change the areas configuraion if you hav
 - Poll Voltages
   - Enabled to poll the voltages on the Area's Zones.  The ELK doesn't push voltages changes, they must be polled.  By default this is False.  Enabling this creates more traffic so this is off by default.  You can query individual zones to get updates in a program, or enable to have then updated with each short poll.
 - Zones Violated
-  - The number of Zones currently violated
+  - The number of Zones currently in Logical Status of Violated, regardless of the Armed Status. This does not mean the zone caused an Alarm, it only means the zone logical status is Violated
 - Zones Bypassed
-  - The number of Zones currently bypassed
+  - The number of Zones currently in Logical Status of bypassed
 
 #### Keypad Node
 
@@ -147,6 +147,7 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
   - Normal
   - Trouble
   - Violated
+    - Note: This does not meant the zone caused an Alarm, it only means the zone logical status is Violated regardless of the Armed Status.
   - Bypassed
 - Voltage
   - The current Zone Voltage.  Note this is not updated on change, it must be Polled.  By default this is polling is disabled, to enable set "Poll Voltages" on the Zone's Area.  The values are only updated on Short Poll intervals, which can be set in the Node Server Configuration Page.  It is also updated on a Zone query, so you can write ISY progrmas to force the query if you want faster updates, or just to update a single zone.
@@ -195,8 +196,13 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
-- 0.5.4: 03/28/2021
+- 0.5.4: 04/05/2021
   - Fixed: [Can not turn off "use off node"](https://github.com/jimboca/udi-poly-elk/issues/56)
+  - Enhancement: [Keypad: Allow showing C or F](https://github.com/jimboca/udi-poly-elk/issues/53)
+  - Enhancement: [Keypad: Only show temperature if the keypad has a sensor](https://github.com/jimboca/udi-poly-elk/issues/52)
+    - I can not test this, so I need someone with a temperature sensor in a keypad to confirm
+  - Documentation: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/46)
+    - Added notes in README about Violated.
 - 0.5.3: 02/27/2021
   - [Area: Add Last Violated Zone](https://github.com/jimboca/udi-poly-elk/issues/55)
   - Set user names for Version 4.4.2 and later, user code 201 = Program Code, 202 = ELK RP Code, 203 = Quick Arm, no code
@@ -270,7 +276,7 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
   - Fix [https://github.com/jimboca/udi-poly-elk/issues/26](Bypass button on zone node screen)
   - Fix [https://github.com/jimboca/udi-poly-elk/issues/25](Tracking of number of bypassed zones in area inconsisten)
 - 0.1.9: 12/18/2020
-  - Fix issues caused when sync_complete is called multiple times 
+  - Fix issues caused when sync_complete is called multiple times
     - [Multiple changes happening after restarting Nodeserver](https://github.com/jimboca/udi-poly-elk/issues/18)
 - 0.1.8: Fix Logging level for Debug + elkm1_lib so you can see wha the ELK is sending
 - 0.1.7: Fix crash during stop when config is not ready, fix startup when config is ready
