@@ -90,7 +90,7 @@ class KeypadNode(BaseNode):
         driver = DNAMES['temperature']
         if val is None:
             val = self.elk.temperature
-        self.set_driver(driver, val, report=reportCmd, force=force uom=self.uoms[driver])
+        self.set_driver(driver, val, report=reportCmd, force=force, uom=self.uoms[driver])
 
     def query(self):
         self.set_drivers()

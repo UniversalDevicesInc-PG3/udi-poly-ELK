@@ -196,7 +196,7 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
-- 0.5.6: 04/06/2021
+- 0.5.6 - 0.5.7: 04/06/2021
   - Fixed to show proper temperature: [Keypad: Only show temperature if the keypad has a sensor](https://github.com/jimboca/udi-poly-elk/issues/52)
 - 0.5.5: 04/06/2021
   - Fixed: [Keypad: Only show temperature if the keypad has a sensor](https://github.com/jimboca/udi-poly-elk/issues/52)
