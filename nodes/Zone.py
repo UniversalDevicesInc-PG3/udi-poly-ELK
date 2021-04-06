@@ -53,14 +53,15 @@ class ZoneNode(BaseNode):
         self.set_drivers(force=False,reportCmd=False)
 
     def callback(self, obj, changeset):
-        LOGGER.debug(f'{self.lpfx} changeset={changeset}')
-        # Why does it get called multiple times with same data?
+        LOGGER.debug(f'{self.lpfx} changeset={changeset} triggered_alarm={self.elk.triggered_alarm}')
         if 'physical_status' in changeset:
             self._set_physical_status(changeset['physical_status'])
         if 'logical_status' in changeset:
             self._set_logical_status(changeset['logical_status'])
         if 'voltage' in changeset:
             self._set_voltage(changeset['voltage'])
+        self.controller.elk.send(az_encode())
+        LOGGER.debug(f'{self.lpfx} changeset={changeset} triggered_alarm={self.elk.triggered_alarm}')
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')

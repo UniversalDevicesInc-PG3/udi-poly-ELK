@@ -195,6 +195,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.4: 03/28/2021
+  - Fixed: [Can not turn off "use off node"](https://github.com/jimboca/udi-poly-elk/issues/56)
 - 0.5.3: 02/27/2021
   - [Area: Add Last Violated Zone](https://github.com/jimboca/udi-poly-elk/issues/55)
   - Set user names for Version 4.4.2 and later, user code 201 = Program Code, 202 = ELK RP Code, 203 = Quick Arm, no code
