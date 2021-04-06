@@ -19,7 +19,7 @@ class BaseNode(Node):
     delayed, we sometimes need to know the value before the DB is updated
     and Polyglot gets the update back.
     """
-    def set_driver(self,mdrv,val,default=0,force=False,report=True,prec=0):
+    def set_driver(self,mdrv,val,default=0,force=False,report=True,prec=0,uom=None):
         LOGGER.debug(f'{self.lpfx} {mdrv},{val} default={default} force={force},report={report}')
         if val is None:
             # Restore from DB for existing nodes
@@ -36,7 +36,7 @@ class BaseNode(Node):
             val = myfloat(val,prec)
         try:
             if not mdrv in self.__my_drivers or val != self.__my_drivers[mdrv] or force:
-                self.setDriver(mdrv,val,report=report)
+                self.setDriver(mdrv,val,report=report,uom=uom,prec=prec)
                 try:
                     info = ''
                     if self.id in NODE_DEF_MAP and mdrv in NODE_DEF_MAP[self.id]:
