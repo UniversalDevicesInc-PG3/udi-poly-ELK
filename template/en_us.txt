@@ -33,6 +33,13 @@ ST-keypad-ST-NAME = Keypad Status
 ST-keypad-GV1-NAME = Last User
 ST-keypad-GV2-NAME = Temperature
 
+# keypad
+ND-keypadT-NAME = ELK Keypad With Temperature
+ND-keypadT-ICON = Arm
+ST-keypadT-ST-NAME = Keypad Status
+ST-keypadT-GV1-NAME = Last User
+ST-keypadT-GV2-NAME = Temperature
+
 # area
 ND-area-NAME = Area Node
 ND-area-ICON = Alarm

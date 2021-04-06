@@ -301,6 +301,7 @@ class Controller(Controller):
                 f"{self.lpfx} temperature unit not defined in customParams, Using default {self.temperature_unit}"
             )
         self.temperature_uom = 4 if self.controller.temperature_unit == "C" else 17
+        LOGGER.info(f"temperature_unit={self.temperature_unit} temerature_uom={self.temperature_uom}")
 
         # Host
         default_host = "Your_ELK_IP_Or_Host:PortNum"

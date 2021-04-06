@@ -25,19 +25,25 @@ class KeypadNode(BaseNode):
         self.address   = f'keypad_{self.elk.index + 1}'
         self.on_time = 0
         self.has_temperature = False if self.elk.temperature == -40 else True
+        LOGGER.info(f'KeyPadNode:init: has_temperature={self.has_temperature}')
         name        = get_valid_node_name(self.elk.name)
         if name == "":
             name = f'Keypad_{self.elk.index + 1}'
-        self.set_uoms()
+        self.uoms = {
+            DNAMES['status']:       2,
+            DNAMES['user']:        25,
+            DNAMES['temperature']: self.controller.temperature_uom,
+        }
         self.drivers = [
             # On/Off
-            {'driver': DNAMES['status'],      'value':  0,  'uom': self.uom[DNAMES['status']]},
-            {'driver': DNAMES['user'],        'value': -1,  'uom': self.uom[DNAMES['user']]}, # Last User
+            {'driver': DNAMES['status'],      'value':  0,  'uom': self.uoms[DNAMES['status']]},
+            {'driver': DNAMES['user'],        'value': -1,  'uom': self.uoms[DNAMES['user']]}, # Last User
         ]
+        LOGGER.debug(f'KeypadNode:init: name="{name}" uom={self.uoms}')
         if self.has_temperature:
-            self.id = 'keypad_T'
-            self.drivers.append[{'driver': DNAMES['temperature'], 'value': -40, 'uom': self.uom[DNAMES['temperature']]}]
-        LOGGER.debug(f'KeypadNode:init: {name}')
+            self.id = 'keypadT'
+            self.drivers.append({'driver': DNAMES['temperature'], 'value': -40, 'uom': self.uoms[DNAMES['temperature']]})
+        LOGGER.debug(f'KeypadNode:init: name="{name}" drivers={self.drivers}')
         super(KeypadNode, self).__init__(controller, parent.address, self.address, name)
         self.lpfx = f'{self.name}:'
 
@@ -47,15 +53,6 @@ class KeypadNode(BaseNode):
         self.set_drivers(force=True,reportCmd=False)
         self.reportDrivers()
         self.elk.add_callback(self.callback)
-
-    def set_uoms(self):
-        self.uom = {
-            DNAMES['status']:       2,
-            DNAMES['user']:        25,
-        }
-        # Temperature 17=F 4=C
-        if self.has_temperature:
-            DNAMES['temperature']: self.controller.temperature_uom
 
     def shortPoll(self):
         pass

@@ -181,14 +181,13 @@
           </accepts>
         </cmds>
     </nodeDef>
-
-    <!-- keypad with Temperature -->
-    <nodeDef id="keypad" nls="keypad_T">
+    <!-- keypad -->
+    <nodeDef id="keypadT" nls="keypadT">
         <editors />
         <sts>
             <st id="ST" editor="bool" />
             <st id="GV1" editor="I_LAST_USER" />
-            <st id="GV2" editor="TEMPERATURE" />
+            <st id="GV2" editor="I_TEMP" />
         </sts>
         <cmds>
             <sends>
@@ -198,7 +197,5 @@
           </accepts>
         </cmds>
     </nodeDef>
-
-
 
 </nodeDefs>
