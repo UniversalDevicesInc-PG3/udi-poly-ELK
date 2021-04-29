@@ -196,6 +196,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.10: 04/28/2021
+  - Fix when inital elk alarm_state is empty
 - 0.5.6 - 0.5.9: 04/06/2021
   - Fixed to show proper temperature: [Keypad: Only show temperature if the keypad has a sensor](https://github.com/jimboca/udi-poly-elk/issues/52)
 - 0.5.5: 04/06/2021

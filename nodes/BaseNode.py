@@ -31,9 +31,15 @@ class BaseNode(Node):
         if val is None:
             val = default
         elif prec == 0:
-            val = int(val)
+            try:
+                val = int(val)
+            except Exception as err:
+                LOGGER.error(f'{self.lpfx} Error converting {val} to integer, will use default={default} for {mdrv}',exc_info=True)
         else:
-            val = myfloat(val,prec)
+            try:
+                val = myfloat(val,prec)
+            except Exception as err:
+                LOGGER.error(f'{self.lpfx} Error converting {val} to float, will use default={default} for {mdrv}',exc_info=True)
         try:
             if not mdrv in self.__my_drivers or val != self.__my_drivers[mdrv] or force:
                 self.setDriver(mdrv,val,report=report,uom=uom)
