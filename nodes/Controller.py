@@ -257,6 +257,7 @@ class Controller(Controller):
 
     def discover(self):
         # TODO: What to do here, kill and restart the thread?
+        LOGGER.error(f"{self.lpfx} discover currently does nothing")
         pass
 
     def elkm1_run(self):
@@ -512,6 +513,10 @@ class Controller(Controller):
         LOGGER.info(f"{self.lpfx}")
         return self.update_profile()
 
+    def cmd_discover(self, command):
+        LOGGER.info(f"{self.lpfx}")
+        return self.discover()
+
     def cmd_set_debug_mode(self, command):
         val = int(command.get("value"))
         LOGGER.debug(f"val={val}")
@@ -520,7 +525,7 @@ class Controller(Controller):
     id = "controller"
     commands = {
         "QUERY": query,
-        "DISCOVER": discover,
+        "DISCOVER": cmd_discover,
         "UPDATE_PROFILE": cmd_update_profile,
         "SET_DM": cmd_set_debug_mode,
     }

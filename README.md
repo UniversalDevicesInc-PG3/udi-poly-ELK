@@ -2,13 +2,15 @@
 
 ## Important Notices
 
-I am not responsible for any issues related to this nodeserver including missing an alarm!
+I am not responsible for any issues related to this nodeserver including missing an alarm!  However I have been using this in my production enviorment for many months and have had no issues.
 
 ## Why use this when ISY has the ELK module?
 
 The ELK Module will not be available on Polisy, the node server will be the supported method.
 
 The node server also has advantages.  It creates a node for Areas, Zones, ... So you can put those nodes in scenes, or use them in programs just like any other node.
+
+This node server works great with the new UD Mobile app for Android and iOS!
 
 ## Installation
 
