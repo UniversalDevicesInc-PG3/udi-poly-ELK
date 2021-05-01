@@ -56,6 +56,14 @@ NODE_DEF_MAP = {
                  3:  'SHORT',
             }
         },
+        'GV1': {
+            'name': 'Triggered Alarm',
+            'nls':  '',
+            'keys': {
+                 0:  'False',
+                 1:  'True',
+            }
+        },
         'ST': {
             'name': 'Logical Status',
             'nls':  'ZPST',

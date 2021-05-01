@@ -20,6 +20,7 @@ class ZoneNode(BaseNode):
         self.physical_status = -2
         self.logical_status = -2
         self.voltage = None
+        self.triggered = None
         self.last_changeset = {}
         self.offnode = None
         self.offnode_obj = None
@@ -53,15 +54,15 @@ class ZoneNode(BaseNode):
         self.set_drivers(force=False,reportCmd=False)
 
     def callback(self, obj, changeset):
-        LOGGER.debug(f'{self.lpfx} changeset={changeset} triggered_alarm={self.elk.triggered_alarm}')
+        LOGGER.debug(f'{self.lpfx} changeset={changeset}')
+        if 'triggered_alarm' in changeset:
+            self._set_triggered(1 if changeset['triggered_alarm'] is True else 0)
         if 'physical_status' in changeset:
             self._set_physical_status(changeset['physical_status'])
         if 'logical_status' in changeset:
             self._set_logical_status(changeset['logical_status'])
         if 'voltage' in changeset:
             self._set_voltage(changeset['voltage'])
-        #self.controller.elk.send(az_encode())
-        #LOGGER.debug(f'{self.lpfx} changeset={changeset} triggered_alarm={self.elk.triggered_alarm}')
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
@@ -145,8 +146,10 @@ class ZoneNode(BaseNode):
             return
         LOGGER.debug(f'{self.lpfx} val={val}')
         self.set_driver('CV', val, prec=1)
+        self.voltage = val
 
     def set_triggered(self,val=None,force=False):
+        LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         if val is None:
             val = self.elk.triggered_alarm
             if val is True:
@@ -158,11 +161,19 @@ class ZoneNode(BaseNode):
                 val = 0
         else:
             val = int(val)
-        LOGGER.debug(f'{self.lpfx} val={val}')
+        LOGGER.debug(f'{self.lpfx} val={val} force={force}')
+        self._set_triggered(val=val,force=force)
+
+    def _set_triggered(self,val,force=False):
+        if val == self.triggered and not force:
+            return
+        LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         self.set_driver('GV1', val)
+        self.triggered = val
 
     def query(self):
         self.set_drivers()
+        self.elk.sync()
         self.reportDrivers()
 
     def set_son(self,val=None):

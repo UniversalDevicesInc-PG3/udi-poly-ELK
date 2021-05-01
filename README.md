@@ -153,9 +153,9 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
   - Bypassed
 - Voltage
   - The current Zone Voltage.  Note this is not updated on change, it must be Polled.  By default this is polling is disabled, to enable set "Poll Voltages" on the Zone's Area.  The values are only updated on Short Poll intervals, which can be set in the Node Server Configuration Page.  It is also updated on a Zone query, so you can write ISY progrmas to force the query if you want faster updates, or just to update a single zone.
-- Triggered
-  - The zone has been manually triggered by a 3rd party app, or this app, when support is added.
-   - True
+- Triggered Alarm
+  - The zone has caused an alarm to be triggered.
+    - True
     - False
 - Area
   - The Area number the Zone is part of.
@@ -198,6 +198,10 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.11: 04/30/2021
+  - Fixed: [discover called incorrectly for runCmd](https://github.com/jimboca/udi-poly-elk/issues/20)
+  - Enhancment for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)
+    - Now properly set Zone GV1 "Triggered Alarm" when a zone triggers an alarm
 - 0.5.10: 04/28/2021
   - Fix when inital elk alarm_state is empty
 - 0.5.6 - 0.5.9: 04/06/2021
