@@ -129,7 +129,7 @@ By default only the area one, is added, change the areas configuraion if you hav
   - This is not sent from the ELK, it is calculated when Alarm is active, meaning Alarm Status is not "No Alarm Active" and the Nodeserver determines that a Violated Zone caused the Alarm, even for an entry/exit delay Zone.  The current first try Algorithim is as follows.
     - if area.alarm_state is greater than 0
       - if zone.definition is not 'Non Alarm' 
-        - if area.armed_status is 'Armed Stay' or 'Armed Stay Instance'
+        - if area.armed_status is 'Armed Stay' or 'Armed Stay Instant'
           - if not zone.definition is 'Burglar Interior' or  'Burglar Interior Follower' or 'Burglar Interior Night' or 'Burglar Interior Night Delay'
             - area.last_alarmed_zone = zone
         - else
