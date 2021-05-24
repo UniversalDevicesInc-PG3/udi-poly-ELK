@@ -31,7 +31,7 @@ class ZoneNode(BaseNode):
         if name == "":
             name = f'Zone_{self.elk.index + 1}'
         super(ZoneNode, self).__init__(controller, self.parent_address, self.address, name)
-        self.lpfx = f'{self.name}:'
+        self.lpfx = f'{self.name}:Zone_{self.elk.index + 1}:'
 
     def start(self):
         LOGGER.debug(f'{self.lpfx} {self.elk}')

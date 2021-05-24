@@ -121,6 +121,21 @@ By default only the area one, is added, change the areas configuraion if you hav
   - The number of Zones currently in Logical Status of Violated, regardless of the Armed Status. This does not mean the zone caused an Alarm, it only means the zone logical status is Violated
 - Zones Bypassed
   - The number of Zones currently in Logical Status of bypassed
+- Last Violated Zone
+  - This is the last zone whose status logical status was Violated, this doesn't mean it caused an Alarm, only means it went Violated
+- Last Triggered Zone (Currently not shown or used)
+  - The zone has caused an alarm to be triggered.  This comes directly from the ELK and only set when a zone triggers and alarm immediatly, if the zone has entry delay it will not set triggered when zone is violated, or when entry delay times out causing an alarm.
+- Last Alarmed Zone
+  - This is not sent from the ELK, it is calculated when Alarm is active, meaning Alarm Status is not "No Alarm Active" and the Nodeserver determines that a Violated Zone caused the Alarm, even for an entry/exit delay Zone.  The current first try Algorithim is as follows.
+    - if area.alarm_state is greater than 0
+      - if zone.definition is not 'Non Alarm' 
+        - if area.armed_status is 'Armed Stay' or 'Armed Stay Instance'
+          - if not zone.definition is 'Burglar Interior' or  'Burglar Interior Follower' or 'Burglar Interior Night' or 'Burglar Interior Night Delay'
+            - area.last_alarmed_zone = zone
+        - else
+            - aea.last_alarmed_zone = zone
+    This will likely need to be more compliated to catch all situations based on area.alarm_state, area.armed_status, and zone.definition.  This also may need to be added to the Zone itself instead of just on an Area.
+
 
 #### Keypad Node
 
@@ -154,7 +169,7 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
 - Voltage
   - The current Zone Voltage.  Note this is not updated on change, it must be Polled.  By default this is polling is disabled, to enable set "Poll Voltages" on the Zone's Area.  The values are only updated on Short Poll intervals, which can be set in the Node Server Configuration Page.  It is also updated on a Zone query, so you can write ISY progrmas to force the query if you want faster updates, or just to update a single zone.
 - Triggered Alarm
-  - The zone has caused an alarm to be triggered.
+  - The zone has caused an alarm to be triggered.  This comes directly from the ELK and only turns on if the zone triggers and alarm immediatly, if the zone has entry delay it will not set triggered when zone is violated, or when entry delay times out causing an alarm.
     - True
     - False
 - Area
@@ -198,6 +213,9 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.12: 05/23/2021
+  - Enhancment for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)
+    - Add Last Alarmed Zone, open for comments from Testers...
 - 0.5.11: 04/30/2021
   - Fixed: [discover called incorrectly for runCmd](https://github.com/jimboca/udi-poly-elk/issues/20)
   - Enhancment for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)

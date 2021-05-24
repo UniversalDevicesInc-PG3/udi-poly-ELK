@@ -53,6 +53,7 @@ ST-area-GV5-NAME = Poll Voltages
 ST-area-GV6-NAME = Last User
 ST-area-GV7-NAME = Last User Keypad
 ST-area-GV8-NAME = Last Violated Zone
+ST-area-GV9-NAME = Last Alarmed Zone
 CMD-area-ST-NAME = Alarm Status
 CMD-area-GV0-NAME = Set Armed Status
 CMD-area-GV1-NAME = Set Arm Up State

@@ -110,6 +110,20 @@ class AreaNode(BaseNode):
     def set_last_voilated_zone(self, val, force=False, reportCmd=True):
         LOGGER.info(f'{self.lpfx} val={val}')
         self.set_driver('GV8',val)
+        if int(self.elk.alarm_state) > 0:
+            # Say nothing for 'Non Alarm'
+            if not self.controller.elk.zones[val].definition == 16:
+                # Stay mode?
+                if self.elk.armed_status == 2 or self.elk.armed_status == 3:
+                    # Yep
+                    # Ignore interior alarms 4-7
+                    if not (self.controller.elk.zones[val].definition > 3
+                            and self.controller.elk.zones[val].definition < 8): 
+                        self.set_driver('GV9',val)
+                else:
+                    # Not in stay, always set it for now
+                        self.set_driver('GV9',val)
+
 
     def set_zone_logical_status(self, zn, st):
         LOGGER.info(f'{self.lpfx} zn={zn} st={st}')
@@ -190,6 +204,7 @@ class AreaNode(BaseNode):
         {'driver': 'GV6',  'value': 0, 'uom': 25},
         {'driver': 'GV7',  'value': 0, 'uom': 25},
         {'driver': 'GV8',  'value': 0, 'uom': 25},
+        {'driver': 'GV9',  'value': 0, 'uom': 25},
     ]
     id = 'area'
     commands = {
