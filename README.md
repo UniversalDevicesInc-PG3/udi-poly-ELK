@@ -133,8 +133,8 @@ By default only the area one, is added, change the areas configuraion if you hav
           - if not zone.definition is 'Burglar Interior' or  'Burglar Interior Follower' or 'Burglar Interior Night' or 'Burglar Interior Night Delay'
             - area.last_alarmed_zone = zone
         - else
-            - aea.last_alarmed_zone = zone
-    This will likely need to be more compliated to catch all situations based on area.alarm_state, area.armed_status, and zone.definition.  This also may need to be added to the Zone itself instead of just on an Area.
+            - area.last_alarmed_zone = zone
+  - This will likely need to be more compliated to catch all situations based on area.alarm_state, area.armed_status, and zone.definition.  This also may need to be added to the Zone itself instead of just on an Area.
 
 
 #### Keypad Node
