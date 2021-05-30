@@ -107,7 +107,7 @@ class AreaNode(BaseNode):
         self.set_driver('GV7',val)
 
     # This is only called by Zones's
-    def set_last_voilated_zone(self, val, force=False, reportCmd=True):
+    def set_last_violated_zone(self, val, force=False, reportCmd=True):
         LOGGER.info(f'{self.lpfx} val={val}')
         self.set_driver('GV8',val)
         if int(self.elk.alarm_state) > 0:
