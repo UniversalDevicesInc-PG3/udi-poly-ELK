@@ -203,7 +203,7 @@ Following are examples have usages for this nodeserver.
 
 ### Triggered Zone
 
-The new Area Triggered Zone makes it easy to send a notification for Zone which started an alarm.  I use the Notificaiton Nodeserver so the program looks like this:
+The new Area Last Triggered Zone makes it easy to send a notification for Zone which started an alarm.  I use the Notificaiton Nodeserver so the program looks like this:
 ```
 ELK Alarm Zone - [ID 0025][Parent 0001]
 
@@ -216,8 +216,10 @@ Then
 Else
    - No Actions - (To add one, press 'Action')
 ```
-The notification resource is also very simple as shown in the 
+The notification resource is also very simple as shown in the Network Resource.
 ![Network Resource](pics/NR_AlarmZone.png)
+
+This can be adapated to your prefered notification method.
 
 
 ## TODO and issues
