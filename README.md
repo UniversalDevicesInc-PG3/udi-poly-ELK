@@ -115,6 +115,11 @@ By default only the area one, is added, change the areas configuraion if you hav
   - Single Chime with Single Beep
   - Single Chime with Constantly Beeping
   - Single Chime with Single Beep and Constantly Beeping
+- Additional Trigger
+  - The ELK only sends a triggered zone when a violated zone actually triggers an alarm. If this option is True, which is the default, the Nodeserver will also set Last Triggered Zone when an approriate zone is violated and the ELK is in an Alarm State.
+    - If Enabled:
+      - In Stay or Away Mode, set triggered for any Entry/Exit Delay Nodes when they are violated.
+      - In Night mode, set triggered for Night Delay Nodes when they are triggered
 - Poll Voltages
   - Enabled to poll the voltages on the Area's Zones.  The ELK doesn't push voltages changes, they must be polled.  By default this is False.  Enabling this creates more traffic so this is off by default.  You can query individual zones to get updates in a program, or enable to have then updated with each short poll.
 - Zones Violated
@@ -123,19 +128,8 @@ By default only the area one, is added, change the areas configuraion if you hav
   - The number of Zones currently in Logical Status of bypassed
 - Last Violated Zone
   - This is the last zone whose status logical status was Violated, this doesn't mean it caused an Alarm, only means it went Violated
-- Last Triggered Zone (Currently not shown or used)
-  - The zone has caused an alarm to be triggered.  This comes directly from the ELK and only set when a zone triggers and alarm immediatly, if the zone has entry delay it will not set triggered when zone is violated, or when entry delay times out causing an alarm.
-- Last Alarmed Zone
-  - This is not sent from the ELK, it is calculated when Alarm is active, meaning Alarm Status is not "No Alarm Active" and the Nodeserver determines that a Violated Zone caused the Alarm, even for an entry/exit delay Zone.  The current first try Algorithim is as follows.
-    - if area.alarm_state is greater than 0
-      - if zone.definition is not 'Non Alarm' 
-        - if area.armed_status is 'Armed Stay' or 'Armed Stay Instant'
-          - if not zone.definition is 'Burglar Interior' or  'Burglar Interior Follower' or 'Burglar Interior Night' or 'Burglar Interior Night Delay'
-            - area.last_alarmed_zone = zone
-        - else
-            - area.last_alarmed_zone = zone
-  - This will likely need to be more compliated to catch all situations based on area.alarm_state, area.armed_status, and zone.definition.  This also may need to be added to the Zone itself instead of just on an Area.
-
+- Last Triggered Zone
+  - The zone has caused an alarm to be triggered.  This comes directly from the ELK when the zone is not an entry/exit or night delay, or optionally the node server will trigger for other cases. See Additional Trigger for more informaition.
 
 #### Keypad Node
 
@@ -215,7 +209,7 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 ## Version History
 - 0.5.12: 05/23/2021
   - Enhancment for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)
-    - Add Last Alarmed Zone, open for comments from Testers...
+    - Add Last Triggered Zone and Entry/Exit Trigger option.  Please provide feedback.
 - 0.5.11: 04/30/2021
   - Fixed: [discover called incorrectly for runCmd](https://github.com/jimboca/udi-poly-elk/issues/20)
   - Enhancment for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)

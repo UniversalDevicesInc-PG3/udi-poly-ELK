@@ -92,6 +92,7 @@ class AreaNode(BaseNode):
         self.set_armed_status()
         self.set_arm_up_state()
         self.set_poll_voltages()
+        self.set_entry_exit_trigger()
         self.set_driver('GV3',self.zones_violated)
         self.set_driver('GV4',self.zones_bypassed)
         #self.setDriver('GV2', pyelk.chime_mode)
@@ -106,23 +107,32 @@ class AreaNode(BaseNode):
         LOGGER.info(f'{self.lpfx} val={val}')
         self.set_driver('GV7',val)
 
-    # This is only called by Zones's
+    # This is only called by Zones's when it goes violated
     def set_last_violated_zone(self, val, force=False, reportCmd=True):
-        LOGGER.info(f'{self.lpfx} val={val}')
+        LOGGER.info(f'{self.lpfx} val={val} EntryExitTrigger={self.entry_exit_trigger}')
         self.set_driver('GV8',val)
-        if int(self.elk.alarm_state) > 0:
-            # Say nothing for 'Non Alarm'
-            if not self.controller.elk.zones[val].definition == 16:
-                # Stay mode?
-                if self.elk.armed_status == 2 or self.elk.armed_status == 3:
-                    # Yep
-                    # Ignore interior alarms 4-7
-                    if not (self.controller.elk.zones[val].definition > 3
-                            and self.controller.elk.zones[val].definition < 8): 
-                        self.set_driver('GV9',val)
-                else:
-                    # Not in stay, always set it for now
-                        self.set_driver('GV9',val)
+        # ELK only sends a violated zone for entry/exit zones when it
+        # starts the timer, but this option sets it as triggered
+        # if entry_exit_trigger is enabled.
+        if self.entry_exit_trigger:
+            if int(self.elk.alarm_state) > 0:
+                # Say nothing for 'Non Alarm'
+                if not self.controller.elk.zones[val].definition == 16:
+                    # Stay mode or Away Mode?
+                    if self.elk.armed_status == 1 or self.elk.armed_status == 2:
+                        # Send for Entry/Exit Delay
+                        if self.controller.elk.zones[val].definition == 1 or self.controller.elk.zones[val].definition == 2: 
+                            self.set_last_triggered_zone(val)
+                    # Night mode?
+                    elif self.elk.armed_status == 4:
+                        # Send for Interior Night Delay
+                        if self.controller.elk.zones[val].definition == 7:
+                            self.set_last_triggered_zone(val)
+
+    # This is only called by Zone's when it triggers an alarm
+    def set_last_triggered_zone(self,val):
+        LOGGER.info(f'{self.lpfx} val={val}')
+        self.set_driver('GV9',val)
 
 
     def set_zone_logical_status(self, zn, st):
@@ -164,6 +174,11 @@ class AreaNode(BaseNode):
         self.set_driver('GV5', val, default=0)
         self.poll_voltages = False if self.get_driver('GV5') == 0 else True
 
+    def set_entry_exit_trigger(self,val=None):
+        LOGGER.info(f'{self.lpfx} {val}')
+        val = self.set_driver('GV10', val, default=1)
+        self.entry_exit_trigger = False if val == 0 else True
+
     def query(self):
         LOGGER.info(f'{self.lpfx}')
         self.set_drivers()
@@ -190,6 +205,11 @@ class AreaNode(BaseNode):
         LOGGER.info(f'{self.lpfx} {val}')
         self.set_poll_voltages(val)
 
+    def cmd_set_entry_exit_trigger(self,command):
+        val = command.get('value')
+        LOGGER.info(f'{self.lpfx} {val}')
+        self.set_entry_exit_trigger(val)
+
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
@@ -205,6 +225,7 @@ class AreaNode(BaseNode):
         {'driver': 'GV7',  'value': 0, 'uom': 25},
         {'driver': 'GV8',  'value': 0, 'uom': 25},
         {'driver': 'GV9',  'value': 0, 'uom': 25},
+        {'driver': 'GV10',  'value': 1, 'uom': 2},
     ]
     id = 'area'
     commands = {
@@ -212,4 +233,5 @@ class AreaNode(BaseNode):
             'SET_POLL_VOLTAGES': cmd_set_poll_voltages,
             'SET_BYPASS': cmd_set_bypass,
             'CLEAR_BYPASS': cmd_clear_bypass,
+            'SET_ENTRY_EXIT_TRIGGER': set_entry_exit_trigger
     }

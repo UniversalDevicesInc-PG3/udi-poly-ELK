@@ -3,24 +3,6 @@
 NODE_DEF_MAP = {
     'area': {
         'ST': {
-            'name':    'Armed Status',
-            'nls':     'ASTATUS',
-            'keys': {
-                -1: 'Unknown',
-                0:  'Disarmed',
-                1:  'Armed Away',
-                2:  'Amred Stay',
-                3:  'Armed Stay Instant',
-                4:  'Armed Night',
-                5:  'Armed Niget Instant',
-                6:  'Armed Vacation',
-                7:  'Armed next Away Mode',
-                8:  'Amred next Stay Mode',
-                9:  'Force Arm to Away Mode',
-                10: 'Force Arm to Stay Mode'
-            }
-        },
-        'GV0': {
             'name':    'Alarm State',
             'nls':     'ALARM',
             'keys': {
@@ -44,6 +26,24 @@ NODE_DEF_MAP = {
                 16: 'Water Alarm',
                 17: 'Fire Supervisory',
                 18: 'Verify Fire'
+            }
+        },
+        'GV0': {
+            'name':    'Armed Status',
+            'nls':     'ASTATUS',
+            'keys': {
+                -1: 'Unknown',
+                0:  'Disarmed',
+                1:  'Armed Away',
+                2:  'Amred Stay',
+                3:  'Armed Stay Instant',
+                4:  'Armed Night',
+                5:  'Armed Niget Instant',
+                6:  'Armed Vacation',
+                7:  'Armed next Away Mode',
+                8:  'Amred next Stay Mode',
+                9:  'Force Arm to Away Mode',
+                10: 'Force Arm to Stay Mode'
             }
         },
         'GV1': {

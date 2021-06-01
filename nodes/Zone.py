@@ -165,6 +165,8 @@ class ZoneNode(BaseNode):
         self._set_triggered(val=val,force=force)
 
     def _set_triggered(self,val,force=False):
+        if val == 1:
+            self.area.set_last_triggered_zone(self.elk.index + 1)
         if val == self.triggered and not force:
             return
         LOGGER.debug(f'{self.lpfx} val={val} force={force}')
