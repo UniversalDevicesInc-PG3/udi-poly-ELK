@@ -197,6 +197,29 @@ It has these options/commands:
 - Turn On for ... Seconds
   - This is one command to turn on for the specified seconds, or zero for latching
 
+## Using the Nodeserver
+
+Following are examples have usages for this nodeserver.
+
+### Triggered Zone
+
+The new Area Triggered Zone makes it easy to send a notification for Zone which started an alarm.  I use the Notificaiton Nodeserver so the program looks like this:
+```
+ELK Alarm Zone - [ID 0025][Parent 0001]
+
+If
+        'ELK / Home' Last Triggered Zone is not Unknown
+ 
+Then
+        Resource 'ELK Alarm Zone'
+ 
+Else
+   - No Actions - (To add one, press 'Action')
+```
+The notification resource is also very simple as shown in the 
+![Network Resource](pics/NR_AlarmZone.png)
+
+
 ## TODO and issues
 
 https://github.com/jimboca/udi-poly-elk/issues
