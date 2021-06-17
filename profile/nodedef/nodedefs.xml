@@ -46,8 +46,10 @@
             <st id="GV3" editor="integer" />
             <!-- bypassed count -->
             <st id="GV4" editor="integer" />
-            <!-- Last User Keypad -->
+            <!-- Last Violated Zone -->
             <st id="GV8" editor="I_ZONE" />
+            <!-- Last User Keypad -->
+            <st id="GV9" editor="I_ZONE" />
         </sts>
         <cmds>
             <sends>

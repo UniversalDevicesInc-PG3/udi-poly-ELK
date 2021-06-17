@@ -165,6 +165,7 @@ class Controller(Controller):
 
     def query(self):
         self.check_params()
+        self.reportDrivers()
         for node in self.nodes:
             self.nodes[node].reportDrivers()
 

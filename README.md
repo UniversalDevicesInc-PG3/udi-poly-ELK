@@ -115,12 +115,21 @@ By default only the area one, is added, change the areas configuraion if you hav
   - Single Chime with Single Beep
   - Single Chime with Constantly Beeping
   - Single Chime with Single Beep and Constantly Beeping
+- Additional Trigger
+  - The ELK only sends a triggered zone when a violated zone actually triggers an alarm. If this option is True, which is the default, the Nodeserver will also set Last Triggered Zone when an approriate zone is violated and the ELK is in an Alarm State.
+    - If Enabled:
+      - In Stay or Away Mode, set triggered for any Entry/Exit Delay Nodes when they are violated.
+      - In Night mode, set triggered for Night Delay Nodes when they are triggered
 - Poll Voltages
   - Enabled to poll the voltages on the Area's Zones.  The ELK doesn't push voltages changes, they must be polled.  By default this is False.  Enabling this creates more traffic so this is off by default.  You can query individual zones to get updates in a program, or enable to have then updated with each short poll.
 - Zones Violated
   - The number of Zones currently in Logical Status of Violated, regardless of the Armed Status. This does not mean the zone caused an Alarm, it only means the zone logical status is Violated
 - Zones Bypassed
   - The number of Zones currently in Logical Status of bypassed
+- Last Violated Zone
+  - This is the last zone whose status logical status was Violated, this doesn't mean it caused an Alarm, only means it went Violated
+- Last Triggered Zone
+  - The zone has caused an alarm to be triggered.  This comes directly from the ELK when the zone is not an entry/exit or night delay, or optionally the node server will trigger for other cases. See Additional Trigger for more informaition.
 
 #### Keypad Node
 
@@ -154,7 +163,7 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
 - Voltage
   - The current Zone Voltage.  Note this is not updated on change, it must be Polled.  By default this is polling is disabled, to enable set "Poll Voltages" on the Zone's Area.  The values are only updated on Short Poll intervals, which can be set in the Node Server Configuration Page.  It is also updated on a Zone query, so you can write ISY progrmas to force the query if you want faster updates, or just to update a single zone.
 - Triggered Alarm
-  - The zone has caused an alarm to be triggered.
+  - The zone has caused an alarm to be triggered.  This comes directly from the ELK and only turns on if the zone triggers and alarm immediatly, if the zone has entry delay it will not set triggered when zone is violated, or when entry delay times out causing an alarm.
     - True
     - False
 - Area
@@ -188,6 +197,31 @@ It has these options/commands:
 - Turn On for ... Seconds
   - This is one command to turn on for the specified seconds, or zero for latching
 
+## Using the Nodeserver
+
+Following are examples have usages for this nodeserver.
+
+### Triggered Zone
+
+The new Area Last Triggered Zone makes it easy to send a notification for Zone which started an alarm.  I use the Notificaiton Nodeserver so the program looks like this:
+```
+ELK Alarm Zone - [ID 0025][Parent 0001]
+
+If
+        'ELK / Home' Last Triggered Zone is not Unknown
+
+Then
+        Resource 'ELK Alarm Zone'
+
+Else
+   - No Actions - (To add one, press 'Action')
+```
+The notification resource is also very simple as shown in the Network Resource.
+![Network Resource](pics/NR_AlarmZone.png)
+
+This can be adapated to your prefered notification method.
+
+
 ## TODO and issues
 
 https://github.com/jimboca/udi-poly-elk/issues
@@ -198,12 +232,17 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.13: 06/17/2021
+  - Bug Fixed: [Zone query causes controller to crash](https://github.com/jimboca/udi-poly-elk/issues/59)
+- 0.5.12: 05/23/2021
+  - Enhancement for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)
+    - Add Last Triggered Zone and Entry/Exit Trigger option.  Please provide feedback.
 - 0.5.11: 04/30/2021
   - Fixed: [discover called incorrectly for runCmd](https://github.com/jimboca/udi-poly-elk/issues/20)
-  - Enhancment for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)
+  - Enhancement for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)
     - Now properly set Zone GV1 "Triggered Alarm" when a zone triggers an alarm
 - 0.5.10: 04/28/2021
-  - Fix when inital elk alarm_state is empty
+  - Fix when initial elk alarm_state is empty
 - 0.5.6 - 0.5.9: 04/06/2021
   - Fixed to show proper temperature: [Keypad: Only show temperature if the keypad has a sensor](https://github.com/jimboca/udi-poly-elk/issues/52)
 - 0.5.5: 04/06/2021

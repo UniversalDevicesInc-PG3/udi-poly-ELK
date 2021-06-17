@@ -31,7 +31,7 @@ class ZoneNode(BaseNode):
         if name == "":
             name = f'Zone_{self.elk.index + 1}'
         super(ZoneNode, self).__init__(controller, self.parent_address, self.address, name)
-        self.lpfx = f'{self.name}:'
+        self.lpfx = f'{self.name}:Zone_{self.elk.index + 1}:'
 
     def start(self):
         LOGGER.debug(f'{self.lpfx} {self.elk}')
@@ -51,7 +51,8 @@ class ZoneNode(BaseNode):
         self.elk.get_voltage()
 
     def query(self):
-        self.set_drivers(force=False,reportCmd=False)
+        self.set_drivers()
+        self.reportDrivers()
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
@@ -96,7 +97,7 @@ class ZoneNode(BaseNode):
 
     def _set_physical_status(self,val,force=False,reportCmd=True):
         if val == self.physical_status and not force:
-            return            
+            return
         LOGGER.debug(f'{self.lpfx} val={val} current={self.physical_status} force={force} son={self.son} son={self.soff}')
         # Only if we are not farcing the same value
         if (not force) and reportCmd:
@@ -130,7 +131,7 @@ class ZoneNode(BaseNode):
         self.set_driver('ST', val)
         self.logical_status = val
         if val == 2:
-            self.area.set_last_voilated_zone(self.elk.index + 1)
+            self.area.set_last_violated_zone(self.elk.index + 1)
         if self.offnode_obj is not None:
             self.offnode_obj.set_driver('ST', val)
         self.area.set_zone_logical_status(self.elk.index,val)
@@ -165,16 +166,13 @@ class ZoneNode(BaseNode):
         self._set_triggered(val=val,force=force)
 
     def _set_triggered(self,val,force=False):
+        if val == 1:
+            self.area.set_last_triggered_zone(self.elk.index + 1)
         if val == self.triggered and not force:
             return
         LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         self.set_driver('GV1', val)
         self.triggered = val
-
-    def query(self):
-        self.set_drivers()
-        self.elk.sync()
-        self.reportDrivers()
 
     def set_son(self,val=None):
         LOGGER.info(f'{self.lpfx} {val}')
@@ -253,6 +251,7 @@ class ZoneNode(BaseNode):
     ]
     id = 'zone'
     commands = {
+        "QUERY": query,
         'SET_SON': cmd_set_son,
         'SET_SOFF': cmd_set_soff,
         'SET_BYPASS': cmd_set_bypass,

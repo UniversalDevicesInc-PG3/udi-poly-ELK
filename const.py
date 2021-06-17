@@ -1,8 +1,33 @@
 
 
-
 NODE_DEF_MAP = {
     'area': {
+        'ST': {
+            'name':    'Alarm State',
+            'nls':     'ALARM',
+            'keys': {
+                -1: 'Unknown',
+                0:  'No Alarm Active',
+                1:  'Entrance Delay is Active',
+                2:  'Alarm Abort Delay Active',
+                3:  'Fire Alarm',
+                4:  'Medical Alarm',
+                5:  'Police Alarm',
+                6:  'Burglar Alarm',
+                7:  'Aux 1 Alarm',
+                8:  'Aux 2 Alarm',
+                9:  'Aux 3 Alarm',
+                10: 'Aux 4 Alarm',
+                11: 'Carbon Monoxide Alarm',
+                12: 'Emergency Alarm',
+                13: 'Freeze Alarm',
+                14: 'Gas Alarm',
+                15: 'Heat Alarm',
+                16: 'Water Alarm',
+                17: 'Fire Supervisory',
+                18: 'Verify Fire'
+            }
+        },
         'GV0': {
             'name':    'Armed Status',
             'nls':     'ASTATUS',
