@@ -51,7 +51,9 @@ class ZoneNode(BaseNode):
         self.elk.get_voltage()
 
     def query(self):
-        self.set_drivers(force=False,reportCmd=False)
+        self.set_drivers()
+        self.elk.sync()
+        self.reportDrivers()
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
@@ -172,11 +174,6 @@ class ZoneNode(BaseNode):
         LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         self.set_driver('GV1', val)
         self.triggered = val
-
-    def query(self):
-        self.set_drivers()
-        self.elk.sync()
-        self.reportDrivers()
 
     def set_son(self,val=None):
         LOGGER.info(f'{self.lpfx} {val}')
