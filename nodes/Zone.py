@@ -52,7 +52,6 @@ class ZoneNode(BaseNode):
 
     def query(self):
         self.set_drivers()
-        self.elk.sync()
         self.reportDrivers()
 
     def callback(self, obj, changeset):
