@@ -96,7 +96,7 @@ class ZoneNode(BaseNode):
 
     def _set_physical_status(self,val,force=False,reportCmd=True):
         if val == self.physical_status and not force:
-            return            
+            return
         LOGGER.debug(f'{self.lpfx} val={val} current={self.physical_status} force={force} son={self.son} son={self.soff}')
         # Only if we are not farcing the same value
         if (not force) and reportCmd:
@@ -255,6 +255,7 @@ class ZoneNode(BaseNode):
     ]
     id = 'zone'
     commands = {
+        "QUERY": query,
         'SET_SON': cmd_set_son,
         'SET_SOFF': cmd_set_soff,
         'SET_BYPASS': cmd_set_bypass,
