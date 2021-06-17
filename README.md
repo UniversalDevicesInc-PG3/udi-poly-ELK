@@ -209,10 +209,10 @@ ELK Alarm Zone - [ID 0025][Parent 0001]
 
 If
         'ELK / Home' Last Triggered Zone is not Unknown
- 
+
 Then
         Resource 'ELK Alarm Zone'
- 
+
 Else
    - No Actions - (To add one, press 'Action')
 ```
@@ -232,15 +232,17 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.13: 06/17/2021
+  - Bug Fixed: [Zone query causes controller to crash](https://github.com/jimboca/udi-poly-elk/issues/59)
 - 0.5.12: 05/23/2021
-  - Enhancment for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)
+  - Enhancement for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)
     - Add Last Triggered Zone and Entry/Exit Trigger option.  Please provide feedback.
 - 0.5.11: 04/30/2021
   - Fixed: [discover called incorrectly for runCmd](https://github.com/jimboca/udi-poly-elk/issues/20)
-  - Enhancment for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)
+  - Enhancement for: [Violated Zone Reporting Armed Stay Mode vs Elk M1 Reporting](https://github.com/jimboca/udi-poly-elk/issues/40)
     - Now properly set Zone GV1 "Triggered Alarm" when a zone triggers an alarm
 - 0.5.10: 04/28/2021
-  - Fix when inital elk alarm_state is empty
+  - Fix when initial elk alarm_state is empty
 - 0.5.6 - 0.5.9: 04/06/2021
   - Fixed to show proper temperature: [Keypad: Only show temperature if the keypad has a sensor](https://github.com/jimboca/udi-poly-elk/issues/52)
 - 0.5.5: 04/06/2021
