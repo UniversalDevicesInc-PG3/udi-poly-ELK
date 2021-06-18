@@ -232,6 +232,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.14: 06/17/2021
+  - Fix prilfe error from 0.5.12
 - 0.5.13: 06/17/2021
   - Bug Fixed: [Zone query causes controller to crash](https://github.com/jimboca/udi-poly-elk/issues/59)
 - 0.5.12: 05/23/2021

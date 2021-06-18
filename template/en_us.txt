@@ -65,7 +65,7 @@ CMD-area-SET_ARMED_STATUS-NAME = Set Armed Status
 CMD-area-SET_BYPASS-NAME = Bypass
 CMD-area-CLEAR_BYPASS-NAME = Clear Bypass
 CMD-area-SET_POLL_VOLTAGES-NAME = Set Poll Voltages
-CMD-area-SET_ENTRY_EXIT_TRIGGER = Set Entry/Exit Trigger
+CMD-area-SET_ENTRY_EXIT_TRIGGER-NAME = Set Additional Trigger
 
 # ST = alarm_state
 ALARM--1 = Unknown

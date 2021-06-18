@@ -233,5 +233,5 @@ class AreaNode(BaseNode):
             'SET_POLL_VOLTAGES': cmd_set_poll_voltages,
             'SET_BYPASS': cmd_set_bypass,
             'CLEAR_BYPASS': cmd_clear_bypass,
-            'SET_ENTRY_EXIT_TRIGGER': set_entry_exit_trigger
+            'SET_ENTRY_EXIT_TRIGGER': set_entry_exit_trigger,
     }
