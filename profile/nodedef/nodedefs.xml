@@ -42,6 +42,8 @@
             <st id="GV2" editor="chime" />
             <!-- Poll Voiltages -->
             <st id="GV5" editor="bool" />
+            <!-- Additional Trigger -->
+            <st id="GV10" editor="bool" />
             <!-- violated count -->
             <st id="GV3" editor="integer" />
             <!-- bypassed count -->
@@ -65,6 +67,9 @@
               </cmd>
               <cmd id="SET_POLL_VOLTAGES">
                 <p id="" editor="bool" init="GV5" />
+              </cmd>
+              <cmd id="SET_ENTRY_EXIT_TRIGGER">
+                <p id="" editor="bool" init="GV10" />
               </cmd>
             </accepts>
         </cmds>
