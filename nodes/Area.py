@@ -108,32 +108,38 @@ class AreaNode(BaseNode):
         self.set_driver('GV7',val)
 
     # This is only called by Zones's when it goes violated
+    # This is passed the elkm1_lib zone number, so we add 1 for our zone numbers
     def set_last_violated_zone(self, val, force=False, reportCmd=True):
         LOGGER.info(f'{self.lpfx} val={val} EntryExitTrigger={self.entry_exit_trigger}')
-        self.set_driver('GV8',val)
+        val = int(val)
+        self.set_driver('GV8',val+1)
         # ELK only sends a violated zone for entry/exit zones when it
         # starts the timer, but this option sets it as triggered
         # if entry_exit_trigger is enabled.
         if self.entry_exit_trigger:
-            if int(self.elk.alarm_state) > 0:
-                # Say nothing for 'Non Alarm'
-                if not self.controller.elk.zones[val].definition == 16:
-                    # Stay mode or Away Mode?
-                    if self.elk.armed_status == 1 or self.elk.armed_status == 2:
-                        # Send for Entry/Exit Delay
-                        if self.controller.elk.zones[val].definition == 1 or self.controller.elk.zones[val].definition == 2: 
-                            self.set_last_triggered_zone(val)
-                    # Night mode?
-                    elif self.elk.armed_status == 4:
-                        # Send for Interior Night Delay
-                        if self.controller.elk.zones[val].definition == 7:
-                            self.set_last_triggered_zone(val)
+            LOGGER.debug(f'{self.lpfx} alarm_state={self.elk.alarm_state} zone.definition={self.controller.elk.zones[val].definition} armed_status={self.elk.armed_status}')
+            # Say nothing for 'Non Alarm'
+            if not int(self.controller.elk.zones[val].definition) == 16:
+                LOGGER.debug("a")
+                # Mode Stay, Away, Night, or Vacation?
+                if int(self.elk.armed_status) == 1 or int(self.elk.armed_status) == 2 or int(self.elk.armed_status) == 4 or int(self.elk.armed_status) == 6:
+                    LOGGER.debug("b")
+                    # Send for Entry/Exit Delay
+                    if int(self.controller.elk.zones[val].definition) == 1 or int(self.controller.elk.zones[val].definition) == 2: 
+                        LOGGER.debug("c")
+                        self.set_last_triggered_zone(val)
+                # Night mode?
+                elif int(self.elk.armed_status) == 4:
+                    LOGGER.debug("d")
+                    # Send for Interior Night Delay
+                    if int(self.controller.elk.zones[val].definition) == 7:
+                        self.set_last_triggered_zone(val)
 
     # This is only called by Zone's when it triggers an alarm
+    # This is passed the elkm1_lib zone number, so we add 1 for our zone numbers
     def set_last_triggered_zone(self,val):
         LOGGER.info(f'{self.lpfx} val={val}')
-        self.set_driver('GV9',val)
-
+        self.set_driver('GV9',val+1)
 
     def set_zone_logical_status(self, zn, st):
         LOGGER.info(f'{self.lpfx} zn={zn} st={st}')

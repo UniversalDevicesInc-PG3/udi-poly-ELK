@@ -118,7 +118,7 @@ By default only the area one, is added, change the areas configuraion if you hav
 - Additional Trigger
   - The ELK only sends a triggered zone when a violated zone actually triggers an alarm. If this option is True, which is the default, the Nodeserver will also set Last Triggered Zone when an approriate zone is violated and the ELK is in an Alarm State.
     - If Enabled:
-      - In Stay or Away Mode, set triggered for any Entry/Exit Delay Nodes when they are violated.
+      - In Stay, Away, Night and Vacation Mode, set triggered for any Entry/Exit Delay Nodes when they are violated.
       - In Night mode, set triggered for Night Delay Nodes when they are triggered
 - Poll Voltages
   - Enabled to poll the voltages on the Area's Zones.  The ELK doesn't push voltages changes, they must be polled.  By default this is False.  Enabling this creates more traffic so this is off by default.  You can query individual zones to get updates in a program, or enable to have then updated with each short poll.
@@ -129,7 +129,7 @@ By default only the area one, is added, change the areas configuraion if you hav
 - Last Violated Zone
   - This is the last zone whose status logical status was Violated, this doesn't mean it caused an Alarm, only means it went Violated
 - Last Triggered Zone
-  - The zone has caused an alarm to be triggered.  This comes directly from the ELK when the zone is not an entry/exit or night delay, or optionally the node server will trigger for other cases. See Additional Trigger for more informaition.
+  - The zone has caused an alarm to be triggered.  This comes directly from the ELK when the zone is not an entry/exit, or optionally the node server will trigger for other cases. See Additional Trigger above for more informaition.
 
 #### Keypad Node
 
@@ -232,8 +232,10 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.15: 06/19/2021
+  - Fixes for Additional Trigger mode
 - 0.5.14: 06/17/2021
-  - Fix prilfe error from 0.5.12
+  - Fix profile error from 0.5.12
 - 0.5.13: 06/17/2021
   - Bug Fixed: [Zone query causes controller to crash](https://github.com/jimboca/udi-poly-elk/issues/59)
 - 0.5.12: 05/23/2021
