@@ -232,6 +232,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.16: 06/26/2021
+  - Fix Bug trying to enable/disable Additional Trigger MOde
 - 0.5.15: 06/19/2021
   - Fixes for Additional Trigger mode
 - 0.5.14: 06/17/2021
