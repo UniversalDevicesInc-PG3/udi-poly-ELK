@@ -222,9 +222,11 @@ class Controller(Controller):
 
     def timeout(self, msg_code):
         LOGGER.error(f"{self.lpfx} Timeout sending message {msg_code}!!!")
+        if msg_code == 'AS':
+            LOGGER.error(f"{self.lpfx} The above Arm System timeout is usually caused by incorrect user code, please check the Polyglot Configuration page for this nodeserver and restart the nodeserver.")
 
     def unknown(self, msg_code, data):
-        if msg_code == 'Unknown message EM':
+        if msg_code == 'EM':
             return
         LOGGER.error(f"{self.lpfx} Unknown message {msg_code}: {data}!!!")
 
