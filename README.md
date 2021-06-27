@@ -232,6 +232,9 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 0.5.17: 06/27/2021
+  - Enhancement: [Test bad login](https://github.com/jimboca/udi-poly-elk/issues/4)
+  - 
 - 0.5.16: 06/26/2021
   - Fix Bug trying to enable/disable Additional Trigger MOde
 - 0.5.15: 06/19/2021
