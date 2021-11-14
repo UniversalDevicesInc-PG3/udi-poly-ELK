@@ -232,6 +232,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 3.0.0: 11/14/2021
+  - Initial conversion to PG3
 - 0.5.17: 06/27/2021
   - Enhancement: [Test bad login](https://github.com/jimboca/udi-poly-elk/issues/4)
   - Confirmed and Closed: [Test disconnect](https://github.com/jimboca/udi-poly-elk/issues/5)

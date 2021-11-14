@@ -3,10 +3,11 @@ import time
 import logging
 import asyncio
 import os
+import markdown2
 from threading import Thread,Event
 from node_funcs import *
 from nodes import AreaNode,OutputNode
-from polyinterface import Controller, LOGGER, LOG_HANDLER
+from udi_interface import Node,LOGGER,Custom,LOG_HANDLER
 from threading import Thread,Event
 
 # sys.path.insert(0, "../elkm1")
@@ -16,12 +17,11 @@ from elkm1_lib.const import Max
 # asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
 mainloop = asyncio.get_event_loop()
 
-class Controller(Controller):
-    def __init__(self, polyglot):
+class Controller(Node):
+    def __init__(self, poly, primary, address, name):
         self.ready = False
         # We track our drsiver values because we need the value before it's been pushed.
-        super(Controller, self).__init__(polyglot)
-        self.name = "ELK Controller"
+        super(Controller, self).__init__(poly, primary, address, name)
         self.hb = 0
         self.elk = None
         self.elk_st = None
@@ -34,29 +34,40 @@ class Controller(Controller):
         self._keypad_nodes = {}
         self.logger = LOGGER
         self.lpfx = self.name + ":"
+        self.poly.Notices.clear()
         # For the short/long poll threads, we run them in threads so the main
         # process is always available for controlling devices
         self.short_event = False
         self.long_event  = False
-        # Not using because it's called to many times
-        # self.poly.onConfig(self.process_config)
+        self.Params      = Custom(poly, 'customparams')
+        poly.subscribe(poly.START,                  self.handler_start, address) 
+        poly.subscribe(poly.POLL,                   self.handler_poll)
+        poly.subscribe(poly.ADDNODEDONE,            self.handler_add_node_done, address)
+        poly.subscribe(self.poly.CUSTOMPARAMS,      self.handler_params)
+        poly.subscribe(poly.LOGLEVEL,               self.handler_log_level)
+        poly.subscribe(self.poly.CONFIGDONE,        self.handler_config_done)
+        poly.subscribe(self.poly.DISCOVER,          self.discover)
+        poly.subscribe(self.poly.STOP,              self.stop)
+        poly.ready()
+        poly.addNode(self)
 
-    def start(self):
-        LOGGER.info(f"{self.lpfx} start")
-        # Don't check profile because we always write it later
-        self.server_data = self.poly.get_server_data(check_profile=False)
-        LOGGER.info(f"{self.lpfx} Version {self.server_data['version']}")
-        self.set_debug_level()
-        self.setDriver("ST", 1)
+    def handler_start(self):
+        LOGGER.debug(f'{self.lpfx} enter')
+        LOGGER.info(f"Started Airscape NodeServer {self.poly.serverdata['version']}")
         self.heartbeat()
+        self.set_params()
         self.check_params()
-        if self.config_st:
-            LOGGER.info(f"{self.lpfx} Calling elk_start...")
-            self.elk_start()
-        else:
-            LOGGER.error(
-                f"{self.lpfx} Not starting ELK since configuration not ready, please fix and restart"
-            )
+        self.elk_start()
+        LOGGER.debug(f'{self.lpfx} exit')
+
+    def handler_config_done(self):
+        LOGGER.debug(f'{self.lpfx} enter')
+        self.poly.addLogLevel('DEBUG_MODULES',9,'Debug + Modules')
+        LOGGER.debug(f'{self.lpfx} exit')
+
+    def handler_add_node_done(self,address):
+        LOGGER.debug(f'{self.lpfx} enter: address={address}')
+        LOGGER.debug(f'{self.lpfx} exit')
 
     def heartbeat(self):
         LOGGER.debug(f"{self.lpfx} hb={self.hb}")
@@ -66,6 +77,12 @@ class Controller(Controller):
         else:
             self.reportCmd("DOF", 2)
             self.hb = 0
+
+    def handler_poll(self, polltype):
+        if polltype == 'longPoll':
+            self.longPoll()
+        elif polltype == 'shortPoll':
+            self.shortPoll()
 
     def shortPoll(self):
         if not self.ready:
@@ -126,6 +143,18 @@ class Controller(Controller):
             self.long_event.clear()
             LOGGER.debug('done')
 
+    def handler_log_level(self,level):
+        LOGGER.info(f'enter: level={level}')
+        if level['level'] < 10:
+            LOGGER.info("Setting basic config to DEBUG...")
+            LOG_HANDLER.set_basic_config(True,logging.DEBUG)
+        else:
+            LOGGER.info("Setting basic config to WARNING...")
+            LOG_HANDLER.set_basic_config(True,logging.WARNING)
+#        logging.getLogger("elkm1_lib.elk").setLevel(slevel)
+#        logging.getLogger("elkm1_lib.proto").setLevel(slevel)
+#        logging.getLogger("elkm1_lib").setLevel(slevel)
+        LOGGER.info(f'exit: level={level}')
 
     def setDriver(self, driver, value):
         LOGGER.debug(f"{self.lpfx} {driver}={value}")
@@ -166,8 +195,8 @@ class Controller(Controller):
     def query(self):
         self.check_params()
         self.reportDrivers()
-        for node in self.nodes:
-            self.nodes[node].reportDrivers()
+        for node in self.poly.getNodes:
+            self.getNode(node).reportDrivers()
 
     def connected(self):
         LOGGER.info(f"{self.lpfx} Connected!!!")
@@ -198,7 +227,13 @@ class Controller(Controller):
                 )
             else:
                 LOGGER.info(f"{self.lpfx} Adding Area {an}")
-                self._area_nodes[an] = self.addNode(AreaNode(self, self.elk.areas[an]))
+                address = f'area_{an + 1}'
+                self.poly.addNode(AreaNode(self, address, self.elk.areas[an]))
+                node = self.poly.getNode(address)
+                if node is None:
+                    LOGGER.error('Failed to add node address')
+                else:
+                    self._area_nodes[an] = node
         LOGGER.info("adding areas done, adding outputs...")
         # elkm1_lib uses zone numbers starting at zero.
         for n in range(Max.OUTPUTS.value):
@@ -211,8 +246,14 @@ class Controller(Controller):
                     f"{self.lpfx} Skipping Output {n+1} because it is not in outputs range {self.use_outputs} in configuration"
                 )
             else:
-                LOGGER.info(f"{self.lpfx} Adding Output {an}")
-                self._output_nodes[an] = self.addNode(OutputNode(self, self.elk.outputs[n]))
+                LOGGER.info(f"{self.lpfx} Adding Output {n}")
+                address = f'output_{n + 1}'
+                self.poly.addNode(OutputNode(self, address, self.elk.outputs[n]))
+                node = self.poly.getNode(address)
+                if node is None:
+                    LOGGER.error('Failed to add node address')
+                else:
+                    self._output_nodes[n] = node
         LOGGER.info("adding outputs done")
         # Only update profile on restart
         if not self.profile_done:
@@ -231,6 +272,15 @@ class Controller(Controller):
         LOGGER.error(f"{self.lpfx} Unknown message {msg_code}: {data}!!!")
 
     def elk_start(self):
+        LOGGER.debug(f'{self.lpfx} enter: config_st={self.config_st}')
+        if not self.config_st:
+            msg = "Can't start elk until configuration is completed"
+            LOGGER.error(msg)
+            self.poly.Notices['elk_start'] = msg
+            return False
+        #
+        # Build the config and start it in a thread
+        #
         self.elk_config = {
             # TODO: Support secure which would use elks: and add 'keypadid': 'xxx', 'password': 'xxx'
             "url": "elk://"
@@ -239,7 +289,6 @@ class Controller(Controller):
         # We have to create a loop since we are in a thread
         # mainloop = asyncio.new_event_loop()
         LOGGER.info(f"{self.lpfx} started")
-        logging.getLogger("elkm1_lib").setLevel(logging.DEBUG)
         asyncio.set_event_loop(mainloop)
         self.elk = Elk(self.elk_config, loop=mainloop)
         LOGGER.info(f"{self.lpfx} Waiting for sync to complete...")
@@ -271,13 +320,25 @@ class Controller(Controller):
             f"{self.lpfx} Oh no I am being deleted. Nooooooooooooooooooooooooooooooooooooooooo."
         )
 
-    def stop(self):
-        LOGGER.debug(f"{self.lpfx} NodeServer stopping...")
+    def elk_stop(self):
+        LOGGER.warning('Stopping ELK monitor...')
         if self.elk is not None:
             self.elk.disconnect()
         if self.elk_thread is not None:
             # Wait for actual termination (if needed)
             self.elk_thread.join()
+        LOGGER.warning('Stopped ELK monitor...')
+        return True
+
+    def elk_restart(self):
+        LOGGER.debug(f"{self.lpfx} enter")
+        if (self.elk_stop):
+            self.elk_start()
+        LOGGER.debug(f"{self.lpfx} exit")
+
+    def stop(self):
+        LOGGER.debug(f"{self.lpfx} NodeServer stopping...")
+        self.elk_stop()
         LOGGER.debug(f"{self.lpfx} NodeServer stopping complete...")
 
     def process_config(self, config):
@@ -286,128 +347,107 @@ class Controller(Controller):
         LOGGER.info(f"{self.lpfx} Enter config={config}")
         LOGGER.info(f"{self.lpfx} process_config done")
 
+    def warn_and_message(self,key,msg):
+        LOGGER.warning(msg)
+        self.poly.Notices[key] = msg
+
+    def handler_typed_params(self,params):
+        LOGGER.debug(f'Loading typed params now {params}')
+        return
+
+    def set_params(self):
+        """
+        Check all user params are shown to the user
+        """
+        configurationHelp = './configdoc.md';
+        if os.path.isfile(configurationHelp):
+	        cfgdoc = markdown2.markdown_path(configurationHelp)
+	        self.poly.setCustomParamsDoc(cfgdoc)
+        else:
+            LOGGER.error(f'config doc not found? {configurationHelp}')
+        defaults = {
+            'temperature_unit': 'F',
+            'host': '',
+            'user_code': '',
+            'areas': '1',
+            'outputs': ''
+        }
+        for key in defaults:
+            if self.Params[key] is None:
+                self.Params[key] = defaults[key]
+
+    def handler_params(self,params):
+        LOGGER.debug(f'enter: Loading typed data now {params}')
+        self.poly.Notices.clear()
+        self.Params.load(params)
+        self.check_params()
+        self.elk_restart()
+    
     def check_params(self):
         """
         Check all user params are available and valid
         """
-        self.removeNoticesAll()
         # Assume it's good unless it's not
-        self.config_st = True
-        # TODO: Only when necessary
-        self.update_profile()
+        config_st = True
+        #
         # Temperature Units
-        default_temperature_unit = "F"
-        if "temperature_unit" in self.polyConfig["customParams"]:
-            self.temperature_unit = self.polyConfig["customParams"]["temperature_unit"]
+        #
+        if self.Params['temperature_unit'] == "F":
+            self.temperature_uom = 17
+        elif self.Params['temperature_unit'] == "C":
+            self.temperature_uom = 4
         else:
-            self.temperature_unit = default_temperature_unit
-            LOGGER.error(
-                f"{self.lpfx} temperature unit not defined in customParams, Using default {self.temperature_unit}"
-            )
-        self.temperature_uom = 4 if self.controller.temperature_unit == "C" else 17
-        LOGGER.info(f"temperature_unit={self.temperature_unit} temerature_uom={self.temperature_uom}")
-
+            self.warn_and_message('temperature_unit',f"Temperature Unit must be F or C not '{self.Params['temperature_unit']}'")
+            config_st = False
+        #
         # Host
-        default_host = "Your_ELK_IP_Or_Host:PortNum"
-        if "host" in self.polyConfig["customParams"]:
-            self.host = self.polyConfig["customParams"]["host"]
+        #
+        if len(self.Params['host']) is None or len(self.Params['host']) == 0:
+            self.warn_and_message('host',f"host not defined '{self.Params['host']}'")
+            config_st = False
         else:
-            self.host = default_host
-            LOGGER.error(
-                f"{self.lpfx} host not defined in customParams, please add it.  Using {self.host}"
-            )
+            LOGGER.debug(f"{self.lpfx} host={self.Params['host']}")
+            self.host = self.Params['host']
+        #
         # Code
-        default_code = "Your_ELK_User_Code_for_Polyglot"
-        # Fix messed up code
-        if "keypad_code" in self.polyConfig["customParams"]:
-            self.user_code = int(self.polyConfig["customParams"]["user_code"])
-        elif "user_code" in self.polyConfig["customParams"]:
+        #
+        if self.Params['user_code'] is None or len(self.Params['user_code']) == 0:
+            self.warn_and_message('user_code',f"user_code not defined '{self.Params['user_code']}'")
+            config_st = False
+        else:
             try:
-                self.user_code = int(self.polyConfig["customParams"]["user_code"])
+                self.user_code = int(self.Params['user_code'])
             except:
-                self.user_code = default_code
-                self.addNotice(
-                    "ERROR user_code is not an integer, please fix, save and restart this nodeserver",
-                    "host",
-                )
-        else:
-            self.user_code = default_code
-            LOGGER.error(
-                f"{self.lpfx} user_code not defined in customParams, please add it.  Using {self.user_code}"
-            )
+                config_st = False
+                self.warn_and_message('user_code',f"user_code '{self.Params['user_code']} is not an integer, please fix, save and restart this nodeserver")
+        #
         # Areas
-        self.use_areas = self.getCustomParam("areas")
+        #
         self.use_areas_list = ()
-        if self.use_areas == "":
-            errs = "No areas defined in config so none will be added"
-            LOGGER.error(errs)
-            self.addNotice(errs, "areas")
+        if self.Params['areas'] is None or len(self.Params['areas']) == 0:
+            self.warn_and_message('areas',f"areas not defined '{self.Params['areas']}' so none will be added")
         else:
-            if self.use_areas is None:
-                self.use_areas = "1"
+            self.use_areas = self.Params['areas']
             try:
                 self.use_areas_list = parse_range(self.use_areas)
             except:
-                errs = f"ERROR: Failed to parse areas range '{self.use_areas}'  will not add any areas: {sys.exc_info()[1]}"
-                LOGGER.error(errs)
-                self.addNotice(errs, "areas")
-                self.config_st = False
+                self.warn_and_message('areas',f"Failed to parse areas range '{self.use_areas}'  will not add any: {sys.exc_info()[1]}")
+                config_st = False
+        #
         # Outputs
-        self.use_outputs = self.getCustomParam("outputs")
+        #
         self.use_outputs_list = ()
-        if self.use_outputs == "" or self.use_outputs is None:
-            LOGGER.warning("No outputs defined in config so none will be added")
+        if self.Params['outputs'] is None or len(self.Params['outputs']) == 0:
+            self.warn_and_message('outputs',"outputs not defined, so none will be added")
         else:
+            self.use_outputs = self.Params['outputs']
             try:
                 self.use_outputs_list = parse_range(self.use_outputs)
             except:
-                errs = f"ERROR: Failed to parse outputs range '{self.use_outputs}'  will not add any outputs: {sys.exc_info()[1]}"
-                LOGGER.error(errs)
-                self.addNotice(errs, "outputs")
-                self.config_st = False
-
-        #self.use_keypads = self.getCustomParam("keypads")
-        #self.use_keypads_list = ()
-        #if self.use_keypads == "" or self.use_keypads is None:
-        #    LOGGER.warning("No keypads defined in config so none will be added")
-        #else:
-        #    try:
-        #        self.use_keypads_list = parse_range(self.use_keypads)
-        #    except:
-        #        errs = f"ERROR: Failed to parse keypads range '{self.use_keypads}'  will not add any keypads: {sys.exc_info()[1]}"
-        #        LOGGER.error(errs)
-        #        self.addNotice(errs, "keypads")
-        #        self.config_st = False
-
-        # Make sure they are in the params
-        self.addCustomParam(
-            {
-                "temperature_unit": self.temperature_unit,
-                "host": self.host,
-                "user_code": self.user_code,
-                "areas": self.use_areas,
-                "outputs": self.use_outputs,
-                #"keypads": self.use_keypads
-            }
-        )
-
-        # Add a notice if they need to change the keypad/password from the default.
-        if self.host == default_host:
-            # This doesn't pass a key to test the old way.
-            self.addNotice(
-                "Please set proper host in configuration page, and restart this nodeserver",
-                "host",
-            )
-            self.config_st = False
-        if self.user_code == default_code:
-            # This doesn't pass a key to test the old way.
-            self.addNotice(
-                "Please set proper user_code in configuration page, and restart this nodeserver",
-                "code",
-            )
-            self.config_st = False
-
-        # self.poly.add_custom_config_docs("<b>And this is some custom config data</b>")
+                self.warn_and_message('outputs',f"Failed to parse outputs range '{self.use_areas}'  will not add any: {sys.exc_info()[1]}")
+                config_st = False
+        self.config_st = config_st
+        LOGGER.debug(f'exit: config_st={config_st}')
 
     def write_profile(self):
         LOGGER.info(f"{self.lpfx} Starting...")
@@ -475,8 +515,7 @@ class Controller(Controller):
         #This sets for all modules
         #LOG_HANDLER.set_basic_config(True, slevel)
         #but we do each indivudally
-        logging.getLogger("elkm1_lib.elk").setLevel(slevel)
-        logging.getLogger("elkm1_lib.proto").setLevel(slevel)
+
 
     def set_debug_level(self, level=None):
         LOGGER.info(f"level={level}")
@@ -510,7 +549,7 @@ class Controller(Controller):
 
     def update_profile(self):
         LOGGER.info(f"{self.lpfx}")
-        return self.poly.installprofile()
+        return self.poly.updateProfile()
 
     def cmd_update_profile(self, command):
         LOGGER.info(f"{self.lpfx}")

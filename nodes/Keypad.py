@@ -1,5 +1,5 @@
 
-from polyinterface import LOGGER
+from udi_interface import LOGGER
 from nodes import BaseNode
 from node_funcs import get_valid_node_name
 
@@ -15,14 +15,13 @@ DNAMES = {
 
 class KeypadNode(BaseNode):
 
-    def __init__(self, controller, parent, area, elk):
+    def __init__(self, controller, parent, address, elk):
         LOGGER.debug(f'KeypadNode:init: {elk}')
         self.elk    = elk
         self.controller = controller
         self.parent     = parent
-        self.area = area
+        self.area       = parent
         self.init   = False
-        self.address   = f'keypad_{self.elk.index + 1}'
         self.on_time = 0
         self.has_temperature = False if self.elk.temperature == -40 else True
         LOGGER.info(f'KeyPadNode:init: has_temperature={self.has_temperature}')
@@ -44,7 +43,8 @@ class KeypadNode(BaseNode):
             self.id = 'keypadT'
             self.drivers.append({'driver': DNAMES['temperature'], 'value': -40, 'uom': self.uoms[DNAMES['temperature']]})
         LOGGER.debug(f'KeypadNode:init: name="{name}" drivers={self.drivers}')
-        super(KeypadNode, self).__init__(controller, parent.address, self.address, name)
+        controller.poly.subscribe(controller.poly.START, self.start, address)
+        super(KeypadNode, self).__init__(controller, parent.address, address, name)
         self.lpfx = f'{self.name}:'
 
     def start(self):

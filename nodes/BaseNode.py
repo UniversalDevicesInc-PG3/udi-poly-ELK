@@ -3,7 +3,7 @@
 """
 
 from sys import exc_info
-from polyinterface import Node,LOGGER
+from udi_interface import Node,LOGGER
 from const import NODE_DEF_MAP
 from node_funcs import myfloat
 
@@ -11,7 +11,8 @@ class BaseNode(Node):
 
     def __init__(self, controller, primary_address, address, name):
         self.__my_drivers = {}
-        super(BaseNode, self).__init__(controller, primary_address, address, name)
+        self.controller = controller
+        super(BaseNode, self).__init__(controller.poly, primary_address, address, name)
         self.lpfx = f'{self.address}:{self.name}:'
 
     """

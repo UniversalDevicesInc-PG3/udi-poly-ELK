@@ -1,5 +1,5 @@
 
-from polyinterface import LOGGER
+from udi_interface import LOGGER
 from nodes import BaseNode,ZoneOffNode
 from node_funcs import get_valid_node_name
 
@@ -11,11 +11,11 @@ from elkm1_lib.const import (
 
 class ZoneNode(BaseNode):
 
-    def __init__(self, controller, parent, area, elk):
+    def __init__(self, controller, parent, address, elk):
         self.elk    = elk
         self.controller = controller
         self.parent     = parent
-        self.area       = area
+        self.area       = parent
         self.init   = False
         self.physical_status = -2
         self.logical_status = -2
@@ -24,14 +24,14 @@ class ZoneNode(BaseNode):
         self.last_changeset = {}
         self.offnode = None
         self.offnode_obj = None
-        self.address   = 'zone_{}'.format(self.elk.index + 1)
-        self.parent_address = 'area_{}'.format(self.elk.area + 1)
         self.logger    = controller.logger
         name        = get_valid_node_name(self.elk.name)
         if name == "":
             name = f'Zone_{self.elk.index + 1}'
-        super(ZoneNode, self).__init__(controller, self.parent_address, self.address, name)
-        self.lpfx = f'{self.name}:Zone_{self.elk.index + 1}:'
+        controller.poly.subscribe(controller.poly.START, self.start, address)
+        super(ZoneNode, self).__init__(controller, parent.address, address, name)
+        self.lpfx = f'{self.name}:{address}:'
+        LOGGER.debug("{self.lpfx}: exit: name={self.name} address={self.address}")
 
     def start(self):
         LOGGER.debug(f'{self.lpfx} {self.elk}')
