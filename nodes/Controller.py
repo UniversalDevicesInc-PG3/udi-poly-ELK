@@ -26,7 +26,7 @@ class Controller(Node):
         self.elk = None
         self.elk_st = None
         self.elk_thread = None
-        self.config_st = False
+        self.config_st = None
         self.profile_done = False
         self.driver = {}
         self._area_nodes = {}
@@ -54,15 +54,34 @@ class Controller(Node):
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
         LOGGER.info(f"Started Airscape NodeServer {self.poly.serverdata['version']}")
+
         self.heartbeat()
-        self.set_params()
-        self.check_params()
-        self.elk_start()
+
+        configurationHelp = './configdoc.md';
+        if os.path.isfile(configurationHelp):
+	        cfgdoc = markdown2.markdown_path(configurationHelp)
+	        self.poly.setCustomParamsDoc(cfgdoc)
+        else:
+            LOGGER.error(f'config doc not found? {configurationHelp}')
+            
+        #self.set_params()
+        #self.check_params()
         LOGGER.debug(f'{self.lpfx} exit')
 
     def handler_config_done(self):
         LOGGER.debug(f'{self.lpfx} enter')
         self.poly.addLogLevel('DEBUG_MODULES',9,'Debug + Modules')
+        # Currently not gaurunteed all config handlers are called, so wait
+        # until custom params are processed
+        count = 0
+        while self.config_st is None and count < 60:
+            LOGGER.warning("Waiting for config to be loaded...")
+            time.sleep(1)
+            count += 1
+        if count == 60:
+            LOGGER.error("Timeout waiting for config to load, check log for other errors.")
+            exit
+        self.elk_start()
         LOGGER.debug(f'{self.lpfx} exit')
 
     def handler_add_node_done(self,address):
@@ -347,7 +366,7 @@ class Controller(Node):
         LOGGER.info(f"{self.lpfx} Enter config={config}")
         LOGGER.info(f"{self.lpfx} process_config done")
 
-    def warn_and_message(self,key,msg):
+    def wm(self,key,msg):
         LOGGER.warning(msg)
         self.poly.Notices[key] = msg
 
@@ -355,16 +374,10 @@ class Controller(Node):
         LOGGER.debug(f'Loading typed params now {params}')
         return
 
-    def set_params(self):
+    def xx_set_params(self):
         """
         Check all user params are shown to the user
         """
-        configurationHelp = './configdoc.md';
-        if os.path.isfile(configurationHelp):
-	        cfgdoc = markdown2.markdown_path(configurationHelp)
-	        self.poly.setCustomParamsDoc(cfgdoc)
-        else:
-            LOGGER.error(f'config doc not found? {configurationHelp}')
         defaults = {
             'temperature_unit': 'F',
             'host': '',
@@ -378,8 +391,8 @@ class Controller(Node):
 
     def handler_params(self,params):
         LOGGER.debug(f'enter: Loading typed data now {params}')
-        self.poly.Notices.clear()
         self.Params.load(params)
+        self.poly.Notices.clear()
         self.check_params()
         self.elk_restart()
     
@@ -397,13 +410,13 @@ class Controller(Node):
         elif self.Params['temperature_unit'] == "C":
             self.temperature_uom = 4
         else:
-            self.warn_and_message('temperature_unit',f"Temperature Unit must be F or C not '{self.Params['temperature_unit']}'")
+            self.wm('temperature_unit',f"Temperature Unit must be F or C not '{self.Params['temperature_unit']}'")
             config_st = False
         #
         # Host
         #
         if len(self.Params['host']) is None or len(self.Params['host']) == 0:
-            self.warn_and_message('host',f"host not defined '{self.Params['host']}'")
+            self.wm('host',f"host not defined '{self.Params['host']}'")
             config_st = False
         else:
             LOGGER.debug(f"{self.lpfx} host={self.Params['host']}")
@@ -412,39 +425,39 @@ class Controller(Node):
         # Code
         #
         if self.Params['user_code'] is None or len(self.Params['user_code']) == 0:
-            self.warn_and_message('user_code',f"user_code not defined '{self.Params['user_code']}'")
+            self.wm('user_code',f"user_code not defined '{self.Params['user_code']}'")
             config_st = False
         else:
             try:
                 self.user_code = int(self.Params['user_code'])
             except:
                 config_st = False
-                self.warn_and_message('user_code',f"user_code '{self.Params['user_code']} is not an integer, please fix, save and restart this nodeserver")
+                self.wm('user_code',f"user_code '{self.Params['user_code']} is not an integer, please fix, save and restart this nodeserver")
         #
         # Areas
         #
         self.use_areas_list = ()
         if self.Params['areas'] is None or len(self.Params['areas']) == 0:
-            self.warn_and_message('areas',f"areas not defined '{self.Params['areas']}' so none will be added")
+            self.wm('areas',f"areas not defined '{self.Params['areas']}' so none will be added")
         else:
             self.use_areas = self.Params['areas']
             try:
                 self.use_areas_list = parse_range(self.use_areas)
             except:
-                self.warn_and_message('areas',f"Failed to parse areas range '{self.use_areas}'  will not add any: {sys.exc_info()[1]}")
+                self.wm('areas',f"Failed to parse areas range '{self.use_areas}'  will not add any: {sys.exc_info()[1]}")
                 config_st = False
         #
         # Outputs
         #
         self.use_outputs_list = ()
         if self.Params['outputs'] is None or len(self.Params['outputs']) == 0:
-            self.warn_and_message('outputs',"outputs not defined, so none will be added")
+            self.wm('outputs',"outputs not defined, so none will be added")
         else:
             self.use_outputs = self.Params['outputs']
             try:
                 self.use_outputs_list = parse_range(self.use_outputs)
             except:
-                self.warn_and_message('outputs',f"Failed to parse outputs range '{self.use_areas}'  will not add any: {sys.exc_info()[1]}")
+                self.wm('outputs',f"Failed to parse outputs range '{self.use_areas}'  will not add any: {sys.exc_info()[1]}")
                 config_st = False
         self.config_st = config_st
         LOGGER.debug(f'exit: config_st={config_st}')

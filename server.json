@@ -13,6 +13,13 @@
     "prem": true,
     "discover": true,
     "profile_version": "3.0.0",
+    "customParams": {
+        "temperature_unit": "F",
+        "host": "",
+        "user_code": "",
+        "areas": "1",
+        "outputs": ""
+    },
     "credits": [
         {
             "title": "Kasa: a NodeServer for ISY and TP-Link Kasa Integration",
