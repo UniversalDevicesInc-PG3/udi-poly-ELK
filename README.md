@@ -232,6 +232,9 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 3.0.1: 11/22/2021
+  - Change how thread is started so ELK has it's own event loop
+  - This should fix issues with restarting sometimes failing
 - 3.0.0: 11/14/2021
   - Initial conversion to PG3
 - 0.5.17: 06/27/2021

@@ -74,3 +74,4 @@ target/
 
 #Project specific
 polyinterface
+*.zip
