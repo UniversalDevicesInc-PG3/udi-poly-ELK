@@ -49,7 +49,6 @@ class AreaNode(BaseNode):
                 LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
                 address = f'zone_{zn+1}'
                 self.controller.poly.addNode(ZoneNode(self.controller, self, address, self.controller.elk.zones[zn]))
-                time.sleep(.1)
                 node = self.controller.poly.getNode(address)
                 if node is None:
                     logger.error(f"Failed to add node {address}")

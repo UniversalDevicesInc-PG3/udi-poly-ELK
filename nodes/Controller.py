@@ -14,9 +14,6 @@ from threading import Thread,Event
 from elkm1_lib import Elk
 from elkm1_lib.const import Max
 
-# asyncio.set_event_loop_policy(AnyThreadEventLoopPolicy())
-mainloop = asyncio.get_event_loop()
-
 class Controller(Node):
     def __init__(self, poly, primary, address, name):
         self.ready = False
@@ -40,14 +37,14 @@ class Controller(Node):
         self.short_event = False
         self.long_event  = False
         self.Params      = Custom(poly, 'customparams')
-        poly.subscribe(poly.START,                  self.handler_start, address) 
-        poly.subscribe(poly.POLL,                   self.handler_poll)
-        poly.subscribe(poly.ADDNODEDONE,            self.handler_add_node_done, address)
-        poly.subscribe(self.poly.CUSTOMPARAMS,      self.handler_params)
-        poly.subscribe(poly.LOGLEVEL,               self.handler_log_level)
-        poly.subscribe(self.poly.CONFIGDONE,        self.handler_config_done)
-        poly.subscribe(self.poly.DISCOVER,          self.discover)
-        poly.subscribe(self.poly.STOP,              self.stop)
+        poly.subscribe(poly.START,             self.handler_start, address) 
+        poly.subscribe(poly.POLL,              self.handler_poll)
+        poly.subscribe(poly.CUSTOMPARAMS,      self.handler_params)
+        poly.subscribe(poly.LOGLEVEL,          self.handler_log_level)
+        poly.subscribe(poly.CONFIGDONE,        self.handler_config_done)
+        poly.subscribe(poly.DISCOVER,          self.discover)
+        poly.subscribe(poly.STOP,              self.stop)
+        #poly.subscribe(poly.ADDNODEDONE,       self.handler_add_node_done)
         poly.ready()
         poly.addNode(self)
 
@@ -82,10 +79,6 @@ class Controller(Node):
             LOGGER.error("Timeout waiting for config to load, check log for other errors.")
             exit
         self.elk_start()
-        LOGGER.debug(f'{self.lpfx} exit')
-
-    def handler_add_node_done(self,address):
-        LOGGER.debug(f'{self.lpfx} enter: address={address}')
         LOGGER.debug(f'{self.lpfx} exit')
 
     def heartbeat(self):
@@ -305,12 +298,20 @@ class Controller(Node):
             "url": "elk://"
             + self.host,
         }
+        LOGGER.info(
+            f"{self.lpfx} Starting Elk Thread, will process data when sync completes..."
+        )
+        self.elk_thread = Thread(name="ELK-" + str(os.getpid()), target=self._elk_start())
+        self.elk_thread.daemon = True
+        self.elk_thread.start()
+
+    def _elk_start(self):
         # We have to create a loop since we are in a thread
-        # mainloop = asyncio.new_event_loop()
         LOGGER.info(f"{self.lpfx} started")
-        asyncio.set_event_loop(mainloop)
-        self.elk = Elk(self.elk_config, loop=mainloop)
-        LOGGER.info(f"{self.lpfx} Waiting for sync to complete...")
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        self.elk = Elk(self.elk_config, loop=loop)
+        LOGGER.debug(f'elk={self.elk} initialized, starting...')
         self.elk.add_handler("connected", self.connected)
         self.elk.add_handler("disconnected", self.disconnected)
         self.elk.add_handler("login", self.login)
@@ -319,12 +320,14 @@ class Controller(Node):
         self.elk.add_handler("unknown", self.unknown)
         LOGGER.info(f"{self.lpfx} Connecting to Elk...")
         self.elk.connect()
-        LOGGER.info(
-            f"{self.lpfx} Starting Elk Thread, will process data when sync completes..."
-        )
-        self.elk_thread = Thread(name="ELK-" + str(os.getpid()), target=self.elk.run)
-        self.elk_thread.daemon = True
-        self.elk_thread.start()
+        self.elk.run()
+        #future = asyncio.run_coroutine_threadsafe(self.elk_start_run(), loop)
+        #LOGGER.info(f'future={future}')
+        #self.elk = future.result()
+
+    async def elk_start_run(self):
+        self.elk.run()
+        return elk
 
     def discover(self):
         # TODO: What to do here, kill and restart the thread?
@@ -340,13 +343,18 @@ class Controller(Node):
         )
 
     def elk_stop(self):
-        LOGGER.warning('Stopping ELK monitor...')
+        LOGGER.warning(f'elk={self.elk} thread={self.elk_thread}')
         if self.elk is not None:
+            LOGGER.warning('Stopping ELK monitor...')
             self.elk.disconnect()
         if self.elk_thread is not None:
-            # Wait for actual termination (if needed)
+            LOGGER.warning('Stopping ELK thread...')
+            # TODO: Wait for actual termination (if needed)
             self.elk_thread.join()
-        LOGGER.warning('Stopped ELK monitor...')
+            if self.elk_thread.is_alive():
+                LOGGER.error('ELK thread did not exit?')
+            else:
+                LOGGER.error('ELK thread done.')
         return True
 
     def elk_restart(self):
@@ -436,6 +444,7 @@ class Controller(Node):
         #
         # Areas
         #
+        self.use_areas = ""
         self.use_areas_list = ()
         if self.Params['areas'] is None or len(self.Params['areas']) == 0:
             self.wm('areas',f"areas not defined '{self.Params['areas']}' so none will be added")
@@ -449,6 +458,7 @@ class Controller(Node):
         #
         # Outputs
         #
+        self.use_outputs = ""
         self.use_outputs_list = ()
         if self.Params['outputs'] is None or len(self.Params['outputs']) == 0:
             self.wm('outputs',"outputs not defined, so none will be added")
