@@ -232,6 +232,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 3.0.2: 11/23/2021
+  - Fix crash during query
 - 3.0.1: 11/22/2021
   - Change how thread is started so ELK has it's own event loop
   - This should fix issues with restarting sometimes failing

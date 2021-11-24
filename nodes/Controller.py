@@ -207,8 +207,8 @@ class Controller(Node):
     def query(self):
         self.check_params()
         self.reportDrivers()
-        for node in self.poly.getNodes:
-            self.getNode(node).reportDrivers()
+        for node in self.poly.getNodes():
+            self.poly.getNode(node).reportDrivers()
 
     def connected(self):
         LOGGER.info(f"{self.lpfx} Connected!!!")
