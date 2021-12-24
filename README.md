@@ -232,7 +232,9 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
-- 3.0.4: 12/13/2021
+- 3.0.5: 12/23/2021
+  - Remove new controller status, seems to be broken in udi interface 3.0.25
+- 3.0.4: 12/23/2021
   - Add status for controller needed to show True, False, Failed
   - Users on older PG3 versions will need to delete DB and recreate for it to work.
 - 3.0.3: 12/23/2021

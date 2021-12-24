@@ -46,7 +46,8 @@ class Controller(Node):
         poly.subscribe(poly.STOP,              self.stop)
         #poly.subscribe(poly.ADDNODEDONE,       self.handler_add_node_done)
         poly.ready()
-        poly.addNode(self, conn_status='ST')
+        #poly.addNode(self, conn_status='ST')
+        poly.addNode(self)
 
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
