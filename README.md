@@ -232,6 +232,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 3.0.3: 12/23/2021
+  - Update to latest udi_interface
 - 3.0.2: 11/23/2021
   - Fix crash during query
 - 3.0.1: 11/22/2021
