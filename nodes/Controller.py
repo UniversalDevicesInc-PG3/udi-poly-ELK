@@ -46,13 +46,14 @@ class Controller(Node):
         poly.subscribe(poly.STOP,              self.stop)
         #poly.subscribe(poly.ADDNODEDONE,       self.handler_add_node_done)
         poly.ready()
-        #poly.addNode(self, conn_status='ST')
+        #poly.addNode(self, conn_status='ST') # When this works, remove setting ST in start below
         poly.addNode(self)
 
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
         LOGGER.info(f"Started Airscape NodeServer {self.poly.serverdata['version']}")
-
+        # Remove when conn_status is working
+        self.setDriver("ST",1)
         self.heartbeat()
 
         configurationHelp = './configdoc.md';
@@ -62,8 +63,6 @@ class Controller(Node):
         else:
             LOGGER.error(f'config doc not found? {configurationHelp}')
             
-        #self.set_params()
-        #self.check_params()
         LOGGER.debug(f'{self.lpfx} exit')
 
     def handler_config_done(self):
@@ -382,21 +381,6 @@ class Controller(Node):
     def handler_typed_params(self,params):
         LOGGER.debug(f'Loading typed params now {params}')
         return
-
-    def xx_set_params(self):
-        """
-        Check all user params are shown to the user
-        """
-        defaults = {
-            'temperature_unit': 'F',
-            'host': '',
-            'user_code': '',
-            'areas': '1',
-            'outputs': ''
-        }
-        for key in defaults:
-            if self.Params[key] is None:
-                self.Params[key] = defaults[key]
 
     def handler_params(self,params):
         LOGGER.debug(f'enter: Loading typed data now {params}')

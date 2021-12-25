@@ -72,9 +72,9 @@ class ZoneNode(BaseNode):
         #                    pyelk.area, pyelk.definition, pyelk.definition_pretty(), pyelk.alarm, pyelk.alarm_pretty()))
         self.set_son()
         self.set_soff()
+        self.set_offnode()
         self.set_physical_status(force=force,reportCmd=reportCmd)
         self.set_logical_status(force=force)
-        self.set_offnode()
         self.set_triggered()
         self.set_voltage()
 
@@ -184,18 +184,18 @@ class ZoneNode(BaseNode):
 
     def set_offnode(self,val=None):
         LOGGER.info(f'{self.lpfx} val={val} offnode={self.offnode} offnode_obj={self.offnode_obj}')
-        self.offnode  = self.set_driver('GV7',val)
+        self.offnode  = self.set_driver('GV7',val,0)
         if self.offnode == 0:
             # No more off node, delete the node...
             if self.offnode_obj is not None:
                 LOGGER.info(f'{self.lpfx} Deleting off node {self.offnode_obj.address}')
-                self.controller.delNode(self.offnode_obj.address)
+                self.controller.poly.delNode(self.offnode_obj.address)
             self.offnode_obj = None
         else:
             # We have a off node, is it new?
             if self.offnode_obj is None:
                 LOGGER.info(f'{self.lpfx} Adding off node')
-                self.offnode_obj = self.controller.addNode(ZoneOffNode(self.controller,self.parent_address,self.address+'_off',self.elk.name+" - Off",
+                self.offnode_obj = self.controller.poly.addNode(ZoneOffNode(self.controller,self.parent.address,self.address+'_off',self.elk.name+" - Off",
                 self.physical_status, self.logical_status))
 
     def cmd_set_son(self,command):
