@@ -514,46 +514,6 @@ class Controller(Node):
             val = default
         return val
 
-    def set_all_logs(self, level, slevel=logging.WARNING):
-        LOGGER.info(
-            f"Setting level={level} sublevel={slevel} CRITICAL={logging.CRITICAL} ERROR={logging.ERROR} WARNING={logging.WARNING},INFO={logging.INFO} DEBUG={logging.DEBUG}"
-        )
-        LOGGER.setLevel(level)
-        #This sets for all modules
-        #LOG_HANDLER.set_basic_config(True, slevel)
-        #but we do each indivudally
-
-
-    def set_debug_level(self, level=None):
-        LOGGER.info(f"level={level}")
-        mdrv = "GV2"
-        if level is None:
-            # Restore from DB for existing nodes
-            level = self.get_driver(mdrv, 20)
-        level = int(level)
-        if level == 0:
-            level = 20
-        LOGGER.info(f"Seting {mdrv} to {level}")
-        self.setDriver(mdrv, level)
-        # 0=All 10=Debug are the same because 0 (NOTSET) doesn't show everything.
-        slevel = logging.WARNING
-        if level <= 10:
-            if level < 10:
-                slevel = logging.DEBUG
-            level = logging.DEBUG
-        elif level == 20:
-            level = logging.INFO
-        elif level == 30:
-            level = logging.WARNING
-        elif level == 40:
-            level = logging.ERROR
-        elif level == 50:
-            level = logging.CRITICAL
-        else:
-            LOGGER.error(f"Unknown level {level}")
-        #LOG_HANDLER.set_basic_config(True,logging.DEBUG)
-        self.set_all_logs(level, slevel)
-
     def update_profile(self):
         LOGGER.info(f"{self.lpfx}")
         return self.poly.updateProfile()
@@ -566,20 +526,14 @@ class Controller(Node):
         LOGGER.info(f"{self.lpfx}")
         return self.discover()
 
-    def cmd_set_debug_mode(self, command):
-        val = int(command.get("value"))
-        LOGGER.debug(f"val={val}")
-        self.set_debug_level(val)
 
     id = "controller"
     commands = {
         "QUERY": query,
         "DISCOVER": cmd_discover,
         "UPDATE_PROFILE": cmd_update_profile,
-        "SET_DM": cmd_set_debug_mode,
     }
     drivers = [
         {"driver": "ST", "value": 0, "uom": 25},
         {"driver": "GV1", "value": 0, "uom": 2},
-        {"driver": "GV2", "value": logging.DEBUG, "uom": 25},
     ]

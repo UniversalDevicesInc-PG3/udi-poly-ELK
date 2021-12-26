@@ -232,7 +232,9 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
-- 3.0.6: 12/26/2021
+- 3.0.8: 12/26/2021
+  - Removed setting debug mode from controller, existing users need to delete controller node in polyglot UI before restarting NS
+- 3.0.7: 12/26/2021
   - Back to using conn_status on controller now that udi_interface 3.0.26 fixes the issues
 - 3.0.6: 12/25/2021
   - Fix setting controller.ST on startup
