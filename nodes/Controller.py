@@ -46,8 +46,7 @@ class Controller(Node):
         poly.subscribe(poly.STOP,              self.stop)
         #poly.subscribe(poly.ADDNODEDONE,       self.handler_add_node_done)
         poly.ready()
-        #poly.addNode(self, conn_status='ST') # When this works, remove setting ST in start below
-        poly.addNode(self)
+        poly.addNode(self, conn_status='ST')
 
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
@@ -580,7 +579,7 @@ class Controller(Node):
         "SET_DM": cmd_set_debug_mode,
     }
     drivers = [
-        {"driver": "ST", "value": 0, "uom": 2},
+        {"driver": "ST", "value": 0, "uom": 25},
         {"driver": "GV1", "value": 0, "uom": 2},
         {"driver": "GV2", "value": logging.DEBUG, "uom": 25},
     ]

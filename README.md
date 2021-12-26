@@ -232,6 +232,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 3.0.6: 12/26/2021
+  - Back to using conn_status on controller now that udi_interface 3.0.26 fixes the issues
 - 3.0.6: 12/25/2021
   - Fix setting controller.ST on startup
   - Fix creating off_node
