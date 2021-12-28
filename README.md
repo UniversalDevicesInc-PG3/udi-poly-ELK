@@ -232,6 +232,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 3.0.9: 12/28/2021
+  - Update to udi_interface to 3.0.27
 - 3.0.8: 12/26/2021
   - Removed setting debug mode from controller, existing users need to delete controller node in polyglot UI before restarting NS
 - 3.0.7: 12/26/2021
