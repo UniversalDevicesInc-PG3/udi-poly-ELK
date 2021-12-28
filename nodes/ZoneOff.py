@@ -1,5 +1,5 @@
 
-from polyinterface import LOGGER
+from udi_interface import LOGGER
 from nodes import BaseNode
 
 class ZoneOffNode(BaseNode):
@@ -9,6 +9,7 @@ class ZoneOffNode(BaseNode):
         self.logical_status = logical_status
         self.physical_status = physical_status
         self.logger    = controller.logger
+        controller.poly.subscribe(controller.poly.START, self.start, address)
         super(ZoneOffNode, self).__init__(controller, parent_address, address, name)
         self.lpfx = self.name + ':'
 

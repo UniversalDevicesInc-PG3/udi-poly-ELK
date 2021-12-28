@@ -232,6 +232,29 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 3.0.9: 12/28/2021
+  - Update to udi_interface to 3.0.27
+- 3.0.8: 12/26/2021
+  - Removed setting debug mode from controller, existing users need to delete controller node in polyglot UI before restarting NS
+- 3.0.7: 12/26/2021
+  - Back to using conn_status on controller now that udi_interface 3.0.26 fixes the issues
+- 3.0.6: 12/25/2021
+  - Fix setting controller.ST on startup
+  - Fix creating off_node
+- 3.0.5: 12/23/2021
+  - Remove new controller status, seems to be broken in udi interface 3.0.25
+- 3.0.4: 12/23/2021
+  - Add status for controller needed to show True, False, Failed
+  - Users on older PG3 versions will need to delete DB and recreate for it to work.
+- 3.0.3: 12/23/2021
+  - Update to latest udi_interface
+- 3.0.2: 11/23/2021
+  - Fix crash during query
+- 3.0.1: 11/22/2021
+  - Change how thread is started so ELK has it's own event loop
+  - This should fix issues with restarting sometimes failing
+- 3.0.0: 11/14/2021
+  - Initial conversion to PG3
 - 0.5.17: 06/27/2021
   - Enhancement: [Test bad login](https://github.com/jimboca/udi-poly-elk/issues/4)
   - Confirmed and Closed: [Test disconnect](https://github.com/jimboca/udi-poly-elk/issues/5)

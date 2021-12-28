@@ -2,7 +2,7 @@
 
 import time
 from threading import Thread,Event
-from polyinterface import LOGGER
+from udi_interface import LOGGER
 from node_funcs import get_valid_node_name
 from nodes import BaseNode,ZoneNode,KeypadNode
 from elkm1_lib.const import (
@@ -18,7 +18,7 @@ VIOLATED = ZoneLogicalStatus['VIOLATED'].value
 
 class AreaNode(BaseNode):
 
-    def __init__(self, controller, elk):
+    def __init__(self, controller, address, elk):
         self.elk    = elk
         self.init   = False
         self.status = None
@@ -31,10 +31,10 @@ class AreaNode(BaseNode):
         self._keypad_nodes = {}
         self.poll_voltages = False
         self.ready = False
-        address     = f'area_{self.elk.index + 1}'
         name        = get_valid_node_name(self.elk.name)
         if name == "":
             name = f'Area_{self.elk.index + 1}'
+        controller.poly.subscribe(controller.poly.START, self.start, address)
         super(AreaNode, self).__init__(controller, address, address, name)
 
     def start(self):
@@ -47,12 +47,23 @@ class AreaNode(BaseNode):
             # Add zones that are in my area, and are defined.
             if self.controller.elk.zones[zn].definition > 0 and self.controller.elk.zones[zn].area == self.elk.index:
                 LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
-                self._zone_nodes[zn] = self.controller.addNode(ZoneNode(self.controller, self, self, self.controller.elk.zones[zn]))
-                time.sleep(.1)
+                address = f'zone_{zn+1}'
+                self.controller.poly.addNode(ZoneNode(self.controller, self, address, self.controller.elk.zones[zn]))
+                node = self.controller.poly.getNode(address)
+                if node is None:
+                    logger.error(f"Failed to add node {address}")
+                else:
+                    self._zone_nodes[zn] = node
         for n in range(Max.KEYPADS.value):
             if self.controller.elk.keypads[n].area == self.elk.index:
                 LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding keypad node {n} '{self.controller.elk.keypads[n]}'")
-                self._keypad_nodes[n] = self.controller.addNode(KeypadNode(self.controller, self, self, self.controller.elk.keypads[n]))
+                address = f'keypad_{n+1}'
+                self.controller.poly.addNode(KeypadNode(self.controller, self, address, self.controller.elk.keypads[n]))
+                node = self.controller.poly.getNode(address)
+                if node is None:
+                    logger.error(f"Failed to add node {address}")
+                else:
+                    self._keypad_nodes[n] = node
             else:
                 LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} skipping keypad node {n} '{self.controller.elk.keypads[n]}'")
         self.ready = True

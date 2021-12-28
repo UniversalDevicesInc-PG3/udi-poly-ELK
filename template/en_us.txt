@@ -10,6 +10,11 @@ ST-ctl-ST-NAME = NodeServer Online
 ST-ctl-GV1-NAME = ELK M1EXP Connected
 ST-ctl-GV2-NAME = Logger Level
 
+# Controller Status
+CST-0 = Disconnected
+CST-1 = Connected
+CST-2 = Failed
+
 # Debug/Logger Modes
 CDM-9 = Debug + elkm1_lib
 CDM-10 = Debug
