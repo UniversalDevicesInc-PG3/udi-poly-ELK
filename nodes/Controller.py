@@ -44,9 +44,13 @@ class Controller(Node):
         poly.subscribe(poly.CONFIGDONE,        self.handler_config_done)
         poly.subscribe(poly.DISCOVER,          self.discover)
         poly.subscribe(poly.STOP,              self.stop)
+        poly.subscribe(poly.CONFIG,            self.config)
         #poly.subscribe(poly.ADDNODEDONE,       self.handler_add_node_done)
         poly.ready()
         poly.addNode(self, conn_status='ST')
+
+    def config(self,data):
+        LOGGER.debug(f'{data}')
 
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
@@ -366,12 +370,6 @@ class Controller(Node):
         LOGGER.debug(f"{self.lpfx} NodeServer stopping...")
         self.elk_stop()
         LOGGER.debug(f"{self.lpfx} NodeServer stopping complete...")
-
-    def process_config(self, config):
-        # this seems to get called twice for every change, why?
-        # What does config represent?
-        LOGGER.info(f"{self.lpfx} Enter config={config}")
-        LOGGER.info(f"{self.lpfx} process_config done")
 
     def wm(self,key,msg):
         LOGGER.warning(msg)
