@@ -4,3 +4,4 @@ logs/*
 *.pyc
 zip_exclude.lst
 *.zip
+udi_interface*/*
