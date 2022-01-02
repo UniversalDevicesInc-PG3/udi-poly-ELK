@@ -11,33 +11,34 @@ from elkm1_lib.const import (
 
 class ZoneNode(BaseNode):
 
+    drivers = [
+        # logical status
+        {'driver': 'ST',  'value': 0, 'uom': 25},
+        # physcial status
+        {'driver': 'GV0', 'value': 0, 'uom': 25},
+        # triggered
+        {'driver': 'GV1', 'value': 0, 'uom': 2},
+        # area
+        {'driver': 'GV2', 'value': 0, 'uom': 56},
+        # definition type
+        {'driver': 'GV3', 'value': 0, 'uom': 25},
+        # alarm configuration
+        {'driver': 'GV4', 'value': 0, 'uom': 25},
+        # DON/DOF Config
+        #{'driver': 'GV5', 'value': 0, 'uom': 25},
+        # bypassed
+        #{'driver': 'GV6', 'value': 0, 'uom': 2},
+        # off node
+        {'driver': 'GV7', 'value': 0, 'uom': 2},
+        # off node
+        {'driver': 'GV8', 'value': 1, 'uom': 25},
+        # off node
+        {'driver': 'GV9', 'value': 2, 'uom': 25},
+        # Voltage
+        {'driver': 'CV',  'value': 0, 'uom': 72},
+    ]
+
     def __init__(self, controller, parent, address, elk):
-        self.drivers = [
-            # logical status
-            {'driver': 'ST',  'value': 0, 'uom': 25},
-            # physcial status
-            {'driver': 'GV0', 'value': 0, 'uom': 25},
-            # triggered
-            {'driver': 'GV1', 'value': 0, 'uom': 2},
-            # area
-            {'driver': 'GV2', 'value': 0, 'uom': 56},
-            # definition type
-            {'driver': 'GV3', 'value': 0, 'uom': 25},
-            # alarm configuration
-            {'driver': 'GV4', 'value': 0, 'uom': 25},
-            # DON/DOF Config
-            #{'driver': 'GV5', 'value': 0, 'uom': 25},
-            # bypassed
-            #{'driver': 'GV6', 'value': 0, 'uom': 2},
-            # off node
-            {'driver': 'GV7', 'value': 0, 'uom': 2},
-            # off node
-            {'driver': 'GV8', 'value': 1, 'uom': 25},
-            # off node
-            {'driver': 'GV9', 'value': 2, 'uom': 25},
-            # Voltage
-            {'driver': 'CV',  'value': 0, 'uom': 72},
-        ]
         self.elk    = elk
         self.controller = controller
         self.parent     = parent
@@ -55,23 +56,28 @@ class ZoneNode(BaseNode):
         if name == "":
             name = f'Zone_{self.elk.index + 1}'
         controller.poly.subscribe(controller.poly.START, self.start, address)
+        controller.poly.subscribe(controller.poly.ADDNODEDONE, self.handler_addnodedone)
         super(ZoneNode, self).__init__(controller, parent.address, address, name)
         self.lpfx = f'{self.name}:{address}:'
         LOGGER.debug("{self.lpfx}: exit: name={self.name} address={self.address}")
 
     def start(self):
         LOGGER.debug(f'{self.lpfx} {self.elk}')
-        # Set drivers that never change
-        # Definition Type
-        self.set_driver('GV3',self.elk.definition)
-        # Zone Area
-        self.set_driver('GV2', self.elk.area + 1)
-        # Set drivers, but dont report don/dof
-        self.set_drivers(force=True,reportCmd=False)
-        self.reportDrivers()
-        self.elk.add_callback(self.callback)
-        # Force get_voltage call
-        self.elk.get_voltage()
+
+    def handler_addnodedone(self,data):
+        if data['address'] == self.address:
+            LOGGER.debug(f'{self.lpfx} {self.elk}')
+            # Set drivers that never change
+            # Definition Type
+            self.set_driver('GV3',self.elk.definition)
+            # Zone Area
+            self.set_driver('GV2', self.elk.area + 1)
+            # Set drivers, but dont report don/dof
+            self.set_drivers(force=True,reportCmd=False)
+            self.reportDrivers()
+            self.elk.add_callback(self.callback)
+            # Force get_voltage call
+            self.elk.get_voltage()
 
     def shortPoll(self,poll_voltage=False):
         if poll_voltage:
@@ -126,9 +132,10 @@ class ZoneNode(BaseNode):
     def _set_physical_status(self,val,force=False,reportCmd=True):
         if val == self.physical_status and not force:
             return
-        LOGGER.debug(f'{self.lpfx} val={val} current={self.physical_status} force={force} son={self.son} son={self.soff}')
+        LOGGER.debug(f'{self.lpfx} val={val} current={self.physical_status} force={force} reportCmd={reportCmd}')
         # Only if we are not farcing the same value
         if (not force) and reportCmd:
+            LOGGER.debug(f'{self.lpfx} son={self.son} son={self.soff}')
             if val == self.son:
                 LOGGER.debug(f'{self.lpfx} Send DON')
                 self.reportCmd("DON")
@@ -223,7 +230,8 @@ class ZoneNode(BaseNode):
             # We have a off node, is it new?
             if self.offnode_obj is None:
                 LOGGER.info(f'{self.lpfx} Adding off node')
-                self.offnode_obj = self.controller.poly.addNode(ZoneOffNode(self.controller,self.parent.address,self.address+'_off',self.elk.name+" - Off",
+                address = self.address+'_off'
+                self.offnode_obj = self.controller.add_node(address,ZoneOffNode(self.controller,self.parent.address,address,self.elk.name+" - Off",
                 self.physical_status, self.logical_status))
 
     def cmd_set_son(self,command):

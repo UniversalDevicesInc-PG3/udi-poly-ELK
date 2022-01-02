@@ -20,15 +20,20 @@ class OutputNode(BaseNode):
             name = f'Output_{self.elk.index + 1}'
         LOGGER.debug(f'OutputNode:init: {name}')
         controller.poly.subscribe(controller.poly.START, self.start, address)
+        controller.poly.subscribe(controller.poly.ADDNODEDONE, self.handler_addnodedone)
         super(OutputNode, self).__init__(controller, controller.address, address, name)
         self.lpfx = f'{self.name}:'
 
     def start(self):
         LOGGER.debug(f'{self.lpfx} {self.elk}')
-        # Set drivers
-        self.set_drivers(force=True,reportCmd=False)
-        self.reportDrivers()
-        self.elk.add_callback(self.callback)
+
+    def handler_addnodedone(self,data):
+        if data['address'] == self.address:
+            LOGGER.debug(f'{self.lpfx} {self.elk}')
+            # Set drivers
+            self.set_drivers(force=True,reportCmd=False)
+            self.reportDrivers()
+            self.elk.add_callback(self.callback)
 
     def shortPoll(self):
         pass

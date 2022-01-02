@@ -44,15 +44,20 @@ class KeypadNode(BaseNode):
             self.drivers.append({'driver': DNAMES['temperature'], 'value': -40, 'uom': self.uoms[DNAMES['temperature']]})
         LOGGER.debug(f'KeypadNode:init: name="{name}" drivers={self.drivers}')
         controller.poly.subscribe(controller.poly.START, self.start, address)
+        controller.poly.subscribe(controller.poly.ADDNODEDONE, self.handler_addnodedone)
         super(KeypadNode, self).__init__(controller, parent.address, address, name)
         self.lpfx = f'{self.name}:'
 
     def start(self):
         LOGGER.debug(f'{self.lpfx} {self.elk}')
-        # Set drivers
-        self.set_drivers(force=True,reportCmd=False)
-        self.reportDrivers()
-        self.elk.add_callback(self.callback)
+
+    def handler_addnodedone(self,data):
+        if data['address'] == self.address:
+            LOGGER.debug(f'{self.lpfx} {self.elk}')
+            # Set drivers
+            self.set_drivers(force=True,reportCmd=False)
+            self.reportDrivers()
+            self.elk.add_callback(self.callback)
 
     def shortPoll(self):
         pass

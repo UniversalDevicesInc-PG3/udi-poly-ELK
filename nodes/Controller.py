@@ -243,6 +243,14 @@ class Controller(Node):
         else:
             LOGGER.error(f"{self.lpfx} Login Failed!!!")
 
+    def add_node(self,address,node):
+        self.poly.addNode(node)
+        self.wait_for_node_done()
+        node = self.poly.getNode(address)
+        if node is None:
+            LOGGER.error('Failed to add node address')
+        return node
+
     def sync_complete(self):
         LOGGER.info(f"{self.lpfx} Sync of keypad is complete!!!")
         # TODO: Add driver for sync complete status, or put in ST?
@@ -259,11 +267,8 @@ class Controller(Node):
             else:
                 LOGGER.info(f"{self.lpfx} Adding Area {an}")
                 address = f'area_{an + 1}'
-                self.poly.addNode(AreaNode(self, address, self.elk.areas[an]))
-                node = self.poly.getNode(address)
-                if node is None:
-                    LOGGER.error('Failed to add node address')
-                else:
+                node = self.add_node(address,AreaNode(self, address, self.elk.areas[an]))
+                if node is not None:
                     self._area_nodes[an] = node
         LOGGER.info("adding areas done, adding outputs...")
         # elkm1_lib uses zone numbers starting at zero.
@@ -279,12 +284,8 @@ class Controller(Node):
             else:
                 LOGGER.info(f"{self.lpfx} Adding Output {n}")
                 address = f'output_{n + 1}'
-                self.poly.addNode(OutputNode(self, address, self.elk.outputs[n]))
-                self.controller.wait_for_node_done()
-                node = self.poly.getNode(address)
-                if node is None:
-                    LOGGER.error('Failed to add node address')
-                else:
+                node = self.add_node(address,OutputNode(self, address, self.elk.outputs[n]))
+                if node is not None:
                     self._output_nodes[n] = node
         LOGGER.info("adding outputs done")
         # Only update profile on restart
