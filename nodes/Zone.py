@@ -12,6 +12,32 @@ from elkm1_lib.const import (
 class ZoneNode(BaseNode):
 
     def __init__(self, controller, parent, address, elk):
+        self.drivers = [
+            # logical status
+            {'driver': 'ST',  'value': 0, 'uom': 25},
+            # physcial status
+            {'driver': 'GV0', 'value': 0, 'uom': 25},
+            # triggered
+            {'driver': 'GV1', 'value': 0, 'uom': 2},
+            # area
+            {'driver': 'GV2', 'value': 0, 'uom': 56},
+            # definition type
+            {'driver': 'GV3', 'value': 0, 'uom': 25},
+            # alarm configuration
+            {'driver': 'GV4', 'value': 0, 'uom': 25},
+            # DON/DOF Config
+            #{'driver': 'GV5', 'value': 0, 'uom': 25},
+            # bypassed
+            #{'driver': 'GV6', 'value': 0, 'uom': 2},
+            # off node
+            {'driver': 'GV7', 'value': 0, 'uom': 2},
+            # off node
+            {'driver': 'GV8', 'value': 1, 'uom': 25},
+            # off node
+            {'driver': 'GV9', 'value': 2, 'uom': 25},
+            # Voltage
+            {'driver': 'CV',  'value': 0, 'uom': 72},
+        ]
         self.elk    = elk
         self.controller = controller
         self.parent     = parent
@@ -47,8 +73,9 @@ class ZoneNode(BaseNode):
         # Force get_voltage call
         self.elk.get_voltage()
 
-    def shortPoll(self):
-        self.elk.get_voltage()
+    def shortPoll(self,poll_voltage=False):
+        if poll_voltage:
+            self.elk.get_voltage()
 
     def query(self):
         self.set_drivers()
@@ -66,6 +93,7 @@ class ZoneNode(BaseNode):
             self._set_voltage(changeset['voltage'])
 
     def set_drivers(self,force=False,reportCmd=True):
+        # setUserValues
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
         #LOGGER.debug('_set_drivers: Zone:{} description:"{}" state:{}={} status:{}={} enabled:{} area:{} definition:{}={} alarm:{}={}'
         #            .format(pyelk.number, pyelk.description, pyelk.state, pyelk.state_pretty(), pyelk.status, pyelk.status_pretty(), pyelk.enabled,
@@ -75,8 +103,8 @@ class ZoneNode(BaseNode):
         self.set_offnode()
         self.set_physical_status(force=force,reportCmd=reportCmd)
         self.set_logical_status(force=force)
-        self.set_triggered()
-        self.set_voltage()
+        self.set_triggered(force=force)
+        self.set_voltage(force=force)
 
     """
         ZDCONF-0 = Send Both
@@ -223,32 +251,7 @@ class ZoneNode(BaseNode):
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
-    drivers = [
-        # logical status
-        {'driver': 'ST',  'value': 0, 'uom': 25},
-        # physcial status
-        {'driver': 'GV0', 'value': 0, 'uom': 25},
-        # triggered
-        {'driver': 'GV1', 'value': 0, 'uom': 2},
-        # area
-        {'driver': 'GV2', 'value': 0, 'uom': 56},
-        # definition type
-        {'driver': 'GV3', 'value': 0, 'uom': 25},
-        # alarm configuration
-        {'driver': 'GV4', 'value': 0, 'uom': 25},
-        # DON/DOF Config
-        #{'driver': 'GV5', 'value': 0, 'uom': 25},
-        # bypassed
-        #{'driver': 'GV6', 'value': 0, 'uom': 2},
-        # off node
-        {'driver': 'GV7', 'value': 0, 'uom': 2},
-        # off node
-        {'driver': 'GV8', 'value': 1, 'uom': 25},
-        # off node
-        {'driver': 'GV9', 'value': 2, 'uom': 25},
-        # Voltage
-        {'driver': 'CV',  'value': 0, 'uom': 72},
-    ]
+
     id = 'zone'
     commands = {
         "QUERY": query,

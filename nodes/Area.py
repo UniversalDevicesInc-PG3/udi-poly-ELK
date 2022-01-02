@@ -49,6 +49,7 @@ class AreaNode(BaseNode):
                 LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
                 address = f'zone_{zn+1}'
                 self.controller.poly.addNode(ZoneNode(self.controller, self, address, self.controller.elk.zones[zn]))
+                self.controller.wait_for_node_done()
                 node = self.controller.poly.getNode(address)
                 if node is None:
                     logger.error(f"Failed to add node {address}")
@@ -60,6 +61,7 @@ class AreaNode(BaseNode):
                 address = f'keypad_{n+1}'
                 self.controller.poly.addNode(KeypadNode(self.controller, self, address, self.controller.elk.keypads[n]))
                 node = self.controller.poly.getNode(address)
+                self.controller.wait_for_node_done()
                 if node is None:
                     logger.error(f"Failed to add node {address}")
                 else:
@@ -75,7 +77,7 @@ class AreaNode(BaseNode):
             return False
         if self.poll_voltages:
             for zn in self._zone_nodes:
-                self._zone_nodes[zn].shortPoll()
+                self._zone_nodes[zn].shortPoll(poll_voltage=self.poll_voltages)
 
     def longPoll(self):
         pass

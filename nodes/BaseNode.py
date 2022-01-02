@@ -26,7 +26,7 @@ class BaseNode(Node):
             # Restore from DB for existing nodes
             try:
                 val = self.getDriver(mdrv)
-                LOGGER.info(f'{self.lpfx} {val}')
+                LOGGER.info(f'{self.lpfx} Using getDriver({mdrv})={val}')
             except:
                 LOGGER.warning(f'{self.lpfx} getDriver({mdrv}) failed which can happen on new nodes, using {default}')
         if val is None:

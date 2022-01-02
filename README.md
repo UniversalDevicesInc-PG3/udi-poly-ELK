@@ -232,6 +232,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Version History
+- 3.0.11: 01/02/2021
+  - add nodequeue so only one node is added a a time to try and fix issues, but not working yet
 - 3.0.10: 01/02/2021
   - Update to udi_interface 3.0.28
 - 3.0.9: 12/28/2021

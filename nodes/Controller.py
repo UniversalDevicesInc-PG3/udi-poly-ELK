@@ -26,6 +26,7 @@ class Controller(Node):
         self.config_st = None
         self.profile_done = False
         self.driver = {}
+        self.n_queue = []
         self._area_nodes = {}
         self._output_nodes = {}
         self._keypad_nodes = {}
@@ -45,9 +46,24 @@ class Controller(Node):
         poly.subscribe(poly.DISCOVER,          self.discover)
         poly.subscribe(poly.STOP,              self.stop)
         poly.subscribe(poly.CONFIG,            self.config)
+        poly.subscribe(poly.ADDNODEDONE,       self.node_queue)
         #poly.subscribe(poly.ADDNODEDONE,       self.handler_add_node_done)
         poly.ready()
         poly.addNode(self, conn_status='ST')
+
+    '''
+    node_queue() and wait_for_node_event() create a simple way to wait
+    for a node to be created.  The nodeAdd() API call is asynchronous and
+    will return before the node is fully created. Using this, we can wait
+    until it is fully created before we try to use it.
+    '''
+    def node_queue(self, data):
+        self.n_queue.append(data['address'])
+
+    def wait_for_node_done(self):
+        while len(self.n_queue) == 0:
+            time.sleep(0.1)
+        self.n_queue.pop()
 
     def config(self,data):
         LOGGER.debug(f'{data}')
@@ -264,6 +280,7 @@ class Controller(Node):
                 LOGGER.info(f"{self.lpfx} Adding Output {n}")
                 address = f'output_{n + 1}'
                 self.poly.addNode(OutputNode(self, address, self.elk.outputs[n]))
+                self.controller.wait_for_node_done()
                 node = self.poly.getNode(address)
                 if node is None:
                     LOGGER.error('Failed to add node address')
