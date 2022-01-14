@@ -250,7 +250,7 @@ https://github.com/jimboca/udi-poly-elk/issues
 Please post any questions or issues to the sub-forum https://forum.universal-devices.com/forum/176-elk-node-server/ unless you know it's really a bug or enhancement then you can add it to https://github.com/jimboca/udi-poly-elk/issues
 
 
-## Version History
+## Release Notes
 - 3.0.12: 01/02/2022
   - More reorganization to try and fix issues with user settable values not being restored
 - 3.0.11: 01/01/2022
