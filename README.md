@@ -12,6 +12,27 @@ The node server also has advantages.  It creates a node for Areas, Zones, ... So
 
 This node server works great with the new UD Mobile app for Android and iOS!
 
+
+## Help
+
+If you have any issues are questions you can ask on [PG3 ELK SubForum](https://forum.universal-devices.com/forum/309-elk/) or report an issue at [PG3 ELK Github issues](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues).
+
+## Moving from PG2
+
+There are a few ways to move
+
+### Backup and Restore
+
+The best way to move from PG2 to PG3 is to backup on PG2 and restore on PG3, but the only option is to do all your nodeservers at once.  I don't have much information on this method, if you have questions please ask on the PG3 forum.
+
+### Delete and add
+
+If you can't or don't want backup/restore then you can delete the NS on PG2 and install on the same slot on PG2.  All node addresses will stay the same so all your programs should work after doing an update and save on each one, or rebooting the ISY, especially any using the Controller node since it's ST value has changed.  Just remember to capture the config information before deleting.
+
+### Add then delete
+
+Another option is to install in a new slot then go edit all your programs and scenes that reference the nodes and switch to the new slots. 
+
 ## Installation
 
 Install from the Polyglot store.
@@ -25,8 +46,6 @@ After setting configuration then restart the nodeserver and all configured areas
 ## Requirements
 
 This uses https://github.com/gwww/elkm1 which currently only supports an M1EXP in local non secure mode.
-
-IF running on Raspberry Pi, you must be on the latest version, Buster with Python 3.6 or above, preferably 3.7.
 
 ## Using this Node Server
 
