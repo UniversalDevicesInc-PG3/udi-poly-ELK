@@ -364,7 +364,7 @@ class Controller(Node):
         )
 
     def elk_stop(self):
-        LOGGER.warning(f'elk={self.elk} thread={self.elk_thread}')
+        LOGGER.info(f'elk={self.elk} thread={self.elk_thread}')
         if self.elk is not None:
             LOGGER.warning('Stopping ELK monitor...')
             self.elk.disconnect()
@@ -379,15 +379,15 @@ class Controller(Node):
         return True
 
     def elk_restart(self):
-        LOGGER.debug(f"{self.lpfx} enter")
+        LOGGER.warning(f"{self.lpfx} Restarting Nodeserver")
         if (self.elk_stop):
             self.elk_start()
-        LOGGER.debug(f"{self.lpfx} exit")
+        LOGGER.info(f"{self.lpfx} exit")
 
     def stop(self):
-        LOGGER.debug(f"{self.lpfx} NodeServer stopping...")
+        LOGGER.warning(f"{self.lpfx} NodeServer stopping...")
         self.elk_stop()
-        LOGGER.debug(f"{self.lpfx} NodeServer stopping complete...")
+        LOGGER.warning(f"{self.lpfx} NodeServer stopping complete...")
 
     def wm(self,key,msg):
         LOGGER.warning(msg)

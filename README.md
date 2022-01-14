@@ -251,6 +251,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Release Notes
+- 3.0.13: 01/14/2022
+  - Add more debugging info to stop and restart
 - 3.0.12: 01/02/2022
   - More reorganization to try and fix issues with user settable values not being restored
 - 3.0.11: 01/01/2022
