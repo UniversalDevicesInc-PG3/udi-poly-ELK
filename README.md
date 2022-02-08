@@ -220,6 +220,27 @@ It has these options/commands:
 
 Following are examples have usages for this nodeserver.
 
+### Notifications
+
+To include any information about a Zone in a notification you can use any if these drivers:
+```
+Area: ${elk.area.1.name}
+ Alarm Status:        ${sys.node.n004_area_1.ST}
+ Armed Status:        ${sys.node.n004_area_1.GV0}
+ Arm Up State:        ${sys.node.n004_area_1.GV1}
+ Last Violated Zone:  ${sys.node.n004_area_1.GV8}
+ Last Triggered Zone: ${sys.node.n004_area_1.GV9}
+ Chime Mode:          ${sys.node.n004_area_1.GV2}
+ Zones Violated:      ${sys.node.n004_area_1.GV3}
+ Zones Bypassed:      ${sys.node.n004_area_1.GV4}
+ Last user:           ${sys.node.n004_area_1.GV6}
+ Last Keypad:         ${sys.node.n004_area_1.GV7}
+
+${elk.zone.001.name} ${elk.zone.001.status}
+${elk.zone.002.name} ${elk.zone.002.status}
+...
+```
+
 ### Triggered Zone
 
 The new Area Last Triggered Zone makes it easy to send a notification for Zone which started an alarm.  I use the Notificaiton Nodeserver so the program looks like this:
@@ -251,6 +272,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Release Notes
+- 3.0.13: 01/14/2022
+  - Add more debugging info to stop and restart
 - 3.0.12: 01/02/2022
   - More reorganization to try and fix issues with user settable values not being restored
 - 3.0.11: 01/01/2022
