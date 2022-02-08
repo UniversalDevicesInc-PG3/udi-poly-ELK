@@ -5,3 +5,5 @@ logs/*
 zip_exclude.lst
 *.zip
 udi_interface*/*
+profile/nls/en_us.txt
+profile/*/custom.xml
