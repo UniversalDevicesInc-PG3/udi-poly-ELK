@@ -1,14 +1,17 @@
+from curses.ascii import SP
 import sys
 import time
 import logging
 import asyncio
 import os
 import markdown2
+from copy import deepcopy
 from threading import Thread,Event
 from node_funcs import *
 from nodes import AreaNode,OutputNode
 from udi_interface import Node,LOGGER,Custom,LOG_HANDLER
 from threading import Thread,Event
+from const import SPEAK_WORDS,SPEAK_PHRASES
 
 # sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
@@ -486,6 +489,26 @@ class Controller(Node):
             nls.write(line)
         nls_tmpl.close()
         #
+        # SPEAK_WORDS
+        #
+        nls.write("\n# SPEAK WORDS\n")
+        swords = list()
+        for idx,word in SPEAK_WORDS.items():
+            swords.append(idx)
+            nls.write(f"SPW-{idx} = {word}\n")
+        #
+        # SPEAK_PHRASES
+        #
+        nls.write("\n# SPEAK PHRASES\n")
+        sphrases = list()
+        for zn in range(Max.ZONES.value):
+            if self.elk.zones[zn].definition > 0:
+                SPEAK_PHRASES[zn] = self.elk.zones[zn].name
+        for idx,word in SPEAK_PHRASES.items():
+            sphrases.append(idx)
+            nls.write(f"SPP-{idx} = {word}\n")
+
+        #
         # Then write our custom NLS lines
         nls.write("\nUSER-0 = Unknown\n")
         for n in range(Max.USERS.value - 3):
@@ -507,9 +530,26 @@ class Controller(Node):
         for n in range(Max.ZONES.value):
             LOGGER.debug(f"{self.lpfx} zone={self.elk.zones[n]}")
             nls.write(f"ZONE-{n+1} = {self.elk.zones[n].name}\n")
-        #
-        # Close it and update the ISY
         nls.close()
+        #
+        # Start the custom editors with the template data.
+        #
+        word = reduce_subset(swords)
+        phrase = reduce_subset(sphrases)
+        out_file = "profile/editor/custom.xml"
+        LOGGER.info(f"{self.lpfx} Writing {out_file}")
+        out_h     = open(out_file,  "w")
+        out_h.write(f'''
+<editor id="sp_words">
+  <range uom="25" subset="{word["subset_string"]}" nls="SPW"/>
+</editor>
+<editor id="sp_phrase">
+  <range uom="25" subset="{phrase["subset_string"]}" nls="SPP"/>
+</editor>
+''')
+        out_h.close()
+        #
+        # Update the ISY
         self.update_profile()
         LOGGER.info(f"{self.lpfx} Done...")
 
@@ -542,14 +582,31 @@ class Controller(Node):
         LOGGER.info(f"{self.lpfx}")
         return self.discover()
 
+    def cmd_speak_word(self, command):
+        val = int(command.get('value'))
+        LOGGER.info(f"{self.lpfx} {val}")
+        # Get the word from the sorted list
+        LOGGER.info(f"{self.lpfx} word={SPEAK_WORDS[val]}")
+        return self.elk.panel.speak_word(val)
+
+    def cmd_speak_phrase(self, command):
+        val = int(command.get('value'))
+        LOGGER.info(f"{self.lpfx} {val}")
+        # Get the word from the sorted list
+        LOGGER.info(f"{self.lpfx} word={SPEAK_PHRASE[val]}")
+        return self.elk.panel.speak_phrase(val)
+
 
     id = "controller"
     commands = {
         "QUERY": query,
         "DISCOVER": cmd_discover,
         "UPDATE_PROFILE": cmd_update_profile,
+        "SET_SPEAK_WORD": cmd_speak_word,
+        "SET_SPEAK_PHRASE": cmd_speak_phrase,
     }
     drivers = [
         {"driver": "ST", "value": 0, "uom": 25},
         {"driver": "GV1", "value": 0, "uom": 2},
+        {"driver": "GV2", "value": 0, "uom": 25},
     ]

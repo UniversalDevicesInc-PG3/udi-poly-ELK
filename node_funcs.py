@@ -51,6 +51,26 @@ def parse_range(range_in):
             #    print("el not an int")
     return range_out
 
+# 
+# Pass in a list containing all the numbers in the set
+# Return full_string and subset_str for editors
+#
+def reduce_subset(subset):
+    subset_str = ""
+    subset.sort()
+    full_string = ",".join(map(str,subset))
+    while len(subset) > 0:
+        x = subset.pop(0)
+        if subset_str != "":
+            subset_str += ","
+        subset_str += str(x)
+        if len(subset) > 0 and x == subset[0] - 1:
+            y = subset.pop(0)
+            while len(subset) > 0 and (y == subset[0] or y == subset[0] - 1):
+                y = subset.pop(0)
+            subset_str += "-" + str(y)
+    return { 'full_string': full_string, 'subset_string': subset_str }
+
 def is_in_list(el,list_in):
     try:
         return list_in.index(el)

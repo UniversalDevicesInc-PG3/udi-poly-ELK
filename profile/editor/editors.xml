@@ -9,8 +9,11 @@
   <editor id="cst">
     <range uom="25" subset="0,1,2" nls="CST"/>
   </editor>
-  <editor id="I_DEBUG">
-    <range uom="25" subset="9,10,20,30,40,50" nls="CDM"/>
+  <editor id="sp_words">
+    <range uom="25" subset="1-472" nls="SPW"/>
+  </editor>
+  <editor id="word_or_phrase">
+    <range uom="25" subset="1-2" nls="WOP"/>
   </editor>
   <editor id="integer">
        <range uom="25" min="0" max="1000" prec="0" />

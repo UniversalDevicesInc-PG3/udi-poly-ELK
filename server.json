@@ -12,7 +12,7 @@
     "cloud": false,
     "prem": true,
     "discover": true,
-    "profile_version": "3.0.12",
+    "profile_version": true,
     "customParams": {
         "temperature_unit": "F",
         "host": "",
@@ -22,7 +22,7 @@
     },
     "credits": [
         {
-            "title": "Kasa: a NodeServer for ISY and TP-Link Kasa Integration",
+            "title": "ELK: A NodeServer for ISY and ELK Alarm Panel Integration",
             "author": "JimBoCA",
             "version": "3.0.12",
             "date": "November 12, 2021",
