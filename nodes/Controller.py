@@ -503,7 +503,7 @@ class Controller(Node):
         sphrases = list()
         for zn in range(Max.ZONES.value):
             if self.elk.zones[zn].definition > 0:
-                SPEAK_PHRASES[zn] = self.elk.zones[zn].name
+                SPEAK_PHRASES[zn+1] = self.elk.zones[zn].name
         for idx,word in SPEAK_PHRASES.items():
             sphrases.append(idx)
             nls.write(f"SPP-{idx} = {word}\n")
@@ -536,18 +536,17 @@ class Controller(Node):
         #
         word = reduce_subset(swords)
         phrase = reduce_subset(sphrases)
-        out_file = "profile/editor/custom.xml"
-        LOGGER.info(f"{self.lpfx} Writing {out_file}")
-        out_h     = open(out_file,  "w")
-        out_h.write(f'''
-<editor id="sp_words">
-  <range uom="25" subset="{word["subset_string"]}" nls="SPW"/>
-</editor>
-<editor id="sp_phrase">
-  <range uom="25" subset="{phrase["subset_string"]}" nls="SPP"/>
-</editor>
-''')
-        out_h.close()
+        template_f = "template/editors.xml"
+        out_f = "profile/editor/custom.xml"
+        LOGGER.debug("Reading {}".format(template_f))
+        with open (template_f, "r") as myfile:
+            data=myfile.read()
+            myfile.close()
+        # Write the editors file with our info
+        LOGGER.debug("Writing {}".format(out_f))
+        with open (out_f, "w") as out_h:
+            out_h.write(data.format(word["full_string"],word["subset_string"],phrase["full_string"],phrase["subset_string"]))
+            out_h.close()
         #
         # Update the ISY
         self.update_profile()
@@ -593,7 +592,7 @@ class Controller(Node):
         val = int(command.get('value'))
         LOGGER.info(f"{self.lpfx} {val}")
         # Get the word from the sorted list
-        LOGGER.info(f"{self.lpfx} word={SPEAK_PHRASE[val]}")
+        LOGGER.info(f"{self.lpfx} phrase={SPEAK_PHRASES[val]}")
         return self.elk.panel.speak_phrase(val)
 
 
@@ -602,8 +601,8 @@ class Controller(Node):
         "QUERY": query,
         "DISCOVER": cmd_discover,
         "UPDATE_PROFILE": cmd_update_profile,
-        "SET_SPEAK_WORD": cmd_speak_word,
-        "SET_SPEAK_PHRASE": cmd_speak_phrase,
+        "SPEAK_WORD": cmd_speak_word,
+        "SPEAK_PHRASE": cmd_speak_phrase,
     }
     drivers = [
         {"driver": "ST", "value": 0, "uom": 25},

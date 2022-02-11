@@ -1,0 +1,16 @@
+<editors>
+
+    <!-- Words -->
+    <!--   Full Subset: {0} -->
+    <!--   Short Subset: {1} -->
+    <!-- Phrases -->
+    <!--   Full Subset: {2} -->
+    <!--   Short Subset: {3} -->
+    
+  <editor id="sp_words">
+    <range uom="25" subset="{1}" nls="SPW"/>
+  </editor>
+  <editor id="sp_phrase">
+    <range uom="25" subset="{3}" nls="SPP"/>
+  </editor>
+</editors>
