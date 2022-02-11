@@ -7,3 +7,4 @@ zip_exclude.lst
 udi_interface*/*
 profile/nls/en_us.txt
 profile/*/custom.xml
+pics/*

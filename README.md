@@ -272,6 +272,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Release Notes
+- 3.1.0: 02/10/2022
+  - [Send speak to panel from list of defined phrases or words](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/57)
 - 3.0.13: 01/14/2022
   - Add more debugging info to stop and restart
 - 3.0.12: 01/02/2022
