@@ -227,8 +227,13 @@ class Controller(Node):
                 self.setDriver("GV1", 0)
 
     def query(self):
+        LOGGER.info(f'{self.lpfx}')
         self.check_params()
         self.reportDrivers()
+
+    def query_all(self):
+        LOGGER.info(f'{self.lpfx}')
+        self.query()
         for node in self.poly.getNodes():
             self.poly.getNode(node).reportDrivers()
 

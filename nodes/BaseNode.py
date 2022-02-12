@@ -15,6 +15,20 @@ class BaseNode(Node):
         super(BaseNode, self).__init__(controller.poly, primary_address, address, name)
         self.lpfx = f'{self.address}:{self.name}:'
 
+    def set_drivers(self):
+        LOGGER.debug(f'{self.lpfx} does not have set_drivers')
+
+    def query(self):
+        LOGGER.info(f'{self.lpfx}')
+        self.set_drivers()
+        self.reportDrivers()
+
+    def shortPoll(self):
+        pass
+
+    def longPoll(self):
+        pass
+
     """
     Create our own get/set driver methods because getDriver from Polyglot can be
     delayed, we sometimes need to know the value before the DB is updated

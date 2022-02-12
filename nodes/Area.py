@@ -196,11 +196,6 @@ class AreaNode(BaseNode):
         val = self.set_driver('GV10', val, default=1)
         self.entry_exit_trigger = False if val == 0 else True
 
-    def query(self):
-        LOGGER.info(f'{self.lpfx}')
-        self.set_drivers()
-        self.reportDrivers()
-
     def cmd_set_armed_status(self,command):
         val = command.get('value')
         LOGGER.info(f'{self.lpfx} elk.arm({val},****')

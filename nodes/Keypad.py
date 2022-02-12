@@ -59,12 +59,6 @@ class KeypadNode(BaseNode):
             self.reportDrivers()
             self.elk.add_callback(self.callback)
 
-    def shortPoll(self):
-        pass
-
-    def query(self):
-        self.set_drivers(force=False,reportCmd=False)
-
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
         if 'last_user' in changeset:
