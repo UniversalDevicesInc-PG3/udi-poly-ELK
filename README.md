@@ -272,6 +272,9 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Release Notes
+- 3.1.1: 02/12/2022
+  - Query of controller no longer queries all nodes since the ISY Query program which typically runs every morning at 3am
+    will query the controller and all other nodes which created a lot of extra traffic.
 - 3.1.0: 02/10/2022
   - [Send speak to panel from list of defined phrases or words](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/57)
 - 3.0.13: 01/14/2022
