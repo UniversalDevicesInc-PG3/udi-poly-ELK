@@ -318,6 +318,8 @@ class Controller(Node):
             msg = "Can't start elk until configuration is completed"
             LOGGER.error(msg)
             self.poly.Notices['elk_start'] = msg
+            # Build temporary profile
+            self.write_profile()
             return False
         #
         # Build the config and start it in a thread
@@ -506,9 +508,12 @@ class Controller(Node):
         #
         nls.write("\n# SPEAK PHRASES\n")
         sphrases = list()
-        for zn in range(Max.ZONES.value):
-            if self.elk.zones[zn].definition > 0:
-                SPEAK_PHRASES[zn+1] = self.elk.zones[zn].name
+        if self.config_st:
+            for zn in range(Max.ZONES.value):
+                if self.elk.zones[zn].definition > 0:
+                    SPEAK_PHRASES[zn+1] = self.elk.zones[zn].name
+        else:
+            LOGGER.warning(f"{self.lpfx} Can't generate full profile until configuration is complete")
         for idx,word in SPEAK_PHRASES.items():
             sphrases.append(idx)
             nls.write(f"SPP-{idx} = {word}\n")
@@ -516,9 +521,10 @@ class Controller(Node):
         #
         # Then write our custom NLS lines
         nls.write("\nUSER-0 = Unknown\n")
-        for n in range(Max.USERS.value - 3):
-            LOGGER.debug(f"{self.lpfx} user={self.elk.users[n]}")
-            nls.write(f"USER-{n+1} = {self.elk.users[n].name}\n")
+        if self.config_st:
+            for n in range(Max.USERS.value - 3):
+                LOGGER.debug(f"{self.lpfx} user={self.elk.users[n]}")
+                nls.write(f"USER-{n+1} = {self.elk.users[n].name}\n")
         # Version 4.4.2 and later, user code 201 = Program Code, 202 = ELK RP Code, 203 = Quick Arm, no code.
         nls.write(f"USER-{Max.USERS.value-2} = Program Code\n")
         nls.write(f"USER-{Max.USERS.value-1} = ELK RP Code\n")
@@ -526,15 +532,17 @@ class Controller(Node):
         #
         # Now the keypad names
         nls.write("\n\nKEYPAD-0 = Unknown\n")
-        for n in range(Max.KEYPADS.value):
-            LOGGER.debug(f"{self.lpfx} keypad={self.elk.keypads[n]}")
-            nls.write(f"KEYPAD-{n+1} = {self.elk.keypads[n].name}\n")
+        if self.config_st:
+            for n in range(Max.KEYPADS.value):
+                LOGGER.debug(f"{self.lpfx} keypad={self.elk.keypads[n]}")
+                nls.write(f"KEYPAD-{n+1} = {self.elk.keypads[n].name}\n")
         #
         # Now the zones names
         nls.write("\n\nZONE-0 = Unknown\n")
-        for n in range(Max.ZONES.value):
-            LOGGER.debug(f"{self.lpfx} zone={self.elk.zones[n]}")
-            nls.write(f"ZONE-{n+1} = {self.elk.zones[n].name}\n")
+        if self.config_st:
+            for n in range(Max.ZONES.value):
+                LOGGER.debug(f"{self.lpfx} zone={self.elk.zones[n]}")
+                nls.write(f"ZONE-{n+1} = {self.elk.zones[n].name}\n")
         nls.close()
         #
         # Start the custom editors with the template data.
@@ -588,6 +596,9 @@ class Controller(Node):
 
     def cmd_speak_word(self, command):
         val = int(command.get('value'))
+        if self.elk is None:
+            LOGGER.warning(f"{self.lpfx} No ELK defined")
+            return False
         LOGGER.info(f"{self.lpfx} {val}")
         # Get the word from the sorted list
         LOGGER.info(f"{self.lpfx} word={SPEAK_WORDS[val]}")
@@ -595,6 +606,9 @@ class Controller(Node):
 
     def cmd_speak_phrase(self, command):
         val = int(command.get('value'))
+        if self.elk is None:
+            LOGGER.warning(f"{self.lpfx} No ELK defined")
+            return False
         LOGGER.info(f"{self.lpfx} {val}")
         # Get the word from the sorted list
         LOGGER.info(f"{self.lpfx} phrase={SPEAK_PHRASES[val]}")

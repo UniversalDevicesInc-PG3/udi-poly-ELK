@@ -272,6 +272,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Release Notes
+- 3.1.2: 02/13/2022
+  - Build a profile even when no ELK is all defined.
 - 3.1.1: 02/12/2022
   - Query of controller no longer queries all nodes since the ISY Query program which typically runs every morning at 3am
     will query the controller and all other nodes which created a lot of extra traffic.
