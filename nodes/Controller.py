@@ -73,7 +73,7 @@ class Controller(Node):
 
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
-        LOGGER.info(f"Started Airscape NodeServer {self.poly.serverdata['version']}")
+        LOGGER.info(f"Started ELK NodeServer {self.poly.serverdata['version']}")
         # Remove when conn_status is working
         self.setDriver("ST",1)
         self.heartbeat()
