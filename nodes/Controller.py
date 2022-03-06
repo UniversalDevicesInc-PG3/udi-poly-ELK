@@ -389,7 +389,7 @@ class Controller(Node):
         return True
 
     def elk_restart(self):
-        LOGGER.warning(f"{self.lpfx} Restarting Nodeserver")
+        LOGGER.warning(f"{self.lpfx} Restarting ELK Connection")
         if (self.elk_stop):
             self.elk_start()
         LOGGER.info(f"{self.lpfx} exit")

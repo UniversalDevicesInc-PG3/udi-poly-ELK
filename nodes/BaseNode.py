@@ -4,7 +4,7 @@
 
 from sys import exc_info
 from udi_interface import Node,LOGGER
-from const import NODE_DEF_MAP
+from const import NODE_DEF_MAP,ELK_TO_INDEX
 from node_funcs import myfloat
 
 class BaseNode(Node):
@@ -46,10 +46,13 @@ class BaseNode(Node):
         if val is None:
             val = default
         elif prec == 0:
-            try:
-                val = int(val)
-            except Exception as err:
-                LOGGER.error(f'{self.lpfx} Error converting {val} to integer, will use default={default} for {mdrv}',exc_info=True)
+            if val in ELK_TO_INDEX:
+                val = ELK_TO_INDEX[val]
+            else:
+                try:
+                    val = int(val)
+                except Exception as err:
+                    LOGGER.error(f'{self.lpfx} Error converting {val} to integer, will use default={default} for {mdrv}',exc_info=True)
         else:
             try:
                 val = myfloat(val,prec)

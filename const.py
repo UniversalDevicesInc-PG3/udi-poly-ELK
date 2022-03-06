@@ -26,7 +26,7 @@ NODE_DEF_MAP = {
                 16: 'Water Alarm',
                 17: 'Fire Supervisory',
                 18: 'Verify Fire'
-            }
+            },
         },
         'GV0': {
             'name':    'Armed Status',
@@ -101,6 +101,28 @@ NODE_DEF_MAP = {
             }
         }
     }
+}
+
+ELK_TO_INDEX = {
+    '0': 0,
+    '1': 1,
+    '2': 2,
+    '3': 3,
+    '4': 4,
+    '5': 5,
+    '6': 6,
+    '7': 7,
+    '8': 8,
+    '9': 9,
+    ':': 10,
+    ';': 11,
+    '<': 12,
+    '=': 13,
+    '>': 14,
+    '?': 15,
+    '@': 16,
+    'A': 17,
+    'B': 18
 }
 
 # The defined ELK Speak Words

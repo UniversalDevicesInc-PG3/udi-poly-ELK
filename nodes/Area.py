@@ -168,23 +168,20 @@ class AreaNode(BaseNode):
 
     def set_alarm_state(self,val=None,force=False):
         LOGGER.info(f'{self.lpfx} {val}')
-        val = self.elk.alarm_state if val is None else int(val)
         # Send DON for Violated?
         #if val == 2:
         #    self.reportCmd("DON",2)
         #else:
         #    self.reportCmd("DOF",2)
-        self.set_driver('ST', val, force=force)
+        self.set_driver('ST', val, default=self.elk.alarm_state, force=force)
 
     def set_armed_status(self,val=None,force=False):
         LOGGER.info(f'{self.lpfx} {val}')
-        val = self.elk.armed_status if val is None else int(val)
-        self.set_driver('GV0',val,force=force)
+        self.set_driver('GV0',val,default=self.elk.armed_status,force=force)
 
     def set_arm_up_state(self,val=None):
         LOGGER.info(f'{self.lpfx} {val}')
-        val = self.elk.arm_up_state if val is None else int(val)
-        self.set_driver('GV1', val)
+        self.set_driver('GV1', val, default=self.elk.arm_up_state)
 
     def set_poll_voltages(self,val=None):
         LOGGER.info(f'{self.lpfx} {val}')
