@@ -224,7 +224,7 @@ Following are examples have usages for this nodeserver.
 
 To include any information about a Zone in a notification you can use any if these drivers:
 ```
-Area: ${elk.area.1.name}
+Area: ${sys.node.n004_area_1.name}
  Alarm Status:        ${sys.node.n004_area_1.ST}
  Armed Status:        ${sys.node.n004_area_1.GV0}
  Arm Up State:        ${sys.node.n004_area_1.GV1}
@@ -236,8 +236,8 @@ Area: ${elk.area.1.name}
  Last user:           ${sys.node.n004_area_1.GV6}
  Last Keypad:         ${sys.node.n004_area_1.GV7}
 
-${elk.zone.001.name} ${elk.zone.001.status}
-${elk.zone.002.name} ${elk.zone.002.status}
+${sys.node.n004_zone_1.name} ${sys.node.n004_zone_1.status}
+${sys.node.n004_zone_2.name} ${sys.node.n004_zone_2.status}
 ...
 ```
 
