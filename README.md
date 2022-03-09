@@ -272,9 +272,11 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Release Notes
+- 3.1.4: 03/08/2022
+  - Fix stop to call poly stop so it should quit properly when PG3 tells it to.
 - 3.1.3: 03/06/2022
   - Fixed: [Fix support for All Alarm Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/71)
-    - Should be fixed, but not testeded for all values
+    - Should be fixed, but not tested for all values
 - 3.1.2: 02/13/2022
   - Build a profile even when no ELK is all defined.
 - 3.1.1: 02/12/2022

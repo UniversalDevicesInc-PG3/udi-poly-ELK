@@ -397,6 +397,7 @@ class Controller(Node):
     def stop(self):
         LOGGER.warning(f"{self.lpfx} NodeServer stopping...")
         self.elk_stop()
+        self.poly.stop()
         LOGGER.warning(f"{self.lpfx} NodeServer stopping complete...")
 
     def wm(self,key,msg):
