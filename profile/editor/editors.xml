@@ -24,7 +24,9 @@
   <editor id="onoff">
        <range uom="78" subset="0,100,101" prec="0" />
   </editor>
-
+  <editor id="I_timer">
+    <range uom="56" min="0" max="65535" prec="0" />
+  </editor>
   <!-- AREAS -->
 
   <!-- Arm Status -->
