@@ -340,6 +340,7 @@ class Controller(Node):
         self.elk_thread = Thread(name="ELK-" + str(os.getpid()), target=self._elk_start())
         self.elk_thread.daemon = True
         self.elk_thread.start()
+        LOGGER.debug(f'{self.lpfx} exit:')
 
     def _elk_start(self):
         # We have to create a loop since we are in a thread
