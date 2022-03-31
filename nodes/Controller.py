@@ -115,15 +115,18 @@ class Controller(Node):
             self.hb = 0
 
     def handler_poll(self, polltype):
+        if self.handler_config_done_st is None:
+            LOGGER.warning('waiting for config handler to be called')
+            return
+        if not self.ready:
+            LOGGER.warning('waiting for sync to complete')
+            return
         if polltype == 'longPoll':
             self.longPoll()
         elif polltype == 'shortPoll':
             self.shortPoll()
 
     def shortPoll(self):
-        if not self.ready:
-            LOGGER.info('waiting for sync to complete')
-            return
         if self.short_event is False:
             LOGGER.debug('Setting up Thread')
             self.short_event = Event()
