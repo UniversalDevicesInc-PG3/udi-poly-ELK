@@ -337,7 +337,7 @@ class Controller(Node):
         LOGGER.info(
             f"{self.lpfx} Starting Elk Thread, will process data when sync completes..."
         )
-        self.elk_thread = Thread(name="ELK-" + str(os.getpid()), target=self._elk_start())
+        self.elk_thread = Thread(name="ELK-" + str(os.getpid()), target=self._elk_start)
         self.elk_thread.daemon = True
         self.elk_thread.start()
         LOGGER.debug(f'{self.lpfx} exit:')
