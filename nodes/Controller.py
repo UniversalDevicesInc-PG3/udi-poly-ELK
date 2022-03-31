@@ -36,6 +36,7 @@ class Controller(Node):
         self.logger = LOGGER
         self.lpfx = self.name + ":"
         self.poly.Notices.clear()
+        self.handler_config_done_st = None
         # For the short/long poll threads, we run them in threads so the main
         # process is always available for controlling devices
         self.short_event = False
@@ -101,6 +102,7 @@ class Controller(Node):
             LOGGER.error("Timeout waiting for config to load, check log for other errors.")
             exit
         self.elk_start()
+        self.handler_config_done_st = True
         LOGGER.debug(f'{self.lpfx} exit')
 
     def heartbeat(self):
@@ -413,7 +415,8 @@ class Controller(Node):
         self.Params.load(params)
         self.poly.Notices.clear()
         self.check_params()
-        self.elk_restart()
+        if self.handler_config_done_st is True:
+            self.elk_restart()
     
     def check_params(self):
         """
@@ -589,7 +592,7 @@ class Controller(Node):
 
     def cmd_update_profile(self, command):
         LOGGER.info(f"{self.lpfx}")
-        return self.update_profile()
+        return self.write_profile()
 
     def cmd_discover(self, command):
         LOGGER.info(f"{self.lpfx}")

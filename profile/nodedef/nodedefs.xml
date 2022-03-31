@@ -75,7 +75,8 @@
               </cmd>
               <cmd id="GV11">
                 <p id="Beep" editor="bool" />
-                <p id="Off Timer" editor="I_timer" init="0" optional="T" />
+                <p id="Clear" editor="I_msg_clear" init="0"/>
+                <p id="OffTimer" editor="I_timer" init="0" optional="T" />
                 <p id="Content" editor="_sys_notify_short" init="0" />
               </cmd>
             </accepts>

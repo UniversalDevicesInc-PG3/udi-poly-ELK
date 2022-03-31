@@ -219,6 +219,31 @@ class AreaNode(BaseNode):
         LOGGER.info(f'{self.lpfx} {val}')
         self.set_entry_exit_trigger(val)
 
+    #  command={'address': 'area_1', 'cmd': 'GV11', 'query': {'Beep.uom2': '0', 'OffTimer.uom56': '60', 'Content.uom145': 'program[0]: node[#]=node[#]'}}
+    # Clear, 0=clear message, 1=clear message with * key, 2=Display until timeout
+    #     def display_message(self, clear, beep, timeout, line1, line2)
+    def cmd_display_message(self,command):
+        LOGGER.debug(f'command={command}')
+        query = command.get('query')
+        beep = query.get('Beep.uom2')
+        beep = False if beep == "0" else True
+        clear = query.get('Clear.uom25')
+        clear = 2 if clear is None else int(clear)
+        off_timer = query.get('OffTimer.uom56')
+        off_timer = 0 if off_timer is None else int(off_timer)
+        content = query.get('Content.uom145')
+        LOGGER.debug(f'clear={clear} beep={beep} off_timer={off_timer} content={content}')
+        if content is None:
+            LOGGER.error('No content sent?')
+            return
+        lines = content.splitlines()
+        if (len(lines) < 2):
+            lines.append('')
+        LOGGER.info(f'display_message({clear}, {beep}, {off_timer}, "{lines[0]}", "{lines[1]}")')
+        self.elk.display_message(
+            clear, beep, off_timer, lines[0], lines[1]
+        )
+
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
@@ -243,4 +268,5 @@ class AreaNode(BaseNode):
             'SET_BYPASS': cmd_set_bypass,
             'CLEAR_BYPASS': cmd_clear_bypass,
             'SET_ENTRY_EXIT_TRIGGER': cmd_set_entry_exit_trigger,
+            'GV11': cmd_display_message,
     }
