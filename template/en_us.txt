@@ -70,6 +70,7 @@ CMD-area-GV10-NAME = Set Additional Trigger
 CMD-area-SET_ARMED_STATUS-NAME = Set Armed Status
 CMD-area-SET_BYPASS-NAME = Bypass
 CMD-area-CLEAR_BYPASS-NAME = Clear Bypass
+CMD-area-CLEAR_MESSAGE-NAME = Clear Message
 CMD-area-SET_POLL_VOLTAGES-NAME = Set Poll Voltages
 CMD-area-SET_ENTRY_EXIT_TRIGGER-NAME = Set Additional Trigger
 CMD-area-GV11-NAME = Display Message
@@ -79,7 +80,6 @@ CMDP-OffTimer-NAME = Off Timer
 CMDP-Content-NAME = Content
 
 # Clear, 0=clear message, 1=clear message with * key, 2=Display until timeout
-MCLR-0: Clear Message
 MCLR-1: Clear Message with * key
 MCLR-2: Display Until Timeout
 

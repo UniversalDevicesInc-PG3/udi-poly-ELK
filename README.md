@@ -149,6 +149,23 @@ By default only the area one, is added, change the areas configuraion if you hav
   - This is the last zone whose status logical status was Violated, this doesn't mean it caused an Alarm, only means it went Violated
 - Last Triggered Zone
   - The zone has caused an alarm to be triggered.  This comes directly from the ELK when the zone is not an entry/exit, or optionally the node server will trigger for other cases. See Additional Trigger above for more informaition.
+- Display Message
+  Send Text to Keypads in Area
+  - Beep: True or False to Beep while displaying the message
+  - Clear: 
+    - Display until Timeout
+      - If timeout not specified, or specified as zero then no timeout
+    - Clear Message with * key
+      - Allow user to clear message with the * key
+    - OFf Timer
+      - Specify seconds to show message for
+    - Content
+      - The Custom Conent from Configuration -> Emails/Notifications -> Customizations
+        - If only sending one line then use subject
+        - If sending 2 lines then use body and leave subject empty
+          - Each line limited to 16 characters
+- Clear Message
+  - Clears the current message
 
 #### Keypad Node
 
@@ -272,6 +289,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Release Notes
+- 3.2.0: 03/31/2022
+  - Added Display Message to send Text to Keypads
 - 3.1.4: 03/08/2022
   - Fix stop to call poly stop so it should quit properly when PG3 tells it to.
 - 3.1.3: 03/06/2022

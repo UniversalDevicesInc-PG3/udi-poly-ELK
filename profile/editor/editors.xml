@@ -28,7 +28,7 @@
     <range uom="56" min="0" max="65535" prec="0" />
   </editor>
   <editor id="I_msg_clear">
-    <range uom="25" subset="0,1,2" nls="MCLR"/>
+    <range uom="25" subset="1,2" nls="MCLR"/>
   </editor>
   <!-- AREAS -->
 

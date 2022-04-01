@@ -73,6 +73,7 @@
               <cmd id="SET_ENTRY_EXIT_TRIGGER">
                 <p id="" editor="bool" init="GV10" />
               </cmd>
+              <cmd id="CLEAR_MESSAGE" />
               <cmd id="GV11">
                 <p id="Beep" editor="bool" />
                 <p id="Clear" editor="I_msg_clear" init="0"/>

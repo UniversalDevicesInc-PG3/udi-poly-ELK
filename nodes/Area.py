@@ -244,6 +244,12 @@ class AreaNode(BaseNode):
             clear, beep, off_timer, lines[0], lines[1]
         )
 
+    def cmd_clear_message(self,command):
+        LOGGER.info(f'display_message(0, False, 0, "", "")')
+        self.elk.display_message(
+            0, False, 0, "", ""
+        )
+
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
@@ -268,5 +274,6 @@ class AreaNode(BaseNode):
             'SET_BYPASS': cmd_set_bypass,
             'CLEAR_BYPASS': cmd_clear_bypass,
             'SET_ENTRY_EXIT_TRIGGER': cmd_set_entry_exit_trigger,
+            'CLEAR_MESSAGE': cmd_clear_message,
             'GV11': cmd_display_message,
     }
