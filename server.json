@@ -12,7 +12,7 @@
     "cloud": false,
     "prem": true,
     "discover": true,
-    "profile_version": "3.1.0",
+    "profile_version": "3.2.0",
     "customParams": {
         "temperature_unit": "F",
         "host": "",
@@ -24,7 +24,7 @@
         {
             "title": "ELK: A NodeServer for ISY and ELK Alarm Panel Integration",
             "author": "JimBoCA",
-            "version": "3.1.4",
+            "version": "3.2.0",
             "date": "November 12, 2021",
             "source": "https://github.com/jimboca/udi-poly-elk/tree/pg3",
             "license": "https://github.com/jimboca/udi-poly-elk/blob/pg3/LICENSE"
