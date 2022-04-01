@@ -290,7 +290,7 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 ## Release Notes
 - 3.2.0: 03/31/2022
-  - Added Display Message to send Text to Keypads
+  - Added [Send text to keypads](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/13)
 - 3.1.4: 03/08/2022
   - Fix stop to call poly stop so it should quit properly when PG3 tells it to.
 - 3.1.3: 03/06/2022
