@@ -237,12 +237,24 @@ class AreaNode(BaseNode):
             LOGGER.error('No content sent?')
             return
         lines = content.splitlines()
+        if len(lines) < 1:
+            LOGGER.error(f"No lines in content '{content}'")
+        line1 = self.clean_dm(lines[0])
         if (len(lines) < 2):
             lines.append('')
-        LOGGER.info(f'display_message({clear}, {beep}, {off_timer}, "{lines[0]}", "{lines[1]}")')
+            line2 = ''
+        else:
+            line2 = self.clean_dm(lines[1])
+        LOGGER.info(f'display_message({clear}, {beep}, {off_timer}, "{line1}", "{line2}")')
         self.elk.display_message(
-            clear, beep, off_timer, lines[0], lines[1]
+            clear, beep, off_timer, line1, line2
         )
+
+    def clean_dm(self,line):
+        fixed = line.encode("ascii", "ignore").decode()
+        if (line != fixed):
+            LOGGER.warning(f"Removed non-ascii characters from '{line}' to '{fixed}'")
+        return fixed
 
     def cmd_clear_message(self,command):
         LOGGER.info(f'display_message(0, False, 0, "", "")')
