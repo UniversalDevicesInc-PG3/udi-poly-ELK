@@ -355,12 +355,16 @@ class Controller(Node):
         self.elk.add_handler("sync_complete", self.sync_complete)
         self.elk.add_handler("timeout", self.timeout)
         self.elk.add_handler("unknown", self.unknown)
+        #self.elk.add_handler('KC', self.kc_handler)
         LOGGER.info(f"{self.lpfx} Connecting to Elk...")
         self.elk.connect()
         self.elk.run()
         #future = asyncio.run_coroutine_threadsafe(self.elk_start_run(), loop)
         #LOGGER.info(f'future={future}')
         #self.elk = future.result()
+
+    #def kc_handler(keypad, key):
+    #  LOGGER.debug(f"{keypad} {key}")
 
     async def elk_start_run(self):
         self.elk.run()

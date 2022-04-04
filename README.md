@@ -289,6 +289,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Release Notes
+- 3.2.2: 04/03/2022
+  - Fixed issue with profile for UD Mobile, but UD Mobile will need to add support for new _sys_short editor.
 - 3.2.1: 04/01/2022
   - Fixed: [Remove non-ascii characters from display message](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/72)
 - 3.2.0: 03/31/2022

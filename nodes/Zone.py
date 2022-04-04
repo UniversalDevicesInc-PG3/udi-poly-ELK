@@ -36,6 +36,8 @@ class ZoneNode(BaseNode):
         {'driver': 'GV9', 'value': 2, 'uom': 25},
         # Voltage
         {'driver': 'CV',  'value': 0, 'uom': 72},
+        # Poll Voltages
+        #{'driver': 'GV10', 'value': 0, 'uom': 2},
     ]
 
     def __init__(self, controller, parent, address, elk):
