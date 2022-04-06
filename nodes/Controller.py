@@ -218,6 +218,7 @@ class Controller(Node):
         self.set_st(st)
 
     def set_st(self, st):
+        LOGGER.debug(f"{self.lpfx} elk_st={self.elk_st} st={st}")
         # Did connection status change?
         if self.elk_st != st:
             # We have been connected, but lost it...
@@ -225,10 +226,10 @@ class Controller(Node):
                 LOGGER.error(f"{self.lpfx} Lost Connection! Will try to reconnect.")
             self.elk_st = st
             if st:
-                LOGGER.debug(f"{self.lpfx} Connected")
+                LOGGER.info(f"{self.lpfx} Connected")
                 self.setDriver("GV1", 1)
             else:
-                LOGGER.debug(f"{self.lpfx} NOT Connected")
+                LOGGER.info(f"{self.lpfx} NOT Connected")
                 self.setDriver("GV1", 0)
 
     def query(self):
@@ -388,6 +389,7 @@ class Controller(Node):
         if self.elk is not None:
             LOGGER.warning('Stopping ELK monitor...')
             self.elk.disconnect()
+            self.set_st(False)
         if self.elk_thread is not None:
             LOGGER.warning('Stopping ELK thread...')
             # TODO: Wait for actual termination (if needed)

@@ -289,6 +289,9 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Release Notes
+- 3.2.3: 05/05/2022
+  - Add more debugging to trace issue with ELK M1EXP Connection going False
+  - Upgraded elmk1_lib to 1.2.0
 - 3.2.2: 04/03/2022
   - Fixed issue with profile for UD Mobile, but UD Mobile will need to add support for new _sys_short editor.
 - 3.2.1: 04/01/2022
