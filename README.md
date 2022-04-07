@@ -289,6 +289,8 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Release Notes
+- 3.2.4: 05/06/2022
+  - Remove internal get/set Driver methods on controller
 - 3.2.3: 05/05/2022
   - Add more debugging to trace issue with ELK M1EXP Connection going False
   - Upgraded elmk1_lib to 1.2.0

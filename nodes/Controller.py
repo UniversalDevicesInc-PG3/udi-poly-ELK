@@ -195,16 +195,16 @@ class Controller(Node):
 #        logging.getLogger("elkm1_lib").setLevel(slevel)
         LOGGER.info(f'exit: level={level}')
 
-    def setDriver(self, driver, value):
-        LOGGER.debug(f"{self.lpfx} {driver}={value}")
-        self.driver[driver] = value
-        super(Controller, self).setDriver(driver, value)
+    #def setDriver(self, driver, value):
+    #    LOGGER.debug(f"{self.lpfx} {driver}={value}")
+    #    self.driver[driver] = value
+    #    super(Controller, self).setDriver(driver, value)
 
-    def getDriver(self, driver):
-        if driver in self.driver:
-            return self.driver[driver]
-        else:
-            return super(Controller, self).getDriver(driver)
+    #def getDriver(self, driver):
+    #    if driver in self.driver:
+    #        return self.driver[driver]
+    #    else:
+    #        return super(Controller, self).getDriver(driver)
 
     # Should not be needed with new library?
     def check_connection(self):
