@@ -267,6 +267,8 @@ class Controller(Node):
 
     def sync_complete(self):
         LOGGER.info(f"{self.lpfx} Sync of keypad is complete!!!")
+        # Ferce this again to make sure because when node starts up the first connected set_st may get overridden :(
+        self.set_st(True)
         # TODO: Add driver for sync complete status, or put in ST?
         LOGGER.info(f"{self.lpfx} adding areas...")
         for an in range(Max.AREAS.value):
