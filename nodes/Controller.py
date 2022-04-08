@@ -36,6 +36,7 @@ class Controller(Node):
         self.logger = LOGGER
         self.lpfx = self.name + ":"
         self.poly.Notices.clear()
+        self.handler_config_st = None
         self.handler_config_done_st = None
         # For the short/long poll threads, we run them in threads so the main
         # process is always available for controlling devices
@@ -49,7 +50,7 @@ class Controller(Node):
         poly.subscribe(poly.CONFIGDONE,        self.handler_config_done)
         poly.subscribe(poly.DISCOVER,          self.discover)
         poly.subscribe(poly.STOP,              self.stop)
-        poly.subscribe(poly.CONFIG,            self.config)
+        poly.subscribe(poly.CONFIG,            self.handler_config)
         poly.subscribe(poly.ADDNODEDONE,       self.node_queue)
         #poly.subscribe(poly.ADDNODEDONE,       self.handler_add_node_done)
         poly.ready()
@@ -63,20 +64,25 @@ class Controller(Node):
     '''
     def node_queue(self, data):
         self.n_queue.append(data['address'])
+        # Start up ELK connection when controller node is all done being added.
+        if (data['address'] == self.address):
+            LOGGER.info(f'{self.lpfx} Calling elk_start')
+            self.elk_start()
+
 
     def wait_for_node_done(self):
         while len(self.n_queue) == 0:
             time.sleep(0.1)
         self.n_queue.pop()
 
-    def config(self,data):
-        LOGGER.debug(f'{data}')
+    def handler_config(self,data):
+        #LOGGER.debug(f'{self.lpfx} {data}')        
+        LOGGER.debug(f'{self.lpfx}')
+        self.handler_config_st = True
 
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
         LOGGER.info(f"Started ELK NodeServer {self.poly.serverdata['version']}")
-        # Remove when conn_status is working
-        self.setDriver("ST",1)
         self.heartbeat()
 
         configurationHelp = './configdoc.md';
@@ -91,17 +97,6 @@ class Controller(Node):
     def handler_config_done(self):
         LOGGER.debug(f'{self.lpfx} enter')
         self.poly.addLogLevel('DEBUG_MODULES',9,'Debug + Modules')
-        # Currently not gaurunteed all config handlers are called, so wait
-        # until custom params are processed
-        count = 0
-        while self.config_st is None and count < 60:
-            LOGGER.warning("Waiting for config to be loaded...")
-            time.sleep(1)
-            count += 1
-        if count == 60:
-            LOGGER.error("Timeout waiting for config to load, check log for other errors.")
-            exit
-        self.elk_start()
         self.handler_config_done_st = True
         LOGGER.debug(f'{self.lpfx} exit')
 
@@ -195,17 +190,6 @@ class Controller(Node):
 #        logging.getLogger("elkm1_lib").setLevel(slevel)
         LOGGER.info(f'exit: level={level}')
 
-    #def setDriver(self, driver, value):
-    #    LOGGER.debug(f"{self.lpfx} {driver}={value}")
-    #    self.driver[driver] = value
-    #    super(Controller, self).setDriver(driver, value)
-
-    #def getDriver(self, driver):
-    #    if driver in self.driver:
-    #        return self.driver[driver]
-    #    else:
-    #        return super(Controller, self).getDriver(driver)
-
     # Should not be needed with new library?
     def check_connection(self):
         if self.elk is None:
@@ -221,9 +205,6 @@ class Controller(Node):
         LOGGER.debug(f"{self.lpfx} elk_st={self.elk_st} st={st}")
         # Did connection status change?
         if self.elk_st != st:
-            # We have been connected, but lost it...
-            if self.elk_st is True:
-                LOGGER.error(f"{self.lpfx} Lost Connection! Will try to reconnect.")
             self.elk_st = st
             if st:
                 LOGGER.info(f"{self.lpfx} Connected")
@@ -642,5 +623,4 @@ class Controller(Node):
     drivers = [
         {"driver": "ST", "value": 0, "uom": 25},
         {"driver": "GV1", "value": 0, "uom": 2},
-        {"driver": "GV2", "value": 0, "uom": 25},
     ]
