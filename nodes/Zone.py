@@ -29,11 +29,11 @@ class ZoneNode(BaseNode):
         # bypassed
         #{'driver': 'GV6', 'value': 0, 'uom': 2},
         # off node
-        {'driver': 'GV7', 'value': 0, 'uom': 2},
-        # off node
-        {'driver': 'GV8', 'value': 1, 'uom': 25},
-        # off node
-        {'driver': 'GV9', 'value': 2, 'uom': 25},
+        {'driver': 'GV7', 'value': 0, 'uom': 2,  'restore':True},
+        # send on for 
+        {'driver': 'GV8', 'value': 1, 'uom': 25, 'restore':True},
+        # send off for
+        {'driver': 'GV9', 'value': 2, 'uom': 25, 'restore':True},
         # Voltage
         {'driver': 'CV',  'value': 0, 'uom': 72},
         # Poll Voltages
