@@ -289,12 +289,14 @@ Please post any questions or issues to the sub-forum https://forum.universal-dev
 
 
 ## Release Notes
-- 3.2.6: 05/06/2022
+- 3.2.7: 04/14/2022
+  - Fix invalid init value which caused issues for UD Mobile
+- 3.2.6: 04/06/2022
   - Move connecting to elk to after add node is complete to try and avoid race condition with setting m1exp connected state.
   - Remove internal get/set Driver methods on controller
   - Force set connected status after sync completes due to race condition on node startup
   - Removed remenants of old logger level driver
-- 3.2.3: 05/05/2022
+- 3.2.3: 04/05/2022
   - Add more debugging to trace issue with ELK M1EXP Connection going False
   - Upgraded elmk1_lib to 1.2.0
 - 3.2.2: 04/03/2022
