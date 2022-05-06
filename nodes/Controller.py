@@ -251,10 +251,10 @@ class Controller(Node):
             # Check that the name matches
             if gnode.name != rname:
                 if self.Params['change_node_names'] == 'true':
-                    LOGGER.warning(f"Created node name '{gnode.name}' does not match requested name '{node.name}', changing to match")
+                    LOGGER.warning(f"Created node name '{gnode.name}' does not match requested name '{rname}', changing to match")
                     node.rename(rname)
                 else:
-                    LOGGER.warning(f"Created node name '{gnode.name}' does not match requested name '{node.name}', NOT changing to match, set change_node_names=true to enable")
+                    LOGGER.warning(f"Created node name '{gnode.name}' does not match requested name '{rname}', NOT changing to match, set change_node_names=true to enable")
 
 
         return node
