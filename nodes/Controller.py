@@ -239,11 +239,24 @@ class Controller(Node):
             LOGGER.error(f"{self.lpfx} Login Failed!!!")
 
     def add_node(self,address,node):
+        rname = node.name
+        LOGGER.debug(f"Adding: {node.name}")
         self.poly.addNode(node)
         self.wait_for_node_done()
-        node = self.poly.getNode(address)
-        if node is None:
+        gnode = self.poly.getNode(address)
+        if gnode is None:
             LOGGER.error('Failed to add node address')
+        else:
+            LOGGER.debug(f"Got: '{gnode.name}' Requsted: '{rname}'")
+            # Check that the name matches
+            if gnode.name != rname:
+                if self.Params['change_node_names'] == 'true':
+                    LOGGER.warning(f"Created node name '{gnode.name}' does not match requested name '{node.name}', changing to match")
+                    node.rename(rname)
+                else:
+                    LOGGER.warning(f"Created node name '{gnode.name}' does not match requested name '{node.name}', NOT changing to match, set change_node_names=true to enable")
+
+
         return node
 
     def sync_complete(self):
@@ -407,6 +420,21 @@ class Controller(Node):
         LOGGER.debug(f'enter: Loading typed data now {params}')
         self.Params.load(params)
         self.poly.Notices.clear()
+        #
+        # Make sure params exist
+        #
+        defaults = {
+            "temperature_unit": "F",
+            "host": "",
+            "user_code": "",
+            "areas": "1",
+            "outputs": "",
+            "change_node_names": "false"
+        }
+        for param in defaults:
+            if not param in params:
+                self.Params[param] = defaults[param]
+                return
         self.check_params()
         if self.handler_config_done_st is True:
             self.elk_restart()
@@ -417,6 +445,9 @@ class Controller(Node):
         """
         # Assume it's good unless it's not
         config_st = True
+        #
+        # Change Node Names
+        #
         #
         # Temperature Units
         #

@@ -281,14 +281,11 @@ This can be adapated to your prefered notification method.
 
 ## TODO and issues
 
-https://github.com/jimboca/udi-poly-elk/issues
-
-## Support
-
-Please post any questions or issues to the sub-forum https://forum.universal-devices.com/forum/176-elk-node-server/ unless you know it's really a bug or enhancement then you can add it to https://github.com/jimboca/udi-poly-elk/issues
-
+https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.2.8: 05/05/2022
+  - Added configuration setting change_node_names.  If set to true then ISY node names will be changed to match the ELK.  Default is true.
 - 3.2.7: 04/14/2022
   - Fix invalid init value which caused issues for UD Mobile
 - 3.2.6: 04/06/2022
