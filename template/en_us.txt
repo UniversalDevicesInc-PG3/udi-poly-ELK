@@ -8,12 +8,22 @@ CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
 CMD-ctl-SPEAK_WORD-NAME = Speak Word
 CMD-ctl-SPEAK_PHRASE-NAME = Speak Phrase
 ST-ctl-ST-NAME = NodeServer Online
-ST-ctl-GV1-NAME = ELK M1EXP Connected
+ST-ctl-GV1-NAME = ELK M1EXP Status
 
 # Controller Status
 CST-0 = Disconnected
 CST-1 = Connected
 CST-2 = Failed
+
+# ELK Connection Status
+EST-0: False
+EST-1: Connected
+EST-2: Disconnected
+EST-3: Login Success
+EST-4: Login Failed
+EST-5: Sync Complete
+EST-6: Timeout
+EST-7: Unknown
 
 # Debug/Logger Modes
 CDM-9 = Debug + elkm1_lib

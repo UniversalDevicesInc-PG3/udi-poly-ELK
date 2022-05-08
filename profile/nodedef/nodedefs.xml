@@ -5,7 +5,7 @@
       <editors />
       <sts>
         <st id="ST" editor="cst" />
-        <st id="GV1" editor="bool" />
+        <st id="GV1" editor="est" />
       </sts>
       <cmds>
           <sends>

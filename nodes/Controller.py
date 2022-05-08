@@ -109,6 +109,18 @@ class Controller(Node):
             self.reportCmd("DOF", 2)
             self.hb = 0
 
+    # Not necessary since callbacks handle this, but if status goes unknown or 
+    # something else then this will reset it.
+    def check_connection(self):
+        if self.elk is None:
+            st = 0
+        elif self.elk.is_connected:
+            st = 1
+        else:
+            st = 2
+        LOGGER.debug(f"{self.lpfx} st={st} elk_st={self.elk_st}")
+        self.set_st(st)
+
     def handler_poll(self, polltype):
         if self.handler_config_done_st is None:
             LOGGER.warning('waiting for config handler to be called')
@@ -190,28 +202,12 @@ class Controller(Node):
 #        logging.getLogger("elkm1_lib").setLevel(slevel)
         LOGGER.info(f'exit: level={level}')
 
-    # Should not be needed with new library?
-    def check_connection(self):
-        if self.elk is None:
-            st = False
-        elif self.elk.is_connected:
-            st = True
-        else:
-            st = False
-        LOGGER.debug(f"{self.lpfx} st={st} elk_st={self.elk_st}")
-        self.set_st(st)
-
     def set_st(self, st):
         LOGGER.debug(f"{self.lpfx} elk_st={self.elk_st} st={st}")
         # Did connection status change?
         if self.elk_st != st:
             self.elk_st = st
-            if st:
-                LOGGER.info(f"{self.lpfx} Connected")
-                self.setDriver("GV1", 1)
-            else:
-                LOGGER.info(f"{self.lpfx} NOT Connected")
-                self.setDriver("GV1", 0)
+            self.setDriver("GV1", st)
 
     def query(self):
         LOGGER.info(f'{self.lpfx}')
@@ -226,17 +222,19 @@ class Controller(Node):
 
     def connected(self):
         LOGGER.info(f"{self.lpfx} Connected!!!")
-        self.set_st(True)
+        self.set_st(1)
 
     def disconnected(self):
         LOGGER.info(f"{self.lpfx} Disconnected!!!")
-        self.set_st(False)
+        self.set_st(2)
 
     def login(self, succeeded):
         if succeeded:
             LOGGER.info("Login succeeded")
+            self.set_st(3)
         else:
             LOGGER.error(f"{self.lpfx} Login Failed!!!")
+            self.set_st(4)
 
     def add_node(self,address,node):
         rname = node.name
@@ -262,7 +260,7 @@ class Controller(Node):
     def sync_complete(self):
         LOGGER.info(f"{self.lpfx} Sync of keypad is complete!!!")
         # Ferce this again to make sure because when node starts up the first connected set_st may get overridden :(
-        self.set_st(True)
+        self.set_st(5)
         # TODO: Add driver for sync complete status, or put in ST?
         LOGGER.info(f"{self.lpfx} adding areas...")
         for an in range(Max.AREAS.value):
@@ -306,12 +304,15 @@ class Controller(Node):
 
     def timeout(self, msg_code):
         LOGGER.error(f"{self.lpfx} Timeout sending message {msg_code}!!!")
+        self.set_st(6)
         if msg_code == 'AS':
             LOGGER.error(f"{self.lpfx} The above Arm System timeout is usually caused by incorrect user code, please check the Polyglot Configuration page for this nodeserver and restart the nodeserver.")
 
     def unknown(self, msg_code, data):
+        # We don't care about email messages
         if msg_code == 'EM':
             return
+        self.set_st(7)
         LOGGER.error(f"{self.lpfx} Unknown message {msg_code}: {data}!!!")
 
     def elk_start(self):
@@ -385,7 +386,7 @@ class Controller(Node):
         if self.elk is not None:
             LOGGER.warning('Stopping ELK monitor...')
             self.elk.disconnect()
-            self.set_st(False)
+            #self.set_st(2)
         if self.elk_thread is not None:
             LOGGER.warning('Stopping ELK thread...')
             # TODO: Wait for actual termination (if needed)
@@ -653,5 +654,5 @@ class Controller(Node):
     }
     drivers = [
         {"driver": "ST", "value": 0, "uom": 25},
-        {"driver": "GV1", "value": 0, "uom": 2},
+        {"driver": "GV1", "value": 0, "uom": 25},
     ]
