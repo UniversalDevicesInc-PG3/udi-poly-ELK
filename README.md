@@ -68,7 +68,7 @@ When the Nodeserver starts up and finishes the sync with the Elk Panel it will b
 This has the following status:
 - NodeServer Online
   - Nodeserver up and running
-- ELK M1EXP Status
+- ELK M1EXP Status: 
    This was changed in version 3.0.0 and due to a bug in PG3 the driver will not update, so you must delete the controller node in the PG3 UI.  If you have any output nodes, you have to delete those first then delete the controller.
   - Connected: When a successful connection to the ElkM1 is completed.
   - Disconnect: When a connection to a panel is disconnected.
@@ -292,6 +292,9 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.3.0: 05/08/2022
+  - Enhancement: [Add Driver for all the ELK status from the lib](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/7)
+    - See [ELK M1EXP Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/blob/master/README.md#elk-controller)
 - 3.2.8: 05/05/2022
   - Added configuration setting change_node_names.  If set to true then ISY node names will be changed to match the ELK.  Default is true.
 - 3.2.7: 04/14/2022
