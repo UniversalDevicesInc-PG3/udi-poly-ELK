@@ -68,8 +68,7 @@ When the Nodeserver starts up and finishes the sync with the Elk Panel it will b
 This has the following status:
 - NodeServer Online
   - Nodeserver up and running
-- ELK M1EXP Status: 
-   This was changed in version 3.0.0 and due to a bug in PG3 the driver will not update, so you must delete the controller node in the PG3 UI.  If you have any output nodes, you have to delete those first then delete the controller.
+- ELK M1EXP Status: This was changed in version 3.3.0 and due to a bug in PG3 the driver will not update, so you must delete the controller node in the PG3 UI.  If you have any output nodes, you have to delete those first then delete the controller.  On every long poll the node server will check the conneciton and change it to Connected/Disconnected which will override the other status.
   - Connected: When a successful connection to the ElkM1 is completed.
   - Disconnect: When a connection to a panel is disconnected.
   - Login Sucess: When a login is made to the panel (only when using elks:// connection mode, which is not supported yet in the node server)
@@ -77,7 +76,6 @@ This has the following status:
   - Sync Complete: When the panel has completed synchonizing all its elements.
   - Timeout: When a send of a message to the ElkM1 times out (fails to send).
   - Unknown: When a message from the ElkM1 is received and the library does not have a method to decode the message. 
-  On every long poll the node server will check the conneciton and change it to Connected/Disconnected which will override the other status.
 - Logger Level
   - Defines how much logging information is printed.
 
