@@ -301,8 +301,7 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
     - See [ELK M1EXP Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/blob/master/README.md#elk-controller)
   - Enhancement: [Add Elk Lights](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/45)
     - See: See [Light Node](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/blob/master/README.md#light-node)
-  - 
-
+  - Enhancement: [Add Elk Counters](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/49)
 - 3.2.8: 05/05/2022
   - Added configuration setting change_node_names.  If set to true then ISY node names will be changed to match the ELK.  Default is true.
 - 3.2.7: 04/14/2022

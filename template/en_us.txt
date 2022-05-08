@@ -36,7 +36,14 @@ CDM-50 = Critical All
 # Light
 ND-light-NAME = ELK Light
 ND-light-ICON = Light
-ST-output-TOGGLE-NAME = Toggle
+ST-light-TOGGLE-NAME = Toggle
+
+# Counter
+ND-counter-NAME = ELK Counter
+ND-counter-ICON = Counter
+CMD-counter-SET-NAME = Set
+CMD-counter-INC-NAME = Increment
+CMD-counter-DEC-NAME = Decrement
 
 # output
 ND-output-NAME = ELK Output

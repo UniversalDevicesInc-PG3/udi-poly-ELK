@@ -202,6 +202,26 @@
         </cmds>
     </nodeDef>
 
+    <!-- counter -->
+    <nodeDef id="counter" nls="counter">
+        <editors />
+        <sts>
+            <st id="ST" editor="counter" />
+        </sts>
+        <cmds>
+            <sends>
+            </sends>
+            <accepts>
+              <cmd id="QUERY" />
+              <cmd id="INC" />
+              <cmd id="DEC" />
+              <cmd id="SET">
+                <p id="" editor="counter" init="ST" />
+              </cmd>
+            </accepts>
+        </cmds>
+    </nodeDef>
+
     <!-- keypad -->
     <nodeDef id="keypad" nls="keypad">
         <editors />

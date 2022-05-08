@@ -21,6 +21,9 @@
   <editor id="integer">
        <range uom="25" min="0" max="1000" prec="0" />
   </editor>
+  <editor id="counter">
+       <range uom="56" min="0" max="65535" prec="0" />
+  </editor>
   <editor id="ontime">
        <range uom="58" min="0" max="65535" prec="0" />
   </editor>
