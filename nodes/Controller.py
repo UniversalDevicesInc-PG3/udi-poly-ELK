@@ -8,7 +8,7 @@ import markdown2
 from copy import deepcopy
 from threading import Thread,Event
 from node_funcs import *
-from nodes import AreaNode,OutputNode
+from nodes import AreaNode,OutputNode,LightNode
 from udi_interface import Node,LOGGER,Custom,LOG_HANDLER
 from threading import Thread,Event
 from const import SPEAK_WORDS,SPEAK_PHRASES
@@ -33,6 +33,7 @@ class Controller(Node):
         self._area_nodes = {}
         self._output_nodes = {}
         self._keypad_nodes = {}
+        self._light_nodes = {}
         self.logger = LOGGER
         self.lpfx = self.name + ":"
         self.poly.Notices.clear()
@@ -296,6 +297,24 @@ class Controller(Node):
                 if node is not None:
                     self._output_nodes[n] = node
         LOGGER.info("adding outputs done")
+        # elkm1_lib uses zone numbers starting at zero.
+        for n in range(Max.LIGHTS.value):
+            LOGGER.debug(f"Check light: {self.elk.lights[n]} is_default_name={self.elk.lights[n].is_default_name()}")
+            if n in self._light_nodes:
+                LOGGER.info(
+                    f"{self.lpfx} Skipping Light {n+1} because it already defined."
+                )
+            elif self.elk.lights[n].is_default_name():
+                LOGGER.info(
+                    f"{self.lpfx} Skipping Light {n+1} because it set to default name"
+                )
+            else:
+                LOGGER.info(f"{self.lpfx} Adding Light {n}")
+                address = f'light_{n + 1}'
+                node = self.add_node(address,LightNode(self, address, self.elk.lights[n]))
+                if node is not None:
+                    self._output_nodes[n] = node
+        LOGGER.info("adding lights done")
         # Only update profile on restart
         if not self.profile_done:
             self.write_profile()

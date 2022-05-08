@@ -225,6 +225,12 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
 
 By default only a Zone node is created.  When you enable a Zone "Use Off Node" this will create another node for that Zone which is sent the "Off" commands.   This allows you to have separate nodes for On and Off so they can be in different Scenes if desired.  This is conveinent for turning on a scene when a door opens, but not turning it off when the door closes.  You could also sent 'Send Off For' to None as well, if you never care about the off control message being sent.
 
+#### Light Node
+
+There will be a Light node created under the Controller for each Light that is not using the default name.  So if you named the light in the ELK it will show up.
+
+This does not yet include support which the ISY had for [Support ELK Export](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/67).  Please comment on that issue if you would like it supported.
+
 #### Output Node
 
 There will be an Ouput node created for each Output you have listed in the outputs range.  The output is named based on the name in the Elk and has status (ST) showing On, Off, or Unknown.  The Unknown value should only happen when the output is first added until the Elk is queried to get the status.
@@ -293,6 +299,10 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 - 3.3.0: 05/08/2022
   - Enhancement: [Add Driver for all the ELK status from the lib](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/7)
     - See [ELK M1EXP Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/blob/master/README.md#elk-controller)
+  - Enhancement: [Add Elk Lights](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/45)
+    - See: See [Light Node](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/blob/master/README.md#light-node)
+  - 
+
 - 3.2.8: 05/05/2022
   - Added configuration setting change_node_names.  If set to true then ISY node names will be changed to match the ELK.  Default is true.
 - 3.2.7: 04/14/2022

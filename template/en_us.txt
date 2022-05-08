@@ -33,6 +33,11 @@ CDM-30 = Warning All
 CDM-40 = Error All
 CDM-50 = Critical All
 
+# Light
+ND-light-NAME = ELK Light
+ND-light-ICON = Light
+ST-output-TOGGLE-NAME = Toggle
+
 # output
 ND-output-NAME = ELK Output
 ND-output-ICON = Output
