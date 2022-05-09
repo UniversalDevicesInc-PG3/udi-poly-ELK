@@ -8,7 +8,7 @@ import markdown2
 from copy import deepcopy
 from threading import Thread,Event
 from node_funcs import *
-from nodes import AreaNode,OutputNode,LightNode,CounterNode
+from nodes import AreaNode,OutputNode,LightNode,CounterNode,TaskNode
 from udi_interface import Node,LOGGER,Custom,LOG_HANDLER
 from threading import Thread,Event
 from const import SPEAK_WORDS,SPEAK_PHRASES
@@ -35,6 +35,7 @@ class Controller(Node):
         self._keypad_nodes = {}
         self._light_nodes = {}
         self._counter_nodes = {}
+        self._task_nodes = {}
         self.logger = LOGGER
         self.lpfx = self.name + ":"
         self.poly.Notices.clear()
@@ -333,6 +334,23 @@ class Controller(Node):
                 if node is not None:
                     self._output_nodes[n] = node
         LOGGER.info("adding counters done")
+        for n in range(Max.TASKS.value):
+            LOGGER.debug(f"Check task: {self.elk.tasks[n]} is_default_name={self.elk.tasks[n].is_default_name()}")
+            if n in self._task_nodes:
+                LOGGER.info(
+                    f"{self.lpfx} Skipping Task {n+1} because it already defined."
+                )
+            elif self.elk.tasks[n].is_default_name():
+                LOGGER.info(
+                    f"{self.lpfx} Skipping Task {n+1} because it set to default name"
+                )
+            else:
+                LOGGER.info(f"{self.lpfx} Adding Task {n}")
+                address = f'task_{n + 1}'
+                node = self.add_node(address,TaskNode(self, address, self.elk.tasks[n]))
+                if node is not None:
+                    self._output_nodes[n] = node
+        LOGGER.info("adding tasks done")
         # Only update profile on restart
         if not self.profile_done:
             self.write_profile()

@@ -222,6 +222,21 @@
         </cmds>
     </nodeDef>
 
+    <!-- task -->
+    <nodeDef id="task" nls="task">
+        <editors />
+        <sts>
+            <st id="ST" editor="bool" />
+        </sts>
+        <cmds>
+            <sends>
+            </sends>
+            <accepts>
+              <cmd id="ACTIVATE" />
+            </accepts>
+        </cmds>
+    </nodeDef>
+
     <!-- keypad -->
     <nodeDef id="keypad" nls="keypad">
         <editors />

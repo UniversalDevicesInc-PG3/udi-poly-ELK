@@ -245,6 +245,20 @@ It has these options/commands:
 - Turn On for ... Seconds
   - This is one command to turn on for the specified seconds, or zero for latching
 
+#### Counter Node
+
+There will be a Counter node created under the Controller for each Counter that is not using the default name.  So if you named the counter in the ELK it will show up.
+
+The counter value can be set directly, incremented or decremented.  Currently it is not possible to set the value to zero.
+
+#### Task Node
+
+There will be a Task node created under the Controller for each Task that is not using the default name.  So if you named the task in the ELK it will show up.
+
+The Task has a Status which is currently meaningless, but someday will show the date/time of last execution when ISY supports it.
+
+The only command for a task is Activate
+
 ## Using the Nodeserver
 
 Following are examples have usages for this nodeserver.
@@ -302,6 +316,9 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
   - Enhancement: [Add Elk Lights](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/45)
     - See: See [Light Node](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/blob/master/README.md#light-node)
   - Enhancement: [Add Elk Counters](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/49)
+    - See: See [Counter Node](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/blob/master/README.md#counter-node)
+  - Enhancement: [Add Elk Tasks](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/51)
+    - See: See [Task Node](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/blob/master/README.md#task-node)
 - 3.2.8: 05/05/2022
   - Added configuration setting change_node_names.  If set to true then ISY node names will be changed to match the ELK.  Default is true.
 - 3.2.7: 04/14/2022

@@ -46,10 +46,10 @@ class CounterNode(BaseNode):
         self.set_val(force=force)
 
     def set_val(self,val=None,force=False):
-        LOGGER.info(f'{self.lpfx} {val}')
+        LOGGER.debug(f'{self.lpfx} {val}')
         if val is None:
             val = self.elk.value
-            LOGGER.error(f'{self.lpfx} current value={val}')
+            LOGGER.debug(f'{self.lpfx} current value={val}')
         self.set_driver('ST',int(val))
 
     def query(self):
