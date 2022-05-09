@@ -210,7 +210,7 @@ class Controller(Node):
         # Did connection status change?
         if self.elk_st != st:
             self.elk_st = st
-            self.setDriver("GV1", st)
+            self.setDriver("GV1", st, uom=25)
 
     def query(self):
         LOGGER.info(f'{self.lpfx}')

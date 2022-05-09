@@ -192,12 +192,14 @@ ST-zone-GV6-NAME = Bypassed
 ST-zone-GV7-NAME = Off Node
 ST-zone-GV8-NAME = Send On For
 ST-zone-GV9-NAME = Send Off For
+ST-zone-GV10-NAME = Poll voltage
 ST-zone-CV-NAME = Voltage
 CMD-zone-SET_ONOFF-NAME = Set Send On/Off Mode
 CMD-zone-SET_OFFNODE-NAME = Use Off Node
 CMD-zone-SET_BYPASS-NAME = Toggle Bypass
 CMD-zone-SET_SON-NAME = Set Send On For
 CMD-zone-SET_SOFF-NAME = Set Send Off For 
+CMD-zone-SET_POLL_VOLTAGE-NAME = Set Poll Voltage 
 # zone off
 ND-zoneoff-NAME = Zone Node
 ND-zoneoff-ICON = Input

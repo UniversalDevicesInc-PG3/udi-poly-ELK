@@ -112,6 +112,8 @@
             <st id="GV9" editor="zsonoff" />
             <!-- Off Node -->
             <st id="GV7" editor="bool" />
+            <!-- Poll Voltage -->
+            <st id="GV10" editor="bool" />
         </sts>
         <cmds>
             <sends>
@@ -133,6 +135,9 @@
               </cmd>
               <cmd id="SET_OFFNODE">
                 <p id="" editor="bool" init="GV7" />
+              </cmd>
+              <cmd id="SET_POLL_VOLTAGE">
+                <p id="" editor="bool" init="GV10" />
               </cmd>
             </accepts>
         </cmds>

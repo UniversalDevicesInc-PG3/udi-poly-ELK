@@ -37,7 +37,7 @@ class ZoneNode(BaseNode):
         # Voltage
         {'driver': 'CV',  'value': 0, 'uom': 72},
         # Poll Voltages
-        #{'driver': 'GV10', 'value': 0, 'uom': 2},
+        {'driver': 'GV10', 'value': 0, 'uom': 2},
     ]
 
     def __init__(self, controller, parent, address, elk):
@@ -48,6 +48,7 @@ class ZoneNode(BaseNode):
         self.init   = False
         self.physical_status = -2
         self.logical_status = -2
+        self.poll_voltage = 0
         self.voltage = None
         self.triggered = None
         self.last_changeset = {}
@@ -82,7 +83,8 @@ class ZoneNode(BaseNode):
             self.elk.get_voltage()
 
     def shortPoll(self,poll_voltage=False):
-        if poll_voltage:
+        LOGGER.debug(f'{self.lpfx} poll_voltage={poll_voltage} and self.poll_voltage={self.poll_voltage}')
+        if poll_voltage and self.poll_voltage == 1:
             self.elk.get_voltage()
 
     def query(self):
@@ -113,6 +115,8 @@ class ZoneNode(BaseNode):
         self.set_logical_status(force=force)
         self.set_triggered(force=force)
         self.set_voltage(force=force)
+        self.set_poll_voltage(force=force)
+        self.elk.get_voltage()
 
     """
         ZDCONF-0 = Send Both
@@ -236,6 +240,10 @@ class ZoneNode(BaseNode):
                 self.offnode_obj = self.controller.add_node(address,ZoneOffNode(self.controller,self.parent.address,address,self.elk.name+" - Off",
                 self.physical_status, self.logical_status))
 
+    def set_poll_voltage(self,val=None,force=False):
+        LOGGER.info(f'{self.lpfx} val={val}')
+        self.poll_voltage  = int(self.set_driver('GV10',val,0))
+
     def cmd_set_son(self,command):
         val = int(command.get('value'))
         LOGGER.debug(f'{self.lpfx} val={val}')
@@ -250,6 +258,11 @@ class ZoneNode(BaseNode):
         val = int(command.get('value'))
         LOGGER.debug(f'{self.lpfx} val={val}')
         self.set_offnode(val)
+
+    def cmd_set_poll_voltage(self,command):
+        val = int(command.get('value'))
+        LOGGER.debug(f'{self.lpfx} val={val}')
+        self.set_poll_voltage(val)
 
     def cmd_set_bypass(self,command):
         LOGGER.info(f'{self.lpfx} Calling bypass...')
@@ -269,5 +282,6 @@ class ZoneNode(BaseNode):
         'SET_SOFF': cmd_set_soff,
         'SET_BYPASS': cmd_set_bypass,
         'CLEAR_BYPASS': cmd_clear_bypass,
-        'SET_OFFNODE': cmd_set_offnode
+        'SET_OFFNODE': cmd_set_offnode,
+        'SET_POLL_VOLTAGE': cmd_set_poll_voltage
     }
