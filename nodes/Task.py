@@ -45,7 +45,6 @@ class TaskNode(BaseNode):
         self.set_val(force=force)
 
     def query(self):
-        self.elk.get()
         self.reportDrivers()
 
     def cmd_query(self,command):
