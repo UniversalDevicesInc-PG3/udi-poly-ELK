@@ -51,7 +51,7 @@ class OutputNode(BaseNode):
         self.on_time = int(val)
 
     def set_onoff(self,val=None,force=False,reportCmd=True):
-        LOGGER.info(f'{self.lpfx} {val}')
+        LOGGER.info(f'{self.lpfx} val={val} force={force} reportCmd={reportCmd}')
         if val is None:
             val = 100 if self.elk.output_on else 0
         elif val is True:

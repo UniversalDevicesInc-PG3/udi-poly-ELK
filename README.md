@@ -146,7 +146,7 @@ By default only the area one, is added, change the areas configuraion if you hav
       - In Stay, Away, Night and Vacation Mode, set triggered for any Entry/Exit Delay Nodes when they are violated.
       - In Night mode, set triggered for Night Delay Nodes when they are triggered
 - Poll Voltages
-  - Enabled to poll the voltages on the Area's Zones.  The ELK doesn't push voltages changes, they must be polled.  By default this is False.  Enabling this creates more traffic so this is off by default.  You can query individual zones to get updates in a program, or enable to have then updated with each short poll.
+  - Enabled to poll the voltages on the Area's Zones.  The ELK doesn't push voltages changes, they must be polled.  By default this is False.  Enabling this creates more traffic so it is off by default.  You can query individual zones to get updates in a program, or enable to have then updated with each short poll.  If you set this to True, you must also enable the Poll Voltage on each zone that you want voltages to be updated.  This polling is doen on short poll intervals.
 - Zones Violated
   - The number of Zones currently in Logical Status of Violated, regardless of the Armed Status. This does not mean the zone caused an Alarm, it only means the zone logical status is Violated
 - Zones Bypassed
@@ -220,6 +220,8 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
     - Short
 - Use Off Node
   - Setting this to True will create the Zone Off Node for this Zone, see Zone Off Node below for more information.
+- Poll Voltage
+  - If the Area Poll Voltage is enabled, then setting this to True for the Zone will poll the voltage on each short poll.
 
 #### Zone Off Node
 
@@ -244,6 +246,8 @@ It has these options/commands:
   - The default time the output stays on when turned on, zero means latching so it stays on until turned off
 - Turn On for ... Seconds
   - This is one command to turn on for the specified seconds, or zero for latching
+
+The output node can be put in a scene as a controller and when the ELK turns it on or off it can control the scene.
 
 #### Counter Node
 
@@ -319,6 +323,10 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
     - See: See [Counter Node](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/blob/master/README.md#counter-node)
   - Enhancement: [Add Elk Tasks](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/51)
     - See: See [Task Node](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/blob/master/README.md#task-node)
+  - Enhancement: [Query should update voltages](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/66)
+    - Added Zone Poll Voltages setting which if enabled will Poll the Voltage on each short poll when the Area Poll Voltage is enabled.
+    - A query on a node will always poll the voltage even if Poll Voltage is False.
+  - Fix: [Allow output to control a scene](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/73)
 - 3.2.8: 05/05/2022
   - Added configuration setting change_node_names.  If set to true then ISY node names will be changed to match the ELK.  Default is true.
 - 3.2.7: 04/14/2022
