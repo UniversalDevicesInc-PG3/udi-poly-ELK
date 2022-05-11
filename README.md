@@ -314,6 +314,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.3.2: 05/10/2022
+  - Fix issues with renameing nodes.  Requires PG3 3.0.62 and udi_interface 3.0.45
 - 3.3.1: 05/09/2022
   - Bug: Fix Task query
 - 3.3.0: 05/08/2022

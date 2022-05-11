@@ -240,24 +240,25 @@ class Controller(Node):
             self.set_st(4)
 
     def add_node(self,address,node):
-        rname = node.name
+        # See if we need to check for node name changes where ELK is the source
+        cname = self.poly.getNodeNameFromDb(address)
+        if cname is not None:
+            LOGGER.debug(f"node {address} Requested: '{node.name}' Current: '{cname}'")
+            # Check that the name matches
+            if node.name != cname:
+                if self.Params['change_node_names'] == 'true':
+                    LOGGER.warning(f"Existing node name '{cname}' for {address} does not match requested name '{node.name}', changing to match")
+                    self.poly.renameNode(address,node.name)
+                else:
+                    LOGGER.warning(f"Existing node name '{cname}' for {address} does not match requested name '{node.name}', NOT changing to match, set change_node_names=true to enable")
+                    # Change it to existing name to avoid addNode error
+                    node.name = cname
         LOGGER.debug(f"Adding: {node.name}")
         self.poly.addNode(node)
         self.wait_for_node_done()
         gnode = self.poly.getNode(address)
         if gnode is None:
             LOGGER.error('Failed to add node address')
-        else:
-            LOGGER.debug(f"Got: '{gnode.name}' Requsted: '{rname}'")
-            # Check that the name matches
-            if gnode.name != rname:
-                if self.Params['change_node_names'] == 'true':
-                    LOGGER.warning(f"Created node name '{gnode.name}' does not match requested name '{rname}', changing to match")
-                    node.rename(rname)
-                else:
-                    LOGGER.warning(f"Created node name '{gnode.name}' does not match requested name '{rname}', NOT changing to match, set change_node_names=true to enable")
-
-
         return node
 
     def sync_complete(self):
