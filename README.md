@@ -314,6 +314,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.3.3: 06/05/2022
+  - Fix: [Output Nodes sending DON/DOF during query](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/75)
 - 3.3.2: 05/10/2022
   - Fix issues with renameing nodes.  Requires PG3 3.0.62 and udi_interface 3.0.45
 - 3.3.1: 05/09/2022

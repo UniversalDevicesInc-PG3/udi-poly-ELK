@@ -39,18 +39,18 @@ class OutputNode(BaseNode):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
         # Why does it get called multiple times with same data?
         if 'output_on' in changeset:
-            self.set_onoff(changeset['output_on'])
+            self.set_onoff(changeset['output_on'],reportCmd=True)
 
-    def set_drivers(self,force=False,reportCmd=True):
+    def set_drivers(self,force=False,reportCmd=False):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
-        self.set_onoff()
+        self.set_onoff(reportCmd=reportCmd)
 
-    def set_time(self,val=0,force=False,reportCmd=True):
+    def set_time(self,val=0,force=False):
         LOGGER.info(f'{self.lpfx}')
-        self.set_driver('TIME',val)
         self.on_time = int(val)
+        self.set_driver('TIME',self.on_time)
 
-    def set_onoff(self,val=None,force=False,reportCmd=True):
+    def set_onoff(self,val=None,force=False,reportCmd=False):
         LOGGER.info(f'{self.lpfx} val={val} force={force} reportCmd={reportCmd}')
         if val is None:
             val = 100 if self.elk.output_on else 0
