@@ -6,11 +6,10 @@ import asyncio
 import os
 import markdown2
 from copy import deepcopy
-from threading import Thread,Event
+from threading import Thread
 from node_funcs import *
 from nodes import AreaNode,OutputNode,LightNode,CounterNode,TaskNode
 from udi_interface import Node,LOGGER,Custom,LOG_HANDLER
-from threading import Thread,Event
 from const import SPEAK_WORDS,SPEAK_PHRASES
 
 # sys.path.insert(0, "../elkm1")
@@ -137,60 +136,22 @@ class Controller(Node):
             self.shortPoll()
 
     def shortPoll(self):
-        if self.short_event is False:
-            LOGGER.debug('Setting up Thread')
-            self.short_event = Event()
-            self.short_thread = Thread(name='shortPoll',target=self._shortPoll)
-            self.short_thread.daemon = True
-            LOGGER.debug('Starting Thread')
-            st = self.short_thread.start()
-            LOGGER.debug(f'Thread start st={st}')
-        # Tell the thread to run
-        LOGGER.debug(f'thread={self.short_thread} event={self.short_event}')
-        if self.short_event is not None:
-            LOGGER.debug('calling event.set')
-            self.short_event.set()
-        else:
-            LOGGER.error(f'event is gone? thread={self.short_thread} event={self.short_event}')
-
-    def _shortPoll(self):
-        while (True):
-            self.short_event.wait()
-            LOGGER.debug('start')
-            for an in self._area_nodes:
-                self._area_nodes[an].shortPoll()
-            self.short_event.clear()
-            LOGGER.debug('done')
+        LOGGER.debug('start')
+        if not self.ready:
+            LOGGER.info('waiting for sync to complete')
+            return
+        for an in self._area_nodes:
+            self._area_nodes[an].shortPoll()
+        LOGGER.debug('done')
 
     def longPoll(self):
+        LOGGER.debug('start')
         self.heartbeat()
         if not self.ready:
             LOGGER.info('waiting for sync to complete')
             return
-        if self.long_event is False:
-            LOGGER.debug('Setting up Thread')
-            self.long_event = Event()
-            self.long_thread = Thread(name='longPoll',target=self._longPoll)
-            self.long_thread.daemon = True
-            LOGGER.debug('Starting Thread')
-            st = self.long_thread.start()
-            LOGGER.debug('Thread start st={st}')
-        # Tell the thread to run
-        LOGGER.debug(f'thread={self.long_thread} event={self.long_event}')
-        if self.long_event is not None:
-            LOGGER.debug('calling event.set')
-            self.long_event.set()
-        else:
-            LOGGER.error(f'event is gone? thread={self.long_thread} event={self.long_event}')
-
-    def _longPoll(self):
-        while (True):
-            self.long_event.wait()
-            LOGGER.debug('start')
-            self.heartbeat()
-            self.check_connection()
-            self.long_event.clear()
-            LOGGER.debug('done')
+        self.check_connection()
+        LOGGER.debug('done')
 
     def handler_log_level(self,level):
         LOGGER.info(f'enter: level={level}')

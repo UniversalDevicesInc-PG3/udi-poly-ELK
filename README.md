@@ -314,6 +314,9 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.3.4: 06/05/2022
+  - Fix heartbeat being sent twice per long poll
+  - Remove creation of Threads for long and short poll, no longer needed since PG3 runs each in a new thread anyway.
 - 3.3.3: 06/05/2022
   - Fix: [Output Nodes sending DON/DOF during query](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/75)
 - 3.3.2: 05/10/2022
