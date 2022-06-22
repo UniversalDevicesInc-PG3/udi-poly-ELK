@@ -314,6 +314,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.3.5: 06/21/2022
+  - Fix: [Crash setting Counter value](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/76)
 - 3.3.4: 06/05/2022
   - Fix heartbeat being sent twice per long poll
   - Remove creation of Threads for long and short poll, no longer needed since PG3 runs each in a new thread anyway.

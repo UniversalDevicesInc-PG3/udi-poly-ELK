@@ -50,7 +50,16 @@ class CounterNode(BaseNode):
         if val is None:
             val = self.elk.value
             LOGGER.debug(f'{self.lpfx} current value={val}')
-        self.set_driver('ST',int(val))
+            if val is None:
+                LOGGER.debug(f'{self.lpfx} counter current value is {val}')
+                return
+        try:
+            val = int(val)
+        except:
+            LOGGER.error(f'{self.lpfx} Can not convert {val} to an integer.')
+            return
+        self.set_driver('ST',val)
+
 
     def query(self):
         self.elk.get()
