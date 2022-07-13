@@ -1,4 +1,4 @@
-# Polyglot V2 ELK Nodeserver
+# Polyglot V3 ELK Nodeserver
 
 ## Important Notices
 
