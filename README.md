@@ -314,6 +314,9 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.3.6: 07/21/2022
+  - Fix: [Armed Status reported incorrectly as Armed Away when actually disarmed](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/77)
+  - Add hooks for [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78) now just need to initiate trouble to test further
 - 3.3.5: 06/21/2022
   - Fix: [Crash setting Counter value](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/76)
 - 3.3.4: 06/05/2022
