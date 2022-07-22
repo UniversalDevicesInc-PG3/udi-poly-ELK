@@ -34,18 +34,20 @@ class BaseNode(Node):
     delayed, we sometimes need to know the value before the DB is updated
     and Polyglot gets the update back.
     """
-    def set_driver(self,mdrv,val,default=0,force=False,report=True,prec=0,uom=None):
+    def set_driver(self,mdrv,val,default=None,force=False,report=True,prec=0,uom=None):
         LOGGER.debug(f'{self.lpfx} {mdrv},{val} default={default} force={force},report={report}')
         if val is None:
-            # Restore from DB for existing nodes
-            try:
-                val = self.getDriver(mdrv)
-                LOGGER.info(f'{self.lpfx} Using getDriver({mdrv})={val}')
-            except:
-                LOGGER.warning(f'{self.lpfx} getDriver({mdrv}) failed which can happen on new nodes, using {default}')
-        if val is None:
-            val = default
-        elif prec == 0:
+            if default is None:
+                # Restore from DB for existing nodes
+                try:
+                    val = self.getDriver(mdrv)
+                    LOGGER.info(f'{self.lpfx} Using getDriver({mdrv})={val}')
+                except:
+                    LOGGER.warning(f'{self.lpfx} getDriver({mdrv}) failed which can happen on new nodes, using {default}')
+            else:
+                # Use the passed in default since that comes from the elk object.
+                val = default
+        if prec == 0:
             if val in ELK_TO_INDEX:
                 val = ELK_TO_INDEX[val]
             else:
