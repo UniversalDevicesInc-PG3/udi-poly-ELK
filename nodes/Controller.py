@@ -153,6 +153,20 @@ class Controller(Node):
         self.check_connection()
         LOGGER.debug('done')
 
+    # This is the callback for the panel
+    def callback(self, element, changeset):
+        LOGGER.info(f'{self.lpfx} cs={changeset}')
+        # cs={'elkm1_version': '5.3.10', 'xep_version': '2.0.44'}
+        #cs={'user_code_length': 4, 'temperature_units': 'F'}
+        for key in changeset:
+            if key == 'elkm1_version' or key == 'xep_version' or key == 'user_code_length' or key == 'temperature_units':
+                LOGGER.info(f"{key}={changeset[key]}")
+            elif key == 'real_time_clock':
+                LOGGER.info(f"{key}={changeset[key]}")
+                # TODO: Toggle something to show we are receiving this?
+            else:
+                LOGGER.warning(f'{self.lpfx} Unhandled  callback: cs={changeset}')
+
     def handler_log_level(self,level):
         LOGGER.info(f'enter: level={level}')
         if level['level'] < 10:
@@ -221,9 +235,9 @@ class Controller(Node):
         if gnode is None:
             LOGGER.error('Failed to add node address')
         return node
-
+        
     def sync_complete(self):
-        LOGGER.info(f"{self.lpfx} Sync of keypad is complete!!!")
+        LOGGER.warning(f"{self.lpfx} Sync of keypad is complete!!!")
         # Ferce this again to make sure because when node starts up the first connected set_st may get overridden :(
         self.set_st(5)
         # TODO: Add driver for sync complete status, or put in ST?
@@ -364,6 +378,7 @@ class Controller(Node):
         asyncio.set_event_loop(loop)
         self.elk = Elk(self.elk_config, loop=loop)
         LOGGER.debug(f'elk={self.elk} initialized, starting...')
+        self.elk.panel.add_callback(self.callback)
         self.elk.add_handler("connected", self.connected)
         self.elk.add_handler("disconnected", self.disconnected)
         self.elk.add_handler("login", self.login)
