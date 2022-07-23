@@ -173,15 +173,15 @@ class AreaNode(BaseNode):
         #    self.reportCmd("DON",2)
         #else:
         #    self.reportCmd("DOF",2)
-        self.set_driver('ST', val, default=self.elk.alarm_state, force=force)
+        self.set_driver('ST', val, restore=False, default=self.elk.alarm_state, force=force)
 
     def set_armed_status(self,val=None,force=False):
         LOGGER.info(f'{self.lpfx} {val}')
-        self.set_driver('GV0',val,default=self.elk.armed_status,force=force)
+        self.set_driver('GV0',val,restore=False,default=self.elk.armed_status,force=force)
 
     def set_arm_up_state(self,val=None):
         LOGGER.info(f'{self.lpfx} {val}')
-        self.set_driver('GV1', val, default=self.elk.arm_up_state)
+        self.set_driver('GV1', val, restore=False,default=self.elk.arm_up_state)
 
     def set_poll_voltages(self,val=None):
         LOGGER.info(f'{self.lpfx} {val}')

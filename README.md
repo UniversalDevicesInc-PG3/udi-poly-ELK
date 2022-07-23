@@ -314,6 +314,9 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+-3.3.7: 07/23/2022
+  - Properly Fixed: [Armed Status reported incorrectly as Armed Away when actually disarmed](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/77)
+    - Version 3.3.6 had a bug which reset values for poll voltages, use off node, back to node server defaults so users who upgraded will need to go back and change the values on the ISY if they were not using the defaults.
 - 3.3.6: 07/21/2022
   - Fix: [Armed Status reported incorrectly as Armed Away when actually disarmed](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/77)
   - Add hooks for [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78) now just need to initiate trouble to test further

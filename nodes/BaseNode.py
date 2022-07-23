@@ -33,11 +33,14 @@ class BaseNode(Node):
     Create our own get/set driver methods because getDriver from Polyglot can be
     delayed, we sometimes need to know the value before the DB is updated
     and Polyglot gets the update back.
+    if  default is None or restore is True then restore previous value from DB
+    otherwise use the default.
     """
-    def set_driver(self,mdrv,val,default=None,force=False,report=True,prec=0,uom=None):
+    def set_driver(self,mdrv,val,default=None,restore=True,force=False,report=True,prec=0,uom=None):
         LOGGER.debug(f'{self.lpfx} {mdrv},{val} default={default} force={force},report={report}')
         if val is None:
-            if default is None:
+            # No val passed in, restore from DB 
+            if default is None or restore is True:
                 # Restore from DB for existing nodes
                 try:
                     val = self.getDriver(mdrv)
