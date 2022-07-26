@@ -314,7 +314,10 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
--3.3.7: 07/23/2022
+- 3.3.8: 07/25/2022
+  - Fixed to work with udi-interface 3.0.47
+  - Fixed longPoll/shortPoll not working properly
+- 3.3.7: 07/23/2022
   - Properly Fixed: [Armed Status reported incorrectly as Armed Away when actually disarmed](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/77)
     - Version 3.3.6 had a bug which reset values for poll voltages, use off node, back to node server defaults so users who upgraded will need to go back and change the values on the ISY if they were not using the defaults.
 - 3.3.6: 07/21/2022

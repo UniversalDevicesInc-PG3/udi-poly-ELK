@@ -58,29 +58,23 @@ class ZoneNode(BaseNode):
         name        = get_valid_node_name(self.elk.name)
         if name == "":
             name = f'Zone_{self.elk.index + 1}'
-        controller.poly.subscribe(controller.poly.START, self.start, address)
-        controller.poly.subscribe(controller.poly.ADDNODEDONE, self.handler_addnodedone)
         super(ZoneNode, self).__init__(controller, parent.address, address, name)
-        self.lpfx = f'{self.name}:{address}:'
+        controller.poly.subscribe(controller.poly.START, self.start, address)
         LOGGER.debug("{self.lpfx}: exit: name={self.name} address={self.address}")
 
     def start(self):
         LOGGER.debug(f'{self.lpfx} {self.elk}')
-
-    def handler_addnodedone(self,data):
-        if data['address'] == self.address:
-            LOGGER.debug(f'{self.lpfx} {self.elk}')
-            # Set drivers that never change
-            # Definition Type
-            self.set_driver('GV3',self.elk.definition)
-            # Zone Area
-            self.set_driver('GV2', self.elk.area + 1)
-            # Set drivers, but dont report don/dof
-            self.set_drivers(force=True,reportCmd=False)
-            self.reportDrivers()
-            self.elk.add_callback(self.callback)
-            # Force get_voltage call
-            self.elk.get_voltage()
+        # Set drivers that never change
+        # Definition Type
+        self.set_driver('GV3',self.elk.definition)
+        # Zone Area
+        self.set_driver('GV2', self.elk.area + 1)
+        # Set drivers, but dont report don/dof
+        self.set_drivers(force=True,reportCmd=False)
+        self.reportDrivers()
+        self.elk.add_callback(self.callback)
+        # Force get_voltage call
+        self.elk.get_voltage()
 
     def shortPoll(self,poll_voltage=False):
         LOGGER.debug(f'{self.lpfx} poll_voltage={poll_voltage} and self.poll_voltage={self.poll_voltage}')

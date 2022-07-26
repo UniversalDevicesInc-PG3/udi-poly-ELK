@@ -19,21 +19,15 @@ class TaskNode(BaseNode):
         if name == "":
             name = f'Task_{self.elk.index + 1}'
         LOGGER.debug(f'TaskNode:init: {name}')
-        controller.poly.subscribe(controller.poly.START, self.start, address)
-        controller.poly.subscribe(controller.poly.ADDNODEDONE, self.handler_addnodedone)
         super(TaskNode, self).__init__(controller, controller.address, address, name)
-        self.lpfx = f'{self.name}:'
+        controller.poly.subscribe(controller.poly.START, self.start, address)
 
     def start(self):
         LOGGER.debug(f'{self.lpfx} {self.elk}')
-
-    def handler_addnodedone(self,data):
-        if data['address'] == self.address:
-            LOGGER.debug(f'{self.lpfx} {self.elk}')
-            # Set drivers
-            #self.set_drivers(force=True)
-            #self.reportDrivers()
-            self.elk.add_callback(self.callback)
+        # Set drivers
+        #self.set_drivers(force=True)
+        #self.reportDrivers()
+        self.elk.add_callback(self.callback)
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')

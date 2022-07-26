@@ -9,21 +9,15 @@ class ZoneOffNode(BaseNode):
         self.logical_status = logical_status
         self.physical_status = physical_status
         self.logger    = controller.logger
-        controller.poly.subscribe(controller.poly.START, self.start, address)
-        controller.poly.subscribe(controller.poly.ADDNODEDONE, self.handler_addnodedone)
         super(ZoneOffNode, self).__init__(controller, parent_address, address, name)
-        self.lpfx = self.name + ':'
+        controller.poly.subscribe(controller.poly.START, self.start, address)
 
     def start(self):
         LOGGER.debug(f'{self.lpfx}')
         super(ZoneOffNode, self).start()
-
-    def handler_addnodedone(self,data):
-        if data['address'] == self.address:
-            LOGGER.debug(f'{self.lpfx}')
-            # Init values from Zone node
-            self.set_driver('GV0',self.physical_status)
-            self.set_driver('ST',self.logical_status)
+        # Init values from Zone node
+        self.set_driver('GV0',self.physical_status)
+        self.set_driver('ST',self.logical_status)
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]

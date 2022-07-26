@@ -124,22 +124,20 @@ class Controller(Node):
         self.set_st(st)
 
     def handler_poll(self, polltype):
+        LOGGER.debug('start')
         if self.handler_config_done_st is None:
             LOGGER.warning('waiting for config handler to be called')
             return
         if not self.ready:
-            LOGGER.warning('waiting for sync to complete')
+            LOGGER.warning('waiting for sync and node initialization to complete')
             return
-        if polltype == 'longPoll':
+        if 'longPoll' in polltype:
             self.longPoll()
-        elif polltype == 'shortPoll':
+        elif 'shortPoll' in polltype:
             self.shortPoll()
 
     def shortPoll(self):
         LOGGER.debug('start')
-        if not self.ready:
-            LOGGER.info('waiting for sync to complete')
-            return
         for an in self._area_nodes:
             self._area_nodes[an].shortPoll()
         LOGGER.debug('done')
@@ -147,9 +145,6 @@ class Controller(Node):
     def longPoll(self):
         LOGGER.debug('start')
         self.heartbeat()
-        if not self.ready:
-            LOGGER.info('waiting for sync to complete')
-            return
         self.check_connection()
         LOGGER.debug('done')
 
@@ -237,7 +232,7 @@ class Controller(Node):
         return node
         
     def sync_complete(self):
-        LOGGER.warning(f"{self.lpfx} Sync of keypad is complete!!!")
+        LOGGER.warning(f"{self.lpfx} Sync of panel is complete, adding nodes...")
         # Ferce this again to make sure because when node starts up the first connected set_st may get overridden :(
         self.set_st(5)
         # TODO: Add driver for sync complete status, or put in ST?
@@ -331,6 +326,7 @@ class Controller(Node):
         if not self.profile_done:
             self.write_profile()
             self.profile_done = True
+        LOGGER.warning(f'{self.lpfx} All nodes added, ready to go...')
         self.ready = True
 
     def timeout(self, msg_code):
