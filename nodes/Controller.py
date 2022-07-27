@@ -160,7 +160,7 @@ class Controller(Node):
                 LOGGER.info(f"{key}={changeset[key]}")
                 # TODO: Toggle something to show we are receiving this?
             elif key == 'remote_programming_status':
-                self.set_rp(changeset[key])
+                self.set_remote_programming_status(changeset[key])
             elif key == 'system_trouble_status':
                 self.set_system_trouble_status(changeset[key])
             else:
@@ -193,10 +193,10 @@ class Controller(Node):
         self.reportDrivers()
 
     def set_drivers(self,force=False):
-        self.set_rp(force=force)
+        self.set_remote_programming_status(force=force)
         self.set_trouble(force=force)
 
-    def set_rp(self,val=None,force=False):
+    def set_remote_programming_status(self,val=None,force=False):
         if val == None:
             val = self.elk.panel.remote_programming_status
         self.setDriver('GV2',val,force=force)
@@ -204,7 +204,7 @@ class Controller(Node):
     def set_system_trouble_status(self,val=None,force=False):
         if val is None:
             val = self.panel.system_trouble_status
-        if self.val == "":
+        if val == "":
             val = "None"
         elif not val in SYSTEM_TROUBLE_STATUS:
             val = "Unknown Error"
