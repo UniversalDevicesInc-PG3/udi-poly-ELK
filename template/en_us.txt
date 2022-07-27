@@ -8,7 +8,9 @@ CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
 CMD-ctl-SPEAK_WORD-NAME = Speak Word
 CMD-ctl-SPEAK_PHRASE-NAME = Speak Phrase
 ST-ctl-ST-NAME = NodeServer Online
-ST-ctl-GV1-NAME = ELK M1EXP Status
+ST-ctl-GV1-NAME = M1EXP Status
+ST-ctl-GV2-NAME = Remote Programming Status
+ST-ctl-GV3-NAME = Trouble Status
 
 # Controller Status
 CST-0 = Disconnected
@@ -24,6 +26,38 @@ EST-4: Login Failed
 EST-5: Sync Complete
 EST-6: Timeout
 EST-7: Unknown
+
+# Remote Programming Status
+RPST-0: Disconnected
+RPST-1: Connected
+RPST-2: Initializing
+
+# Trouble Status
+TBST--2: None
+TBST--1: Unknown Error
+TBST-0: AC Fail
+TBST-1: Box Tamper", True)
+TBST-2: Fail To Communicate
+TBST-3: EEProm Memory Error
+TBST-4: Low Battery Control
+TBST-5: Transmitter Low Battery", True)
+TBST-6: Over Current
+TBST-7: Telephone Fault
+TBST-9: Output 2
+TBST-10: Missing Keypad
+TBST-11: Zone Expander
+TBST-12: Output Expander
+TBST-14: ELKRP Remote Access
+TBST-16: Common Area Not Armed
+TBST-17: Flash Memory Error
+TBST-18: Security Alert", True)
+TBST-19: Serial Port Expander
+TBST-20: Lost Transmitter", True)
+TBST-21: GE Smoke CleanMe
+TBST-22: Ethernet
+TBST-31: Display Message In Keypad Line 1
+TBST-32: Display Message In Keypad Line 2
+TBST-33: Fire
 
 # Debug/Logger Modes
 CDM-9 = Debug + elkm1_lib

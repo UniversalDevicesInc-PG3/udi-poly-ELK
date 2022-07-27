@@ -6,6 +6,8 @@
       <sts>
         <st id="ST" editor="cst" />
         <st id="GV1" editor="est" />
+        <st id="GV2" editor="rpst" />
+        <st id="GV3" editor="tbst" />
       </sts>
       <cmds>
           <sends>

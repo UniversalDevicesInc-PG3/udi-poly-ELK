@@ -12,6 +12,12 @@
   <editor id="est">
     <range uom="25" subset="0-7" nls="EST"/>
   </editor>
+  <editor id="rpst">
+    <range uom="25" subset="0-2" nls="RPST"/>
+  </editor>
+  <editor id="tbst">
+    <range uom="25" subset="-2,33" nls="TBST"/>
+  </editor>
   <editor id="sp_words">
     <range uom="25" subset="1-472" nls="SPW"/>
   </editor>

@@ -10,7 +10,7 @@ from threading import Thread
 from node_funcs import *
 from nodes import AreaNode,OutputNode,LightNode,CounterNode,TaskNode
 from udi_interface import Node,LOGGER,Custom,LOG_HANDLER
-from const import SPEAK_WORDS,SPEAK_PHRASES
+from const import SPEAK_WORDS,SPEAK_PHRASES,SYSTEM_TROUBLE_STATUS
 
 # sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
@@ -159,6 +159,10 @@ class Controller(Node):
             elif key == 'real_time_clock':
                 LOGGER.info(f"{key}={changeset[key]}")
                 # TODO: Toggle something to show we are receiving this?
+            elif key == 'remote_programming_status':
+                self.set_rp(changeset[key])
+            elif key == 'system_trouble_status':
+                self.set_system_trouble_status(changeset[key])
             else:
                 LOGGER.warning(f'{self.lpfx} Unhandled  callback: cs={changeset}')
 
@@ -185,7 +189,26 @@ class Controller(Node):
     def query(self):
         LOGGER.info(f'{self.lpfx}')
         self.check_params()
+        self.set_drivers(force=True)
         self.reportDrivers()
+
+    def set_drivers(self,force=False):
+        self.set_rp(force=force)
+        self.set_trouble(force=force)
+
+    def set_rp(self,val=None,force=False):
+        if val == None:
+            val = self.elk.panel.remote_programming_status
+        self.setDriver('GV2',val,force=force)
+
+    def set_system_trouble_status(self,val=None,force=False):
+        if val is None:
+            val = self.panel.system_trouble_status
+        if self.val == "":
+            val = "None"
+        elif not val in SYSTEM_TROUBLE_STATUS:
+            val = "Unknown Error"
+        self.setDriver('GV3',SYSTEM_TROUBLE_STATUS[val],force=force)
 
     def query_all(self):
         LOGGER.info(f'{self.lpfx}')
@@ -683,4 +706,6 @@ class Controller(Node):
     drivers = [
         {"driver": "ST", "value": 0, "uom": 25},
         {"driver": "GV1", "value": 0, "uom": 25},
+        {"driver": "GV2", "value": 0, "uom": 25},
+        {"driver": "GV3", "value": -2, "uom": 25},
     ]

@@ -125,6 +125,33 @@ ELK_TO_INDEX = {
     'B': 18
 }
 
+SYSTEM_TROUBLE_STATUS = {
+    'None': -2,
+    'Unknown Error': -1,
+    'AC Fail': 0,
+    'Box Tamper': 1,
+    'Fail To Communicate': 2,
+    'EEProm Memory Error': 3,
+    'Low Battery Control': 4,
+    'Transmitter Low Battery': 5,
+    'Over Current': 6,
+    'Telephone Fault': 7,
+    'Output 2': 9,
+    'Missing Keypad': 10,
+    'Zone Expander': 11,
+    'Output Expander': 12,
+    'ELKRP Remote Access': 14,
+    'Common Area Not Armed': 15,
+    'Flash Memory Error': 16,
+    'Security Alert': 17,
+    'Serial Port Expander': 18,
+    'Lost Transmitter': 19,
+    'GE Smoke CleanMe': 21,
+    'Ethernet': 22,
+    'Display Message In Keypad Line 1': 31,
+    'Display Message In Keypad Line 2': 32,
+    'Fire': 33    
+}
 # The defined ELK Speak Words
 # Do not add any to this list since it will change
 # the nls order and mess up existing programs.
