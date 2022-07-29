@@ -59,6 +59,27 @@ TBST-31: Display Message In Keypad Line 1
 TBST-32: Display Message In Keypad Line 2
 TBST-33: Fire
 
+KEY--1: None
+KEY-0: User Code Entered
+KEY-11: STAR
+KEY-12: POUND
+KEY-13: F1
+KEY-14: F2
+KEY-15: F3
+KEY-16: F4
+KEY-17: STAY
+KEY-18: EXIT
+KEY-19: CHIME
+KEY-20: BYPASS
+KEY-21: ELK
+KEY-22: DOWN
+KEY-23: UP
+KEY-24: RIGHT
+KEY-25: LEFT
+KEY-26: F6
+KEY-27: F5
+KEY-28: Data Key Mode
+
 # Debug/Logger Modes
 CDM-9 = Debug + elkm1_lib
 CDM-10 = Debug
@@ -98,6 +119,7 @@ ND-keypad-ICON = Arm
 ST-keypad-ST-NAME = Keypad Status
 ST-keypad-GV1-NAME = Last User
 ST-keypad-GV2-NAME = Temperature
+ST-keypad-GV3-NAME = Last Keypress
 
 # keypad
 ND-keypadT-NAME = ELK Keypad With Temperature
@@ -105,6 +127,7 @@ ND-keypadT-ICON = Arm
 ST-keypadT-ST-NAME = Keypad Status
 ST-keypadT-GV1-NAME = Last User
 ST-keypadT-GV2-NAME = Temperature
+ST-keypadT-GV3-NAME = Last Keypress
 
 # area
 ND-area-NAME = Area Node

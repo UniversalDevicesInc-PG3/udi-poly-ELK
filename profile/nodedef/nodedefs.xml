@@ -250,6 +250,7 @@
         <sts>
             <st id="ST" editor="bool" />
             <st id="GV1" editor="I_LAST_USER" />
+            <st id="GV3" editor="keyp" />
         </sts>
         <cmds>
             <sends>
@@ -266,6 +267,7 @@
             <st id="ST" editor="bool" />
             <st id="GV1" editor="I_LAST_USER" />
             <st id="GV2" editor="I_TEMP" />
+            <st id="GV3" editor="keyp" />
         </sts>
         <cmds>
             <sends>

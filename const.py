@@ -152,6 +152,7 @@ SYSTEM_TROUBLE_STATUS = {
     'Display Message In Keypad Line 2': 32,
     'Fire': 33    
 }
+
 # The defined ELK Speak Words
 # Do not add any to this list since it will change
 # the nls order and mess up existing programs.

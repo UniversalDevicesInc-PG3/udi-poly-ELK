@@ -11,6 +11,7 @@ DNAMES = {
     'status':      'ST',
     'user':        'GV1',
     'temperature': 'GV2',
+    'keypress':    'GV3'
 }
 
 class KeypadNode(BaseNode):
@@ -32,11 +33,13 @@ class KeypadNode(BaseNode):
             DNAMES['status']:       2,
             DNAMES['user']:        25,
             DNAMES['temperature']: self.controller.temperature_uom,
+            DNAMES['keypress']:    25,
         }
         self.drivers = [
             # On/Off
             {'driver': DNAMES['status'],      'value':  0,  'uom': self.uoms[DNAMES['status']]},
             {'driver': DNAMES['user'],        'value': -1,  'uom': self.uoms[DNAMES['user']]}, # Last User
+            {'driver': DNAMES['keypress'],    'value': -1,  'uom': self.uoms[DNAMES['keypress']]}, # Last Keypress
         ]
         LOGGER.debug(f'KeypadNode:init: name="{name}" uom={self.uoms}')
         if self.has_temperature:
@@ -53,21 +56,41 @@ class KeypadNode(BaseNode):
         self.reportDrivers()
         self.elk.add_callback(self.callback)
 
+    # 2022-07-26 21:08:36,625 ELK-6095   udi_interface      DEBUG    Keypad:callback: keypad_2:Down Hall: changeset={'last_keypress': ('ELK', 21)}
     def callback(self, obj, changeset):
-        LOGGER.debug(f'{self.lpfx} changeset={changeset}')
-        if 'last_user' in changeset:
-            self.set_user(int(changeset['last_user']) + 1)
-            self.area.set_keypad(self.elk.index + 1)
-        elif 'last_log' in changeset:
-            if 'user_number' in changesset['last_log']:
-                self.set_user(int(changeset['last_log']['user_number']) + 1)
+        # Catch this since it causes the ELK connection to crash
+        try:
+            LOGGER.debug(f'{self.lpfx} changeset={changeset}')
+            if 'last_user' in changeset:
+                self.set_user(int(changeset['last_user']) + 1)
                 self.area.set_keypad(self.elk.index + 1)
+            elif 'last_log' in changeset:
+                if 'user_number' in changesset['last_log']:
+                    self.set_user(int(changeset['last_log']['user_number']) + 1)
+                    self.area.set_keypad(self.elk.index + 1)
+            elif 'last_keypress' in changeset:
+                #  changeset={'last_keypress': ('ELK', 21)}
+                kp = changeset['last_keypress']
+                i = 0
+                while i < len(kp):
+                    LOGGER.debug(f"key={kp[i]} val={kp[i+1]}")
+                    self.set_key(kp[i+1])
+                    i += 2
+        except:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
         self.set_driver(DNAMES['status'],1)
         self.set_user()
         self.set_temperature()
+        self.set_key()
+
+    def set_key(self,val=None,force=False):
+        LOGGER.debug(f'{self.lpfx} val={val} force={force}')
+        if val is None:
+            val = -1
+        self.set_driver(DNAMES['keypress'],val,force=force)
 
     def set_user(self,val=None,force=False,reportCmd=True):
         LOGGER.info(f'{self.lpfx} val={val}')

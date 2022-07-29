@@ -162,7 +162,8 @@ class Controller(Node):
             elif key == 'remote_programming_status':
                 self.set_remote_programming_status(changeset[key])
             elif key == 'system_trouble_status':
-                self.set_system_trouble_status(changeset[key])
+                for status in changeset[key].split(','):
+                    self.set_system_trouble_status(changeset[key])
             else:
                 LOGGER.warning(f'{self.lpfx} Unhandled  callback: cs={changeset}')
 
@@ -202,6 +203,7 @@ class Controller(Node):
         self.setDriver('GV2',val,force=force)
 
     def set_system_trouble_status(self,val=None,force=False):
+        LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         if val is None:
             val = self.panel.system_trouble_status
         if val == "":
