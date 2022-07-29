@@ -162,8 +162,7 @@ class Controller(Node):
             elif key == 'remote_programming_status':
                 self.set_remote_programming_status(changeset[key])
             elif key == 'system_trouble_status':
-                for status in changeset[key].split(','):
-                    self.set_system_trouble_status(changeset[key])
+                self.set_system_trouble_status(changeset[key])
             else:
                 LOGGER.warning(f'{self.lpfx} Unhandled  callback: cs={changeset}')
 
@@ -206,11 +205,16 @@ class Controller(Node):
         LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         if val is None:
             val = self.panel.system_trouble_status
-        if val == "":
-            val = "None"
-        elif not val in SYSTEM_TROUBLE_STATUS:
-            val = "Unknown Error"
-        self.setDriver('GV3',SYSTEM_TROUBLE_STATUS[val],force=force)
+        for status in SYSTEM_TROUBLE_STATUS:
+            SYSTEM_TROUBLE_STATUS[status]['value'] = False
+        for status in changeset[key].split(','):
+            if status in SYSTEM_TROUBLE_STATUS:
+                SYSTEM_TROUBLE_STATUS[status]['value'] = True
+            else:
+                # TODO: Set ERR driver?
+                LOGGER.error(f"{self.lpfx} Unknown system trouble status '{stutus}")
+        for status in SYSTEM_TROUBLE_STATUS:
+            self.set_driver(SYSTEM_TROUBLE_STATUS[status]['driver'],SYSTEM_TROUBLE_STATUS[status]['value'])
 
     def query_all(self):
         LOGGER.info(f'{self.lpfx}')
@@ -709,5 +713,26 @@ class Controller(Node):
         {"driver": "ST", "value": 0, "uom": 25},
         {"driver": "GV1", "value": 0, "uom": 25},
         {"driver": "GV2", "value": 0, "uom": 25},
-        {"driver": "GV3", "value": -2, "uom": 25},
+        {"driver": "GV3", "value": 0, "uom": 2},
+        {"driver": "GV4", "value": 0, "uom": 2},
+        {"driver": "GV5", "value": 0, "uom": 2},
+        {"driver": "GV6", "value": 0, "uom": 2},
+        {"driver": "GV7", "value": 0, "uom": 2},
+        {"driver": "GV8", "value": 0, "uom": 2},
+        {"driver": "GV9", "value": 0, "uom": 2},
+        {"driver": "GV10", "value": 0, "uom": 2},
+        {"driver": "GV11", "value": 0, "uom": 2},
+        {"driver": "GV12", "value": 0, "uom": 2},
+        {"driver": "GV13", "value": 0, "uom": 2},
+        {"driver": "GV14", "value": 0, "uom": 2},
+        {"driver": "GV15", "value": 0, "uom": 2},
+        {"driver": "GV16", "value": 0, "uom": 2},
+        {"driver": "GV17", "value": 0, "uom": 2},
+        {"driver": "GV18", "value": 0, "uom": 2},
+        {"driver": "GV19", "value": 0, "uom": 2},
+        {"driver": "GV20", "value": 0, "uom": 2},
+        {"driver": "GV21", "value": 0, "uom": 2},
+        {"driver": "GV22", "value": 0, "uom": 2},
+        {"driver": "GV23", "value": 0, "uom": 2},
+        {"driver": "GV24", "value": 0, "uom": 2},
     ]

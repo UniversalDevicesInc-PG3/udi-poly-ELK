@@ -314,6 +314,12 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.4.0: 07/28/2022 - BETA
+  - [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78)
+  - [Add Remote Programming Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/80)
+  - [Allow Elk NS to Recognize Keypad Presses](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues)
+  - []()
+  - []()
 - 3.3.8: 07/25/2022
   - Fixed to work with udi-interface 3.0.47
   - Fixed longPoll/shortPoll not working properly

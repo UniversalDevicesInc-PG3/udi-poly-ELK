@@ -12,7 +12,7 @@
     "cloud": false,
     "prem": true,
     "discover": true,
-    "profile_version": "3.4.0d",
+    "profile_version": "3.4.0",
     "customParams": {
         "temperature_unit": "F",
         "host": "",
