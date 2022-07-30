@@ -31,9 +31,13 @@ class OutputNode(BaseNode):
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
-        # Why does it get called multiple times with same data?
-        if 'output_on' in changeset:
-            self.set_onoff(changeset['output_on'],reportCmd=True)
+        try:
+            # Why does it get called multiple times with same data?
+            if 'output_on' in changeset:
+                self.set_onoff(changeset['output_on'],reportCmd=True)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def set_drivers(self,force=False,reportCmd=False):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')

@@ -8,6 +8,7 @@ CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
 CMD-ctl-SPEAK_WORD-NAME = Speak Word
 CMD-ctl-SPEAK_PHRASE-NAME = Speak Phrase
 ST-ctl-ST-NAME = NodeServer Online
+ST-ctl-ERR-NAME = NodeServer Errors
 ST-ctl-GV1-NAME = M1EXP Status
 ST-ctl-GV2-NAME = Remote Programming Status
 ST-ctl-GV3-NAME = AC Fail

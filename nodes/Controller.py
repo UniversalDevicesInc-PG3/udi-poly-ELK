@@ -5,6 +5,7 @@ import logging
 import asyncio
 import os
 import markdown2
+from datetime import datetime
 from copy import deepcopy
 from threading import Thread
 from node_funcs import *
@@ -27,7 +28,7 @@ class Controller(Node):
         self.elk_thread = None
         self.config_st = None
         self.profile_done = False
-        self.driver = {}
+        self.errors = 0
         self.n_queue = []
         self._area_nodes = {}
         self._output_nodes = {}
@@ -92,7 +93,9 @@ class Controller(Node):
 	        cfgdoc = markdown2.markdown_path(configurationHelp)
 	        self.poly.setCustomParamsDoc(cfgdoc)
         else:
-            LOGGER.error(f'config doc not found? {configurationHelp}')
+            msg = f'config doc not found? {configurationHelp}'
+            LOGGER.error(msg)
+            self.inc_error(msg)
             
         LOGGER.debug(f'{self.lpfx} exit')
 
@@ -150,21 +153,25 @@ class Controller(Node):
 
     # This is the callback for the panel
     def callback(self, element, changeset):
-        LOGGER.info(f'{self.lpfx} cs={changeset}')
-        # cs={'elkm1_version': '5.3.10', 'xep_version': '2.0.44'}
-        #cs={'user_code_length': 4, 'temperature_units': 'F'}
-        for key in changeset:
-            if key == 'elkm1_version' or key == 'xep_version' or key == 'user_code_length' or key == 'temperature_units':
-                LOGGER.info(f"{key}={changeset[key]}")
-            elif key == 'real_time_clock':
-                LOGGER.info(f"{key}={changeset[key]}")
-                # TODO: Toggle something to show we are receiving this?
-            elif key == 'remote_programming_status':
-                self.set_remote_programming_status(changeset[key])
-            elif key == 'system_trouble_status':
-                self.set_system_trouble_status(changeset[key])
-            else:
-                LOGGER.warning(f'{self.lpfx} Unhandled  callback: cs={changeset}')
+        try:
+            LOGGER.info(f'{self.lpfx} cs={changeset}')
+            # cs={'elkm1_version': '5.3.10', 'xep_version': '2.0.44'}
+            #cs={'user_code_length': 4, 'temperature_units': 'F'}
+            for key in changeset:
+                if key == 'elkm1_version' or key == 'xep_version' or key == 'user_code_length' or key == 'temperature_units':
+                    LOGGER.info(f"{key}={changeset[key]}")
+                elif key == 'real_time_clock':
+                    LOGGER.info(f"{key}={changeset[key]}")
+                    # TODO: Toggle something to show we are receiving this?
+                elif key == 'remote_programming_status':
+                    self.set_remote_programming_status(changeset[key])
+                elif key == 'system_trouble_status':
+                    self.set_system_trouble_status(changeset[key])
+                else:
+                    LOGGER.warning(f'{self.lpfx} Unhandled  callback: cs={changeset}')
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def handler_log_level(self,level):
         LOGGER.info(f'enter: level={level}')
@@ -193,11 +200,26 @@ class Controller(Node):
         self.reportDrivers()
 
     def set_drivers(self,force=False):
+        self.set_error(force=force)
         self.set_remote_programming_status(force=force)
-        self.set_trouble(force=force)
+        self.set_system_trouble_status(force=force)
+
+    def set_error(self,val=None,force=False):
+        if val is None:
+            val = 0
+        self.errors = val
+        self.setDriver('ERR',self.errors)
+
+    def inc_error(self,err_str,val=None):
+        if val is None:
+            val = 1
+        now = datetime.now()
+        self.errors += val
+        self.setDriver('ERR',self.errors)
+        self.poly.Notices['ns_error'] = f"ERROR: {now.strftime('%m/%d/%Y %H:%M:%S')} See log for: {err_str}"
 
     def set_remote_programming_status(self,val=None,force=False):
-        if val == None:
+        if val is None:
             val = self.elk.panel.remote_programming_status
         self.setDriver('GV2',val,force=force)
 
@@ -211,10 +233,11 @@ class Controller(Node):
             if status in SYSTEM_TROUBLE_STATUS:
                 SYSTEM_TROUBLE_STATUS[status]['value'] = True
             else:
-                # TODO: Set ERR driver?
-                LOGGER.error(f"{self.lpfx} Unknown system trouble status '{stutus}")
+                msg = f"{self.lpfx} Unknown system trouble status '{stutus}"
+                LOGGER.error(msg)
+                self.inc_error(msg)
         for status in SYSTEM_TROUBLE_STATUS:
-            self.set_driver(SYSTEM_TROUBLE_STATUS[status]['driver'],SYSTEM_TROUBLE_STATUS[status]['value'])
+            self.setDriver(SYSTEM_TROUBLE_STATUS[status]['driver'],SYSTEM_TROUBLE_STATUS[status]['value'])
 
     def query_all(self):
         LOGGER.info(f'{self.lpfx}')
@@ -235,8 +258,10 @@ class Controller(Node):
             LOGGER.info("Login succeeded")
             self.set_st(3)
         else:
-            LOGGER.error(f"{self.lpfx} Login Failed!!!")
+            msg = f"{self.lpfx} Login Failed!!!"
+            LOGGER.error(msg)
             self.set_st(4)
+            self.inc_error(msg)
 
     def add_node(self,address,node):
         # See if we need to check for node name changes where ELK is the source
@@ -257,7 +282,9 @@ class Controller(Node):
         self.wait_for_node_done()
         gnode = self.poly.getNode(address)
         if gnode is None:
-            LOGGER.error('Failed to add node address')
+            msg = f'Failed to add node address {address}'
+            LOGGER.error(msg)
+            self.inc_error(msg)
         return node
         
     def sync_complete(self):
@@ -359,17 +386,23 @@ class Controller(Node):
         self.ready = True
 
     def timeout(self, msg_code):
-        LOGGER.error(f"{self.lpfx} Timeout sending message {msg_code}!!!")
+        msg = f"{self.lpfx} Timeout sending message {msg_code}!!!"
+        LOGGER.error(msg)
+        self.inc_error(msg)
         self.set_st(6)
         if msg_code == 'AS':
-            LOGGER.error(f"{self.lpfx} The above Arm System timeout is usually caused by incorrect user code, please check the Polyglot Configuration page for this nodeserver and restart the nodeserver.")
+            msg = f"{self.lpfx} The above Arm System timeout is usually caused by incorrect user code, please check the Polyglot Configuration page for this nodeserver and restart the nodeserver."
+            LOGGER.error(msg)
+            self.inc_error(msg)
 
     def unknown(self, msg_code, data):
         # We don't care about email messages
         if msg_code == 'EM':
             return
         self.set_st(7)
-        LOGGER.error(f"{self.lpfx} Unknown message {msg_code}: {data}!!!")
+        msg = f"{self.lpfx} Unknown message {msg_code}: {data}!!!"
+        LOGGER.error(msg)
+        self.inc_error(msg)
 
     def elk_start(self):
         LOGGER.debug(f'{self.lpfx} enter: config_st={self.config_st}')
@@ -449,7 +482,9 @@ class Controller(Node):
             # TODO: Wait for actual termination (if needed)
             self.elk_thread.join()
             if self.elk_thread.is_alive():
-                LOGGER.error('ELK thread did not exit?')
+                msg = 'ELK thread did not exit?'
+                LOGGER.error(msg)
+                self.inc_error(msg)
             else:
                 LOGGER.error('ELK thread done.')
         return True
@@ -711,6 +746,7 @@ class Controller(Node):
     }
     drivers = [
         {"driver": "ST", "value": 0, "uom": 25},
+        {"driver": "ERR", "value": 0, "uom": 56},
         {"driver": "GV1", "value": 0, "uom": 25},
         {"driver": "GV2", "value": 0, "uom": 25},
         {"driver": "GV3", "value": 0, "uom": 2},

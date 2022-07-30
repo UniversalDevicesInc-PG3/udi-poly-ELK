@@ -76,8 +76,9 @@ class KeypadNode(BaseNode):
                     LOGGER.debug(f"key={kp[i]} val={kp[i+1]}")
                     self.set_key(kp[i+1])
                     i += 2
-        except:
+        except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')

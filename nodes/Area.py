@@ -79,16 +79,20 @@ class AreaNode(BaseNode):
     # user_number=1 was me
     def callback(self, element, changeset):
         LOGGER.info(f'{self.lpfx} cs={changeset}')
-        if 'alarm_state' in changeset:
-            self.set_alarm_state(changeset['alarm_state'])
-        if 'armed_status' in changeset:
-            self.set_armed_status(changeset['armed_status'])
-        if 'arm_up_state' in changeset:
-            self.set_arm_up_state(changeset['arm_up_state'])
-        # Need to investigate this more, do we really need this if keypad callback is setting it?
-        if 'last_log' in changeset:
-            if 'user_number' in changeset['last_log']:
-                self.set_user(int(changeset['last_log']['user_number']))
+        try:
+            if 'alarm_state' in changeset:
+                self.set_alarm_state(changeset['alarm_state'])
+            if 'armed_status' in changeset:
+                self.set_armed_status(changeset['armed_status'])
+            if 'arm_up_state' in changeset:
+                self.set_arm_up_state(changeset['arm_up_state'])
+            # Need to investigate this more, do we really need this if keypad callback is setting it?
+            if 'last_log' in changeset:
+                if 'user_number' in changeset['last_log']:
+                    self.set_user(int(changeset['last_log']['user_number']))
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
     # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
@@ -229,11 +233,15 @@ class AreaNode(BaseNode):
         content = query.get('Content.uom145')
         LOGGER.debug(f'clear={clear} beep={beep} off_timer={off_timer} content={content}')
         if content is None:
-            LOGGER.error('No content sent?')
+            msg = 'No content sent in message?'
+            LOGGER.error(msg)
+            self.inc_error(msg)
             return
         lines = content.splitlines()
         if len(lines) < 1:
-            LOGGER.error(f"No lines in content '{content}'")
+            msg = f"No lines in content '{content}'"
+            LOGGER.error(msg)
+            self.inc_error(msg)
         line1 = self.clean_dm(lines[0])
         if (len(lines) < 2):
             lines.append('')

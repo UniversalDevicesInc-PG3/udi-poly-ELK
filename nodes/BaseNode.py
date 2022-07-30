@@ -29,6 +29,9 @@ class BaseNode(Node):
     def longPoll(self):
         pass
 
+    def inc_error(self,err_str,val=None):
+        return self.controller.inc_error(err_str,val=val)
+
     """
     Create our own get/set driver methods because getDriver from Polyglot can be
     delayed, we sometimes need to know the value before the DB is updated
@@ -57,12 +60,16 @@ class BaseNode(Node):
                 try:
                     val = int(val)
                 except Exception as err:
-                    LOGGER.error(f'{self.lpfx} Error converting {val} to integer, will use default={default} for {mdrv}',exc_info=True)
+                    msg = f'{self.lpfx} Error converting {val} to integer, will use default={default} for {mdrv}'
+                    LOGGER.error(msg,exc_info=True)
+                    self.inc_error(msg)
         else:
             try:
                 val = myfloat(val,prec)
             except Exception as err:
-                LOGGER.error(f'{self.lpfx} Error converting {val} to float, will use default={default} for {mdrv}',exc_info=True)
+                msg = f'{self.lpfx} Error converting {val} to float, will use default={default} for {mdrv}'
+                LOGGER.error(msg,exc_info=True)
+                self.inc_error(msg)
         try:
             if not mdrv in self.__my_drivers or val != self.__my_drivers[mdrv] or force:
                 self.setDriver(mdrv,val,report=report,uom=uom)
@@ -77,12 +84,16 @@ class BaseNode(Node):
                     self.__my_drivers[mdrv] = val
                     LOGGER.info(f'{self.lpfx} set_driver({mdrv},{val}) {info}')
                 except Exception as err:
-                    LOGGER.error(f'{self.lpfx} Internal error getting node driver info for {mdrv}',exc_info=True)
+                    msg = f'{self.lpfx} Internal error getting node driver info for {mdrv}'
+                    LOGGER.error(msg,exc_info=True)
+                    self.inc_error(msg)
                     LOGGER.info(f'{self.lpfx} set_driver({mdrv},{val})')
             #else:
             #    LOGGER.debug(f'{self.lpfx} not necessary')
         except:
-            LOGGER.error(f'{self.lpfx} set_driver({mdrv},{val}) failed',exc_info=True)
+            msg = f'{self.lpfx} set_driver({mdrv},{val}) failed'
+            LOGGER.error(msg,exc_info=True)
+            self.inc_error(msg)
             return None
         return val
 

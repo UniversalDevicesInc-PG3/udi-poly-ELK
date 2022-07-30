@@ -87,14 +87,18 @@ class ZoneNode(BaseNode):
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
-        if 'triggered_alarm' in changeset:
-            self._set_triggered(1 if changeset['triggered_alarm'] is True else 0)
-        if 'physical_status' in changeset:
-            self._set_physical_status(changeset['physical_status'])
-        if 'logical_status' in changeset:
-            self._set_logical_status(changeset['logical_status'])
-        if 'voltage' in changeset:
-            self._set_voltage(changeset['voltage'])
+        try:
+            if 'triggered_alarm' in changeset:
+                self._set_triggered(1 if changeset['triggered_alarm'] is True else 0)
+            if 'physical_status' in changeset:
+                self._set_physical_status(changeset['physical_status'])
+            if 'logical_status' in changeset:
+                self._set_logical_status(changeset['logical_status'])
+            if 'voltage' in changeset:
+                self._set_voltage(changeset['voltage'])
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def set_drivers(self,force=False,reportCmd=True):
         # setUserValues
@@ -193,7 +197,9 @@ class ZoneNode(BaseNode):
             elif val is False:
                 val = 0
             else:
-                LOGGER.error(f'{self.lpfx} Unknown value {val}, assuming 0')
+                msg = f'{self.lpfx} Unknown value {val}, assuming 0'
+                LOGGER.error(msg)
+                self.inc_error(msg)
                 val = 0
         else:
             val = int(val)

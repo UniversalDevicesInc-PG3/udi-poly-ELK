@@ -31,8 +31,12 @@ class TaskNode(BaseNode):
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
-        if 'value' in changeset:
-            self.set_val(changeset['value'])
+        try:
+            if 'value' in changeset:
+                self.set_val(changeset['value'])
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def set_drivers(self,force=False):
         LOGGER.debug(f'{self.lpfx} force={force}')

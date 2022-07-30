@@ -31,8 +31,12 @@ class LightNode(BaseNode):
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
-        if 'status' in changeset:
-            self.set_onoff(100 if changeset['status'] == 1 else 0)
+        try:
+            if 'status' in changeset:
+                self.set_onoff(100 if changeset['status'] == 1 else 0)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')

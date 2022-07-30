@@ -1,8 +1,8 @@
-# Polyglot V3 ELK Nodeserver
+# Polyglot V3 ELK Node server
 
 ## Important Notices
 
-I am not responsible for any issues related to this nodeserver including missing an alarm!  However I have been using this in my production enviorment for many months and have had no issues.
+I am not responsible for any issues related to this node server including missing an alarm!  However I have been using this in my production enviorment for many months and have had no issues.
 
 ## Why use this when ISY has the ELK module?
 
@@ -23,7 +23,7 @@ There are a few ways to move
 
 ### Backup and Restore
 
-The best way to move from PG2 to PG3 is to backup on PG2 and restore on PG3, but the only option is to do all your nodeservers at once.  I don't have much information on this method, if you have questions please ask on the PG3 forum.
+The best way to move from PG2 to PG3 is to backup on PG2 and restore on PG3, but the only option is to do all your node servers at once.  I don't have much information on this method, if you have questions please ask on the PG3 forum.
 
 ### Delete and add
 
@@ -39,9 +39,9 @@ Install from the Polyglot store.
 
 ### Configuration
 
-Open the Configuration Page for the Nodeserver in the Polyglot UI and view the [Configuration Help](/POLYGLOT_CONFIG.md) available on that page.
+Open the Configuration Page for the node server in the Polyglot UI and view the [Configuration Help](/POLYGLOT_CONFIG.md) available on that page.
 
-After setting configuration then restart the nodeserver and all configured areas will be added.   There is a Node for each Area, and the Zone's for that area are grouped under it.  Sometimes the ISY fails to actually group some of the nodes, if you notices Zone's not grouped, then right click on it and select Group, which will fix them all.
+After setting configuration then restart the node server and all configured areas will be added.   There is a Node for each Area, and the Zone's for that area are grouped under it.  Sometimes the ISY fails to actually group some of the nodes, if you notices Zone's not grouped, then right click on it and select Group, which will fix them all.
 
 ## Requirements
 
@@ -59,16 +59,20 @@ If there is an alarm event, sending a "disarm" with the node server turns off th
 
 #### Syncing profile changes
 
-When the Nodeserver starts up and finishes the sync with the Elk Panel it will build a custom profile which currently contains a list of your user names.  This allows showing the real user name instead of user number.  If you change, add or remove user names you must restart the nodeserver to have them reflected on the ISY.  Also, close and re-open the Admin console if it was open while the nodeserver was restarting.
+When the Node server starts up and finishes the sync with the Elk Panel it will build a custom profile which currently contains a list of your user names.  This allows showing the real user name instead of user number.  If you change, add or remove user names you must restart the node server to have them reflected on the ISY.  Also, close and re-open the Admin console if it was open while the node server was restarting.
 
 ### Nodes
 
 #### ELK Controller
 
 This has the following status:
-- NodeServer Online
-  - Nodeserver up and running
-- ELK M1EXP Status: This was changed in version 3.3.0 and due to a bug in PG3 the driver will not update, so you must delete the controller node in the PG3 UI.  If you have any output nodes, you have to delete those first then delete the controller.  On every long poll the node server will check the conneciton and change it to Connected/Disconnected which will override the other status.
+- Node Server Online
+  - driver; ST
+  - Node server up and running
+- ELK M1EXP Status:
+  - Status of the connection to the M1EXP
+  - driver: GV1
+  - This was changed in version 3.3.0 and due to a bug in PG3 the driver will not update, so you must delete the controller node in the PG3 UI.  If you have any output nodes, you have to delete those first then delete the controller.  On every long poll the node server will check the conneciton and change it to Connected/Disconnected which will override the other status.
   - Connected: When a successful connection to the ElkM1 is completed.
   - Disconnect: When a connection to a panel is disconnected.
   - Login Sucess: When a login is made to the panel (only when using elks:// connection mode, which is not supported yet in the node server)
@@ -76,13 +80,45 @@ This has the following status:
   - Sync Complete: When the panel has completed synchonizing all its elements.
   - Timeout: When a send of a message to the ElkM1 times out (fails to send).
   - Unknown: When a message from the ElkM1 is received and the library does not have a method to decode the message. 
-- Logger Level
-  - Defines how much logging information is printed.
+- Node Server Errors
+  - This is an integer value of detected errors during node server execution.  I have attempted to trap all possible errors, but there can still be some that are not detected. These show up as ERROR lines in the node server log file, and a notice is also added to the node server page in the PG3 UI.
+  - These issues should be reported to [PG# Issues](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues)
+- Remote Programming Status
+  - Status of connection from ElkRP program
+  - driver: GV2
+- System Trouble Status
+  - The True/False status of all available system troubles
+  - drivers:
+    - driver:GV3  AC Fail
+    - driver:GV4  Box Tamper
+    - driver:GV4  Fail To Communicate
+    - driver:GV5  EEProm Memory Error
+    - driver:GV6  Low Battery Control
+    - driver:GV7  Transmitter Low Battery
+    - driver:GV8  Over Current
+    - driver:GV9  Telephone Fault
+    - driver:GV10  Output 2
+    - driver:GV11  Missing Keypad
+    - driver:GV12  Zone Expander
+    - driver:GV13  Output Expander
+    - driver:GV14  ELKRP Remote Access
+    - driver:GV15  Common Area Not Armed
+    - driver:GV16  Flash Memory Error
+    - driver:GV17  Security Alert
+    - driver:GV18  Serial Port Expander
+    - driver:GV19  Lost Transmitter
+    - driver:GV20  GE Smoke CleanMe
+    - driver:GV21  Ethernet
+    - driver:GV22  Display Message In Keypad Line 1
+    - driver:GV23  Display Message In Keypad Line 2
+    - driver:GV24  Fire
+
 
 #### Area Node
 
 By default only the area one, is added, change the areas configuraion if you have more than one.  The areas are 1-8, and the node names will match the names defined on your ELK.  They contain the following:
 - Alarm Status
+  - driver:ST
   - If there is an Alarm
     - No Alarm Active
     - Entrance Delay is Active
@@ -104,6 +140,7 @@ By default only the area one, is added, change the areas configuraion if you hav
     - Fire Supervisory
     - Verify Fire
 - Armed Status
+  - driver:GV0
   - The current Armed status, can be controlled by the ISY
     - Unknown
       - Only set to this on startup until the status is Known, not settable by user.
@@ -119,6 +156,7 @@ By default only the area one, is added, change the areas configuraion if you hav
     - Force Arm To Away Mode (Need to test what this does, bypass?)
     - Force Arm To Stay Mode (Need to test what this does, bypass?)
 - Arm Up State
+  - driver:GV1
   - The current Arm Up State
     - Unknown (Only on startup)
     - Not Ready To Arm
@@ -129,8 +167,10 @@ By default only the area one, is added, change the areas configuraion if you hav
     - Force Armed
     - Armed With Bypass
 - Last User
+  - driver:GV6
   - The last user to access any keypad with a code.  See "Syncing profile changes" section for more information.
 - Chime Mode
+  - driver:GV2
   - Unknown
   - Silent
   - Single Beep
@@ -141,19 +181,25 @@ By default only the area one, is added, change the areas configuraion if you hav
   - Single Chime with Constantly Beeping
   - Single Chime with Single Beep and Constantly Beeping
 - Additional Trigger
-  - The ELK only sends a triggered zone when a violated zone actually triggers an alarm. If this option is True, which is the default, the Nodeserver will also set Last Triggered Zone when an approriate zone is violated and the ELK is in an Alarm State.
+  - driver:GV10
+  - The ELK only sends a triggered zone when a violated zone actually triggers an alarm. If this option is True, which is the default, the Node server will also set Last Triggered Zone when an approriate zone is violated and the ELK is in an Alarm State.
     - If Enabled:
       - In Stay, Away, Night and Vacation Mode, set triggered for any Entry/Exit Delay Nodes when they are violated.
       - In Night mode, set triggered for Night Delay Nodes when they are triggered
 - Poll Voltages
+  - driver:GV5
   - Enabled to poll the voltages on the Area's Zones.  The ELK doesn't push voltages changes, they must be polled.  By default this is False.  Enabling this creates more traffic so it is off by default.  You can query individual zones to get updates in a program, or enable to have then updated with each short poll.  If you set this to True, you must also enable the Poll Voltage on each zone that you want voltages to be updated.  This polling is doen on short poll intervals.
 - Zones Violated
+  - driver:GV3
   - The number of Zones currently in Logical Status of Violated, regardless of the Armed Status. This does not mean the zone caused an Alarm, it only means the zone logical status is Violated
 - Zones Bypassed
+  - driver:GV4
   - The number of Zones currently in Logical Status of bypassed
 - Last Violated Zone
+  - driver:GV8
   - This is the last zone whose status logical status was Violated, this doesn't mean it caused an Alarm, only means it went Violated
 - Last Triggered Zone
+  - driver:GV9
   - The zone has caused an alarm to be triggered.  This comes directly from the ELK when the zone is not an entry/exit, or optionally the node server will trigger for other cases. See Additional Trigger above for more informaition.
 - Display Message
   Send Text to Keypads in Area
@@ -179,48 +225,62 @@ There is a Keypad node for each keypad found and they are by default grouped und
 
 - Keypad Status
   - Currently always True, may be used in the future
+  - driver: ST
 - Last User
   - The last user to enter access code at the keyboard, which is also propagated up the the Area Last User
+  - driver: GV1
 - Temperature
   - The temperature from the keypad, or -40F is keypad doesn't report temperature.
-
+  - driver: GV2
+- Last KeyPress
+  - The last key pressed on the keypad
+  - driver: GV3
 
 #### Zone Node
 
 Currently every Zone in the Area will be added as a Node if the Zone Definition is greater than Zero.  They are grouped under the Area node they are assigned to.  Nodes contain the following:
 
-- Physical Status
-  - UNKNOWN
-  - Unconfigured
-  - Open
-  - EOL
-  - SHORT
 - Logical Status
+  - driver:ST
   - UNKNOWN
   - Normal
   - Trouble
   - Violated
     - Note: This does not meant the zone caused an Alarm, it only means the zone logical status is Violated regardless of the Armed Status.
   - Bypassed
+- Physical Status
+  - driver:GV0
+  - UNKNOWN
+  - Unconfigured
+  - Open
+  - EOL
+  - SHORT
 - Voltage
+  - driver:CV
   - The current Zone Voltage.  Note this is not updated on change, it must be Polled.  By default this is polling is disabled, to enable set "Poll Voltages" on the Zone's Area.  The values are only updated on Short Poll intervals, which can be set in the Node Server Configuration Page.  It is also updated on a Zone query, so you can write ISY progrmas to force the query if you want faster updates, or just to update a single zone.
 - Triggered Alarm
+  - driver:GV1
   - The zone has caused an alarm to be triggered.  This comes directly from the ELK and only turns on if the zone triggers and alarm immediatly, if the zone has entry delay it will not set triggered when zone is violated, or when entry delay times out causing an alarm.
     - True
     - False
 - Area
+  - driver:GV2
   - The Area number the Zone is part of.
 - Type
+  - driver:GV3
   - The Zone Type configured in the ELK, 37 different choices
 - Send On For / Send Off For
+  - driver: GV8 / GV9
   - Allow configuring of when the On and/or Off control signals are sent for the Zone Physical Status changes. This allows you to put the Node in a Scene and by default an On is sent when the Zone changes to Open, and an Off is sent when Zone changes to.  But this can be changed with these options:
     - Ignore
     - Open
     - EOL
     - Short
 - Use Off Node
+  - driver:GV7
   - Setting this to True will create the Zone Off Node for this Zone, see Zone Off Node below for more information.
 - Poll Voltage
+  - driver:GV10
   - If the Area Poll Voltage is enabled, then setting this to True for the Zone will poll the voltage on each short poll.
 
 #### Zone Off Node
@@ -263,9 +323,9 @@ The Task has a Status which is currently meaningless, but someday will show the 
 
 The only command for a task is Activate
 
-## Using the Nodeserver
+## Using the Node server
 
-Following are examples have usages for this nodeserver.
+Following are examples have usages for this node server.
 
 ### Notifications
 
@@ -290,7 +350,7 @@ ${sys.node.n004_zone_2.name} ${sys.node.n004_zone_2.status}
 
 ### Triggered Zone
 
-The new Area Last Triggered Zone makes it easy to send a notification for Zone which started an alarm.  I use the Notificaiton Nodeserver so the program looks like this:
+The new Area Last Triggered Zone makes it easy to send a notification for Zone which started an alarm.  I use the Notificaiton Node server so the program looks like this:
 ```
 ELK Alarm Zone - [ID 0025][Parent 0001]
 
@@ -315,9 +375,17 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
 - 3.4.0: 07/28/2022 - BETA
+  - More documentation cleanup, still needs more.
+    - Added driver's to many Nodes, still more to go.
   - [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78)
+    - See [ELK Controller](#ElkController) System Trouble Status
   - [Add Remote Programming Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/80)
+    - See [ELK Controller](#ElkController) Remote Programming Status
   - [Allow Elk NS to Recognize Keypad Presses](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues)
+  - [Add ERROR driver to controller](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/62)
+    - See [ELK Controller](#ELKController) Node server errors
+  - []()
+  - []()
   - []()
   - []()
 - 3.3.8: 07/25/2022
@@ -513,14 +581,14 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 - 0.2.1: 01/04/2021
   - Add BaseNode so all nodes use common set/get driver methods for consistency and debugging aid
 - 0.2.0: 12/26/2020
-  - __IMPORTANT__ All Area and Zone node address will change, either delete them all in Polyglot UI or delete the nodeserver and add again
+  - __IMPORTANT__ All Area and Zone node address will change, either delete them all in Polyglot UI or delete the node server and add again
     - [Area and Zone numbers should match ELK numbers](https://github.com/jimboca/udi-poly-elk/issues/21)
     - Make sure to re-sync the ISY UDMobile App as well after re-adding
   - Fix [https://github.com/jimboca/udi-poly-elk/issues/26](Bypass button on zone node screen)
   - Fix [https://github.com/jimboca/udi-poly-elk/issues/25](Tracking of number of bypassed zones in area inconsisten)
 - 0.1.9: 12/18/2020
   - Fix issues caused when sync_complete is called multiple times
-    - [Multiple changes happening after restarting Nodeserver](https://github.com/jimboca/udi-poly-elk/issues/18)
+    - [Multiple changes happening after restarting Node server](https://github.com/jimboca/udi-poly-elk/issues/18)
 - 0.1.8: Fix Logging level for Debug + elkm1_lib so you can see wha the ELK is sending
 - 0.1.7: Fix crash during stop when config is not ready, fix startup when config is ready
 - 0.1.6: [Don't start ELK when Configuration is not setup yet](https://github.com/jimboca/udi-poly-elk/issues/16)

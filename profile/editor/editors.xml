@@ -19,7 +19,7 @@
     <range uom="25" subset="-2,33" nls="TBST"/>
   </editor>
   <editor id="keyp">
-    <range uom="25" subset="0-100" nls="KEY"/>
+    <range uom="25" subset="-2-0,11-28" nls="KEY"/>
   </editor>
   <editor id="sp_words">
     <range uom="25" subset="1-472" nls="SPW"/>

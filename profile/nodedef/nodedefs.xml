@@ -6,6 +6,7 @@
       <sts>
         <st id="ST" editor="cst" />
         <st id="GV1" editor="est" />
+        <st id="ERR" editor="counter" />
         <st id="GV2" editor="rpst" />
         <st id="GV3" editor="bool" />
         <st id="GV4" editor="bool" />
