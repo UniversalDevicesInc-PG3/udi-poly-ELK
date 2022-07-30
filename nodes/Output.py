@@ -15,19 +15,27 @@ class OutputNode(BaseNode):
         self.controller = controller
         self.init   = False
         self.on_time = 0
-        name        = get_valid_node_name(self.elk.name)
-        if name == "":
-            name = f'Output_{self.elk.index + 1}'
-        LOGGER.debug(f'OutputNode:init: {name}')
-        super(OutputNode, self).__init__(controller, controller.address, address, name)
-        controller.poly.subscribe(controller.poly.START, self.start, address)
+        try:
+            name        = get_valid_node_name(self.elk.name)
+            if name == "":
+                name = f'Output_{self.elk.index + 1}'
+            LOGGER.debug(f'OutputNode:init: {name}')
+            super(OutputNode, self).__init__(controller, controller.address, address, name)
+            controller.poly.subscribe(controller.poly.START, self.start, address)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def start(self):
-        LOGGER.debug(f'{self.lpfx} {self.elk}')
-        # Set drivers
-        self.set_drivers(force=True,reportCmd=False)
-        self.reportDrivers()
-        self.elk.add_callback(self.callback)
+        try:
+            LOGGER.debug(f'{self.lpfx} {self.elk}')
+            # Set drivers
+            self.set_drivers(force=True,reportCmd=False)
+            self.reportDrivers()
+            self.elk.add_callback(self.callback)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
@@ -41,7 +49,7 @@ class OutputNode(BaseNode):
 
     def set_drivers(self,force=False,reportCmd=False):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
-        self.set_onoff(reportCmd=reportCmd)
+        self.set_onoff(force=force,reportCmd=reportCmd)
 
     def set_time(self,val=0,force=False):
         LOGGER.info(f'{self.lpfx}')
@@ -49,50 +57,74 @@ class OutputNode(BaseNode):
         self.set_driver('TIME',self.on_time)
 
     def set_onoff(self,val=None,force=False,reportCmd=False):
-        LOGGER.info(f'{self.lpfx} val={val} force={force} reportCmd={reportCmd}')
-        if val is None:
-            val = 100 if self.elk.output_on else 0
-        elif val is True:
-            val = 100
-        elif val is False:
-            val = 0
-        self.set_driver('ST',val)
-        if (not force) and reportCmd:
-            if self.elk.output_on:
-                LOGGER.debug(f'{self.lpfx} Send DON')
-                self.reportCmd("DON")
-            else:
-                LOGGER.debug(f'{self.lpfx} Send DOF')
-                self.reportCmd("DOF")
-
-    def query(self):
-        self.set_drivers()
-        self.reportDrivers()
+        try:
+            LOGGER.info(f'{self.lpfx} val={val} force={force} reportCmd={reportCmd}')
+            if val is None:
+                val = 100 if self.elk.output_on else 0
+            elif val is True:
+                val = 100
+            elif val is False:
+                val = 0
+            self.set_driver('ST',val,force=force)
+            if (not force) and reportCmd:
+                if self.elk.output_on:
+                    LOGGER.debug(f'{self.lpfx} Send DON')
+                    self.reportCmd("DON")
+                else:
+                    LOGGER.debug(f'{self.lpfx} Send DOF')
+                    self.reportCmd("DOF")
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_time(self,command):
-        val = int(command.get('value'))
-        LOGGER.debug(f'{self.lpfx} {val}')
-        self.set_time(val)
+        try:
+            val = int(command.get('value'))
+            LOGGER.debug(f'{self.lpfx} {val}')
+            self.set_time(val)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_on_wtime(self,command):
-        LOGGER.debug(f'{self.lpfx} {command}')
-        self.elk.turn_on(int(command.get('value')))
+        try:
+            LOGGER.debug(f'{self.lpfx} {command}')
+            self.elk.turn_on(int(command.get('value')))
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_on(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.elk.turn_on(self.on_time)
+        try:
+            LOGGER.debug(f'{self.lpfx}')
+            self.elk.turn_on(self.on_time)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_off(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.elk.turn_off()
+        try:
+            LOGGER.debug(f'{self.lpfx}')
+            self.elk.turn_off()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_toggle(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.elk.toggle()
+        try:
+            LOGGER.debug(f'{self.lpfx}')
+            self.elk.toggle()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_query(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.query()
+        try:
+            LOGGER.debug(f'{self.lpfx}')
+            self.query()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]

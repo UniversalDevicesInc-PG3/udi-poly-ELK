@@ -22,39 +22,47 @@ class KeypadNode(BaseNode):
         self.controller = controller
         self.parent     = parent
         self.area       = parent
-        self.init   = False
-        self.on_time = 0
-        self.has_temperature = False if self.elk.temperature == -40 else True
-        LOGGER.info(f'KeyPadNode:init: has_temperature={self.has_temperature}')
-        name        = get_valid_node_name(self.elk.name)
-        if name == "":
-            name = f'Keypad_{self.elk.index + 1}'
-        self.uoms = {
-            DNAMES['status']:       2,
-            DNAMES['user']:        25,
-            DNAMES['temperature']: self.controller.temperature_uom,
-            DNAMES['keypress']:    25,
-        }
-        self.drivers = [
-            # On/Off
-            {'driver': DNAMES['status'],      'value':  0,  'uom': self.uoms[DNAMES['status']]},
-            {'driver': DNAMES['user'],        'value': -1,  'uom': self.uoms[DNAMES['user']]}, # Last User
-            {'driver': DNAMES['keypress'],    'value': -1,  'uom': self.uoms[DNAMES['keypress']]}, # Last Keypress
-        ]
-        LOGGER.debug(f'KeypadNode:init: name="{name}" uom={self.uoms}')
-        if self.has_temperature:
-            self.id = 'keypadT'
-            self.drivers.append({'driver': DNAMES['temperature'], 'value': -40, 'uom': self.uoms[DNAMES['temperature']]})
-        LOGGER.debug(f'KeypadNode:init: name="{name}" drivers={self.drivers}')
-        super(KeypadNode, self).__init__(controller, parent.address, address, name)
-        controller.poly.subscribe(controller.poly.START, self.start, address)
+        try:
+            self.init   = False
+            self.on_time = 0
+            self.has_temperature = False if self.elk.temperature == -40 else True
+            LOGGER.info(f'KeyPadNode:init: has_temperature={self.has_temperature}')
+            name        = get_valid_node_name(self.elk.name)
+            if name == "":
+                name = f'Keypad_{self.elk.index + 1}'
+            self.uoms = {
+                DNAMES['status']:       2,
+                DNAMES['user']:        25,
+                DNAMES['temperature']: self.controller.temperature_uom,
+                DNAMES['keypress']:    25,
+            }
+            self.drivers = [
+                # On/Off
+                {'driver': DNAMES['status'],      'value':  0,  'uom': self.uoms[DNAMES['status']]},
+                {'driver': DNAMES['user'],        'value': -1,  'uom': self.uoms[DNAMES['user']]}, # Last User
+                {'driver': DNAMES['keypress'],    'value': -1,  'uom': self.uoms[DNAMES['keypress']]}, # Last Keypress
+            ]
+            LOGGER.debug(f'KeypadNode:init: name="{name}" uom={self.uoms}')
+            if self.has_temperature:
+                self.id = 'keypadT'
+                self.drivers.append({'driver': DNAMES['temperature'], 'value': -40, 'uom': self.uoms[DNAMES['temperature']]})
+            LOGGER.debug(f'KeypadNode:init: name="{name}" drivers={self.drivers}')
+            super(KeypadNode, self).__init__(controller, parent.address, address, name)
+            controller.poly.subscribe(controller.poly.START, self.start, address)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def start(self):
-        LOGGER.debug(f'{self.lpfx} {self.elk}')
-        # Set drivers
-        self.set_drivers(force=True,reportCmd=False)
-        self.reportDrivers()
-        self.elk.add_callback(self.callback)
+        try:
+            LOGGER.debug(f'{self.lpfx} {self.elk}')
+            # Set drivers
+            self.set_drivers(force=True,reportCmd=False)
+            self.reportDrivers()
+            self.elk.add_callback(self.callback)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     # 2022-07-26 21:08:36,625 ELK-6095   udi_interface      DEBUG    Keypad:callback: keypad_2:Down Hall: changeset={'last_keypress': ('ELK', 21)}
     def callback(self, obj, changeset):
@@ -82,10 +90,10 @@ class KeypadNode(BaseNode):
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
-        self.set_driver(DNAMES['status'],1)
-        self.set_user()
-        self.set_temperature()
-        self.set_key()
+        self.set_driver(DNAMES['status'],1,force=force)
+        self.set_user(force=force)
+        self.set_temperature(force=force)
+        self.set_key(force=force)
 
     def set_key(self,val=None,force=False):
         LOGGER.debug(f'{self.lpfx} val={val} force={force}')
@@ -97,7 +105,7 @@ class KeypadNode(BaseNode):
         LOGGER.info(f'{self.lpfx} val={val}')
         if val is None:
             val = self.elk.last_user + 1
-        self.set_driver(DNAMES['user'],val)
+        self.set_driver(DNAMES['user'],val,force=force)
         self.area.set_user(val)
 
     def set_temperature(self,val=None,force=False,reportCmd=True):
@@ -108,10 +116,6 @@ class KeypadNode(BaseNode):
         if val is None:
             val = self.elk.temperature
         self.set_driver(driver, val, report=reportCmd, force=force, uom=self.uoms[driver], prec=1)
-
-    def query(self):
-        self.set_drivers()
-        self.reportDrivers()
 
     def cmd_query(self,command):
         LOGGER.debug(f'{self.lpfx}')

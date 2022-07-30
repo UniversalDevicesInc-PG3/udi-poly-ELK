@@ -39,28 +39,32 @@ class AreaNode(BaseNode):
 
     def start(self):
         LOGGER.debug(f"{self.lpfx}")
-        self.elk.add_callback(self.callback)
-        self.set_drivers()
-        self.reportDrivers()
-        # elkm1_lib uses zone numbers starting at zero.
-        for zn in range(Max.ZONES.value):
-            LOGGER.debug(f'{self.lpfx} index={zn} area={self.controller.elk.zones[zn].area} definition={self.controller.elk.zones[zn].definition}')
-            # Add zones that are in my area, and are defined.
-            if self.controller.elk.zones[zn].definition > 0 and self.controller.elk.zones[zn].area == self.elk.index:
-                LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
-                address = f'zone_{zn+1}'
-                node = self.controller.add_node(address, ZoneNode(self.controller, self, address, self.controller.elk.zones[zn]))
-                if node is not None:
-                    self._zone_nodes[zn] = node
-        for n in range(Max.KEYPADS.value):
-            if self.controller.elk.keypads[n].area == self.elk.index:
-                LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding keypad node {n} '{self.controller.elk.keypads[n]}'")
-                address = f'keypad_{n+1}'
-                node = self.controller.add_node(address,KeypadNode(self.controller, self, address, self.controller.elk.keypads[n]))
-                if node is not None:
-                    self._keypad_nodes[n] = node
-            else:
-                LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} skipping keypad node {n} '{self.controller.elk.keypads[n]}'")
+        try:
+            self.elk.add_callback(self.callback)
+            self.set_drivers(force=True)
+            self.reportDrivers()
+            # elkm1_lib uses zone numbers starting at zero.
+            for zn in range(Max.ZONES.value):
+                LOGGER.debug(f'{self.lpfx} index={zn} area={self.controller.elk.zones[zn].area} definition={self.controller.elk.zones[zn].definition}')
+                # Add zones that are in my area, and are defined.
+                if self.controller.elk.zones[zn].definition > 0 and self.controller.elk.zones[zn].area == self.elk.index:
+                    LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
+                    address = f'zone_{zn+1}'
+                    node = self.controller.add_node(address, ZoneNode(self.controller, self, address, self.controller.elk.zones[zn]))
+                    if node is not None:
+                        self._zone_nodes[zn] = node
+            for n in range(Max.KEYPADS.value):
+                if self.controller.elk.keypads[n].area == self.elk.index:
+                    LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding keypad node {n} '{self.controller.elk.keypads[n]}'")
+                    address = f'keypad_{n+1}'
+                    node = self.controller.add_node(address,KeypadNode(self.controller, self, address, self.controller.elk.keypads[n]))
+                    if node is not None:
+                        self._keypad_nodes[n] = node
+                else:
+                    LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} skipping keypad node {n} '{self.controller.elk.keypads[n]}'")
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
         self.ready = True
 
     def shortPoll(self):
@@ -96,33 +100,33 @@ class AreaNode(BaseNode):
 
     # armed_status:0 arm_up_state:1 alarm_state:0 alarm_memory:None is_exit:False timer1:0 timer2:0 cs={'name': 'Home'}
     # {'armed_status': '0', 'arm_up_state': '1', 'alarm_state': '0'}
-    def set_drivers(self):
+    def set_drivers(self,force=False):
         LOGGER.info(f'{self.lpfx} Area:{self.elk.index} {self.elk.name}')
-        self.set_alarm_state()
-        self.set_armed_status()
-        self.set_arm_up_state()
-        self.set_poll_voltages()
-        self.set_entry_exit_trigger()
-        self.set_driver('GV3',self.zones_violated)
-        self.set_driver('GV4',self.zones_bypassed)
+        self.set_alarm_state(force=force)
+        self.set_armed_status(force=force)
+        self.set_arm_up_state(force=force)
+        self.set_poll_voltages(force=force)
+        self.set_entry_exit_trigger(force=force)
+        self.set_driver('GV3',self.zones_violated,force=force)
+        self.set_driver('GV4',self.zones_bypassed,force=force)
         #self.setDriver('GV2', pyelk.chime_mode)
 
     # This is called by Keypad or callback
     def set_user(self, val, force=False, reportCmd=True):
         LOGGER.info(f'{self.lpfx} val={val}')
-        self.set_driver('GV6',val)
+        self.set_driver('GV6',val,force=force)
 
     # This is only called by Keypad's
     def set_keypad(self, val, force=False, reportCmd=True):
         LOGGER.info(f'{self.lpfx} val={val}')
-        self.set_driver('GV7',val)
+        self.set_driver('GV7',val,force=force)
 
     # This is only called by Zones's when it goes violated
     # This is passed the elkm1_lib zone number, so we add 1 for our zone numbers
     def set_last_violated_zone(self, val, force=False, reportCmd=True):
         LOGGER.info(f'{self.lpfx} val={val} EntryExitTrigger={self.entry_exit_trigger}')
         val = int(val)
-        self.set_driver('GV8',val+1)
+        self.set_driver('GV8',val+1,force=force)
         # ELK only sends a violated zone for entry/exit zones when it
         # starts the timer, but this option sets it as triggered
         # if entry_exit_trigger is enabled.
@@ -147,11 +151,11 @@ class AreaNode(BaseNode):
 
     # This is only called by Zone's when it triggers an alarm
     # This is passed the elkm1_lib zone number, so we add 1 for our zone numbers
-    def set_last_triggered_zone(self,val):
+    def set_last_triggered_zone(self,val,force=False):
         LOGGER.info(f'{self.lpfx} val={val}')
-        self.set_driver('GV9',val+1)
+        self.set_driver('GV9',val+1,force=force)
 
-    def set_zone_logical_status(self, zn, st):
+    def set_zone_logical_status(self, zn, st, force=False):
         LOGGER.info(f'{self.lpfx} zn={zn} st={st}')
         self.zones_logical_status[zn] = st
         self.zones_bypassed = 0
@@ -162,8 +166,8 @@ class AreaNode(BaseNode):
                     self.zones_bypassed += 1
                 elif val == VIOLATED:
                     self.zones_violated += 1
-        self.set_driver('GV3',self.zones_violated)
-        self.set_driver('GV4',self.zones_bypassed)
+        self.set_driver('GV3',self.zones_violated,force=force)
+        self.set_driver('GV4',self.zones_bypassed,force=force)
 
     def set_alarm_state(self,val=None,force=False):
         LOGGER.info(f'{self.lpfx} {val}')
@@ -178,80 +182,104 @@ class AreaNode(BaseNode):
         LOGGER.info(f'{self.lpfx} {val}')
         self.set_driver('GV0',val,restore=False,default=self.elk.armed_status,force=force)
 
-    def set_arm_up_state(self,val=None):
+    def set_arm_up_state(self,val=None,force=False):
         LOGGER.info(f'{self.lpfx} {val}')
-        self.set_driver('GV1', val, restore=False,default=self.elk.arm_up_state)
+        self.set_driver('GV1', val, restore=False,default=self.elk.arm_up_state,force=force)
 
-    def set_poll_voltages(self,val=None):
+    def set_poll_voltages(self,val=None, force=False):
         LOGGER.info(f'{self.lpfx} {val}')
-        self.set_driver('GV5', val, default=0)
+        self.set_driver('GV5', val, default=0, force=force)
         self.poll_voltages = False if self.get_driver('GV5') == 0 else True
 
-    def set_entry_exit_trigger(self,val=None):
+    def set_entry_exit_trigger(self,val=None, force=False):
         LOGGER.info(f'{self.lpfx} {val}')
         val = self.set_driver('GV10', val, default=1)
         self.entry_exit_trigger = False if val == 0 else True
 
     def cmd_set_armed_status(self,command):
-        val = command.get('value')
-        LOGGER.info(f'{self.lpfx} elk.arm({val},****')
-        # val is a string, not integer :(
-        self.elk.arm(val,self.controller.user_code)
+        try:
+            val = command.get('value')
+            LOGGER.info(f'{self.lpfx} elk.arm({val},****')
+            # val is a string, not integer :(
+            self.elk.arm(val,self.controller.user_code)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_bypass(self,command):
-        val = command.get('value')
-        LOGGER.info(f'{self.lpfx} Calling bypass...')
-        self.elk.bypass(self.controller.user_code)
+        try:
+            val = command.get('value')
+            LOGGER.info(f'{self.lpfx} Calling bypass...')
+            self.elk.bypass(self.controller.user_code)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_clear_bypass(self,command):
-        val = command.get('value')
-        LOGGER.info(f'{self.lpfx} Calling clear bypass...')
-        self.elk.clear_bypass(self.controller.user_code)
+        try:
+            val = command.get('value')
+            LOGGER.info(f'{self.lpfx} Calling clear bypass...')
+            self.elk.clear_bypass(self.controller.user_code)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_poll_voltages(self,command):
-        val = command.get('value')
-        LOGGER.info(f'{self.lpfx} {val}')
-        self.set_poll_voltages(val)
+        try:
+            val = command.get('value')
+            LOGGER.info(f'{self.lpfx} {val}')
+            self.set_poll_voltages(val)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_entry_exit_trigger(self,command):
-        val = command.get('value')
-        LOGGER.info(f'{self.lpfx} {val}')
-        self.set_entry_exit_trigger(val)
+        try:
+            val = command.get('value')
+            LOGGER.info(f'{self.lpfx} {val}')
+            self.set_entry_exit_trigger(val)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     #  command={'address': 'area_1', 'cmd': 'GV11', 'query': {'Beep.uom2': '0', 'OffTimer.uom56': '60', 'Content.uom145': 'program[0]: node[#]=node[#]'}}
     # Clear, 0=clear message, 1=clear message with * key, 2=Display until timeout
     #     def display_message(self, clear, beep, timeout, line1, line2)
     def cmd_display_message(self,command):
         LOGGER.debug(f'command={command}')
-        query = command.get('query')
-        beep = query.get('Beep.uom2')
-        beep = False if beep == "0" else True
-        clear = query.get('Clear.uom25')
-        clear = 2 if clear is None else int(clear)
-        off_timer = query.get('OffTimer.uom56')
-        off_timer = 0 if off_timer is None else int(off_timer)
-        content = query.get('Content.uom145')
-        LOGGER.debug(f'clear={clear} beep={beep} off_timer={off_timer} content={content}')
-        if content is None:
-            msg = 'No content sent in message?'
-            LOGGER.error(msg)
-            self.inc_error(msg)
-            return
-        lines = content.splitlines()
-        if len(lines) < 1:
-            msg = f"No lines in content '{content}'"
-            LOGGER.error(msg)
-            self.inc_error(msg)
-        line1 = self.clean_dm(lines[0])
-        if (len(lines) < 2):
-            lines.append('')
-            line2 = ''
-        else:
-            line2 = self.clean_dm(lines[1])
-        LOGGER.info(f'display_message({clear}, {beep}, {off_timer}, "{line1}", "{line2}")')
-        self.elk.display_message(
-            clear, beep, off_timer, line1, line2
-        )
+        try:
+            query = command.get('query')
+            beep = query.get('Beep.uom2')
+            beep = False if beep == "0" else True
+            clear = query.get('Clear.uom25')
+            clear = 2 if clear is None else int(clear)
+            off_timer = query.get('OffTimer.uom56')
+            off_timer = 0 if off_timer is None else int(off_timer)
+            content = query.get('Content.uom145')
+            LOGGER.debug(f'clear={clear} beep={beep} off_timer={off_timer} content={content}')
+            if content is None:
+                msg = 'No content sent in message?'
+                LOGGER.error(msg)
+                self.inc_error(msg)
+                return
+            lines = content.splitlines()
+            if len(lines) < 1:
+                msg = f"No lines in content '{content}'"
+                LOGGER.error(msg)
+                self.inc_error(msg)
+            line1 = self.clean_dm(lines[0])
+            if (len(lines) < 2):
+                lines.append('')
+                line2 = ''
+            else:
+                line2 = self.clean_dm(lines[1])
+            LOGGER.info(f'display_message({clear}, {beep}, {off_timer}, "{line1}", "{line2}")')
+            self.elk.display_message(
+                clear, beep, off_timer, line1, line2
+            )
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def clean_dm(self,line):
         fixed = line.encode("ascii", "ignore").decode()
@@ -260,10 +288,14 @@ class AreaNode(BaseNode):
         return fixed
 
     def cmd_clear_message(self,command):
-        LOGGER.info(f'display_message(0, False, 0, "", "")')
-        self.elk.display_message(
-            0, False, 0, "", ""
-        )
+        try:
+            LOGGER.info(f'display_message(0, False, 0, "", "")')
+            self.elk.display_message(
+                0, False, 0, "", ""
+            )
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]

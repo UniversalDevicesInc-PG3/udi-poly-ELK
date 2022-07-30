@@ -23,12 +23,16 @@ class CounterNode(BaseNode):
         controller.poly.subscribe(controller.poly.START, self.start, address)
 
     def start(self):
-        LOGGER.debug(f'{self.lpfx} {self.elk}')
-        # Set drivers
-        #self.set_drivers(force=True)
-        #self.reportDrivers()
-        self.elk.add_callback(self.callback)
-        self.set_val()
+        try:
+            LOGGER.debug(f'{self.lpfx} {self.elk}')
+            # Set drivers
+            #self.set_drivers(force=True)
+            #self.reportDrivers()
+            self.elk.add_callback(self.callback)
+            self.set_val()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
@@ -40,8 +44,12 @@ class CounterNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def set_drivers(self,force=False):
-        LOGGER.debug(f'{self.lpfx} force={force}')
-        self.set_val(force=force)
+        try:
+            LOGGER.debug(f'{self.lpfx} force={force}')
+            self.set_val(force=force)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def set_val(self,val=None,force=False):
         LOGGER.debug(f'{self.lpfx} {val}')
@@ -58,11 +66,11 @@ class CounterNode(BaseNode):
             LOGGER.error(msg)
             self.inc_error(msg)
             return
-        self.set_driver('ST',val)
-
+        self.set_driver('ST',val,force=force)
 
     def query(self):
         self.elk.get()
+        self.set_drivers(force=True)
         self.reportDrivers()
 
     def cmd_query(self,command):
@@ -70,17 +78,29 @@ class CounterNode(BaseNode):
         self.query()
 
     def cmd_set(self,command):
-        val = int(command.get('value'))
-        LOGGER.debug(f'{self.lpfx} {val}')
-        self.elk.set(int(val))
+        try:
+            val = int(command.get('value'))
+            LOGGER.debug(f'{self.lpfx} {val}')
+            self.elk.set(int(val))
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_inc(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.elk.set(int(self.elk.value) + 1)
+        try:
+            LOGGER.debug(f'{self.lpfx}')
+            self.elk.set(int(self.elk.value) + 1)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_dec(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.elk.set(int(self.elk.value) - 1)
+        try:
+            LOGGER.debug(f'{self.lpfx}')
+            self.elk.set(int(self.elk.value) - 1)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]

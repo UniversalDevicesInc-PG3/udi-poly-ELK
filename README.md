@@ -377,6 +377,8 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 - 3.4.0: 07/28/2022 - BETA
   - More documentation cleanup, still needs more.
     - Added driver's to many Nodes, still more to go.
+  - When node is queried the values are passed to PG3 with force option so they always update ISY
+    - This helps set initial ISY driver values during query-all on restart
   - [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78)
     - See [ELK Controller](#ElkController) System Trouble Status
   - [Add Remote Programming Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/80)

@@ -44,6 +44,7 @@
               <p id="" editor="sp_phrase" />
             </cmd>
             <cmd id="QUERY" />
+            <cmd id="QUERY_ALL" />
             <cmd id="DISCOVER" />
             <cmd id="UPDATE_PROFILE" />
           </accepts>

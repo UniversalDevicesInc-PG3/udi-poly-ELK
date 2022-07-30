@@ -15,19 +15,27 @@ class LightNode(BaseNode):
         self.controller = controller
         self.init   = False
         self.on_time = 0
-        name        = get_valid_node_name(self.elk.name)
-        if name == "":
-            name = f'Light_{self.elk.index + 1}'
-        LOGGER.debug(f'LightNode:init: {name}')
-        super(LightNode, self).__init__(controller, controller.address, address, name)
-        controller.poly.subscribe(controller.poly.START, self.start, address)
+        try:
+            name        = get_valid_node_name(self.elk.name)
+            if name == "":
+                name = f'Light_{self.elk.index + 1}'
+            LOGGER.debug(f'LightNode:init: {name}')
+            super(LightNode, self).__init__(controller, controller.address, address, name)
+            controller.poly.subscribe(controller.poly.START, self.start, address)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def start(self):
-        LOGGER.debug(f'{self.lpfx} {self.elk}')
-        # Set drivers
-        self.set_drivers(force=True,reportCmd=False)
-        self.reportDrivers()
-        self.elk.add_callback(self.callback)
+        try:
+            LOGGER.debug(f'{self.lpfx} {self.elk}')
+            # Set drivers
+            self.set_drivers(force=True,reportCmd=False)
+            self.reportDrivers()
+            self.elk.add_callback(self.callback)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def callback(self, obj, changeset):
         LOGGER.debug(f'{self.lpfx} changeset={changeset}')
@@ -40,11 +48,11 @@ class LightNode(BaseNode):
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
-        self.set_onoff(reportCmd=False)
+        self.set_onoff(force=force,reportCmd=False)
 
     def set_time(self,val=0,force=False,reportCmd=True):
         LOGGER.info(f'{self.lpfx}')
-        self.set_driver('TIME',val)
+        self.set_driver('TIME',val,force=force)
         self.on_time = int(val)
 
     def set_onoff(self,val=None,force=False,reportCmd=True):
@@ -55,7 +63,7 @@ class LightNode(BaseNode):
             val = 100
         elif val is False:
             val = 0
-        self.set_driver('ST',val)
+        self.set_driver('ST',val,force=force)
         if (not force) and reportCmd:
             if self.elk.status > 0:
                 LOGGER.debug(f'{self.lpfx} Send DON')
@@ -64,21 +72,29 @@ class LightNode(BaseNode):
                 LOGGER.debug(f'{self.lpfx} Send DOF')
                 self.reportCmd("DOF")
 
-    def query(self):
-        self.set_drivers()
-        self.reportDrivers()
-
     def cmd_set_on(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.elk.level(100)
+        try:
+            LOGGER.debug(f'{self.lpfx}')
+            self.elk.level(100)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_off(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.elk.level(0)
+        try:
+            LOGGER.debug(f'{self.lpfx}')
+            self.elk.level(0)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_toggle(self,command):
-        LOGGER.debug(f'{self.lpfx}')
-        self.elk.toggle()
+        try:
+            LOGGER.debug(f'{self.lpfx}')
+            self.elk.toggle()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_query(self,command):
         LOGGER.debug(f'{self.lpfx}')

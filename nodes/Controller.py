@@ -190,12 +190,12 @@ class Controller(Node):
 #        logging.getLogger("elkm1_lib").setLevel(slevel)
         LOGGER.info(f'exit: level={level}')
 
-    def set_st(self, st):
+    def set_st(self, st, force=False):
         LOGGER.debug(f"{self.lpfx} elk_st={self.elk_st} st={st}")
         # Did connection status change?
         if self.elk_st != st:
             self.elk_st = st
-            self.setDriver("GV1", st, uom=25)
+            self.setDriver("GV1", st, uom=25,force=force)
 
     def query(self):
         LOGGER.info(f'{self.lpfx}')
@@ -257,9 +257,8 @@ class Controller(Node):
     def query_all(self):
         LOGGER.info(f'{self.lpfx}')
         try:
-            self.query()
             for node in self.poly.getNodes():
-                self.poly.getNode(node).reportDrivers()
+                self.poly.getNode(node).query()
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
@@ -727,38 +726,63 @@ class Controller(Node):
         LOGGER.info(f"{self.lpfx}")
         return self.poly.updateProfile()
 
+    def cmd_query_all(self, command):
+        try:
+            LOGGER.info(f"{self.lpfx}")
+            return self.query_all()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
+
     def cmd_update_profile(self, command):
-        LOGGER.info(f"{self.lpfx}")
-        return self.write_profile()
+        try:
+            LOGGER.info(f"{self.lpfx}")
+            return self.write_profile()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_discover(self, command):
-        LOGGER.info(f"{self.lpfx}")
-        return self.discover()
+        try:
+            LOGGER.info(f"{self.lpfx}")
+            return self.discover()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_speak_word(self, command):
-        val = int(command.get('value'))
-        if self.elk is None:
-            LOGGER.warning(f"{self.lpfx} No ELK defined")
-            return False
-        LOGGER.info(f"{self.lpfx} {val}")
-        # Get the word from the sorted list
-        LOGGER.info(f"{self.lpfx} word={SPEAK_WORDS[val]}")
-        return self.elk.panel.speak_word(val)
+        try:
+            val = int(command.get('value'))
+            if self.elk is None:
+                LOGGER.warning(f"{self.lpfx} No ELK defined")
+                return False
+            LOGGER.info(f"{self.lpfx} {val}")
+            # Get the word from the sorted list
+            LOGGER.info(f"{self.lpfx} word={SPEAK_WORDS[val]}")
+            return self.elk.panel.speak_word(val)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_speak_phrase(self, command):
-        val = int(command.get('value'))
-        if self.elk is None:
-            LOGGER.warning(f"{self.lpfx} No ELK defined")
-            return False
-        LOGGER.info(f"{self.lpfx} {val}")
-        # Get the word from the sorted list
-        LOGGER.info(f"{self.lpfx} phrase={SPEAK_PHRASES[val]}")
-        return self.elk.panel.speak_phrase(val)
+        try:
+            val = int(command.get('value'))
+            if self.elk is None:
+                LOGGER.warning(f"{self.lpfx} No ELK defined")
+                return False
+            LOGGER.info(f"{self.lpfx} {val}")
+            # Get the word from the sorted list
+            LOGGER.info(f"{self.lpfx} phrase={SPEAK_PHRASES[val]}")
+            return self.elk.panel.speak_phrase(val)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
 
     id = "controller"
     commands = {
         "QUERY": query,
+        "QUERY_ALL": cmd_query_all,
         "DISCOVER": cmd_discover,
         "UPDATE_PROFILE": cmd_update_profile,
         "SPEAK_WORD": cmd_speak_word,
