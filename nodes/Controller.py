@@ -216,7 +216,7 @@ class Controller(Node):
         if val is None:
             val = 0
         self.errors = val
-        self.setDriver('ERR',self.errors)
+        self.setDriver('ERR',self.errors,force=force)
 
     def inc_error(self,err_str,val=None):
         if val is None:
@@ -235,18 +235,23 @@ class Controller(Node):
         LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         if val is None:
             val = self.elk.panel.system_trouble_status
+            LOGGER.debug(f'{self.lpfx} val={val}')
         for status in SYSTEM_TROUBLE_STATUS:
-            SYSTEM_TROUBLE_STATUS[status]['value'] = False
+            SYSTEM_TROUBLE_STATUS[status]['value'] = 0
         if val != "":
+            LOGGER.warning(f'{self.lpfx} Setting System Trouble Status for: {val}')
             for status in val.split(','):
                 if status in SYSTEM_TROUBLE_STATUS:
-                    SYSTEM_TROUBLE_STATUS[status]['value'] = True
+                    LOGGER.warning(f'{self.lpfx} Setting System Trouble Status for: {status}')
+                    SYSTEM_TROUBLE_STATUS[status]['value'] = 1
                 else:
                     msg = f"{self.lpfx} Unknown system trouble status '{status}' in '{val}'"
                     LOGGER.error(msg)
                     self.inc_error(msg)
         for status in SYSTEM_TROUBLE_STATUS:
-            self.setDriver(SYSTEM_TROUBLE_STATUS[status]['driver'],SYSTEM_TROUBLE_STATUS[status]['value'])
+            if SYSTEM_TROUBLE_STATUS[status]['value'] == 1:
+                LOGGER.warning(f'{self.lpfx} Setting System Trouble Status for: {status}=True')
+            self.setDriver(SYSTEM_TROUBLE_STATUS[status]['driver'],SYSTEM_TROUBLE_STATUS[status]['value'],force=force)
 
     def query_all(self):
         LOGGER.info(f'{self.lpfx}')
@@ -458,6 +463,7 @@ class Controller(Node):
         self.elk.add_handler("unknown", self.unknown)
         #self.elk.add_handler('KC', self.kc_handler)
         LOGGER.info(f"{self.lpfx} Connecting to Elk...")
+        self.set_drivers(force=True)
         self.elk.connect()
         self.elk.run()
         #future = asyncio.run_coroutine_threadsafe(self.elk_start_run(), loop)
