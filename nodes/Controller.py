@@ -128,16 +128,20 @@ class Controller(Node):
 
     def handler_poll(self, polltype):
         LOGGER.debug('start')
-        if self.handler_config_done_st is None:
-            LOGGER.warning('waiting for config handler to be called')
-            return
-        if not self.ready:
-            LOGGER.warning('waiting for sync and node initialization to complete')
-            return
-        if 'longPoll' in polltype:
-            self.longPoll()
-        elif 'shortPoll' in polltype:
-            self.shortPoll()
+        try:
+            if self.handler_config_done_st is None:
+                LOGGER.warning('waiting for config handler to be called')
+                return
+            if not self.ready:
+                LOGGER.warning('waiting for sync and node initialization to complete')
+                return
+            if 'longPoll' in polltype:
+                self.longPoll()
+            elif 'shortPoll' in polltype:
+                self.shortPoll()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def shortPoll(self):
         LOGGER.debug('start')
@@ -195,9 +199,13 @@ class Controller(Node):
 
     def query(self):
         LOGGER.info(f'{self.lpfx}')
-        self.check_params()
-        self.set_drivers(force=True)
-        self.reportDrivers()
+        try:
+            self.check_params()
+            self.set_drivers(force=True)
+            self.reportDrivers()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def set_drivers(self,force=False):
         self.set_error(force=force)
@@ -226,24 +234,29 @@ class Controller(Node):
     def set_system_trouble_status(self,val=None,force=False):
         LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         if val is None:
-            val = self.panel.system_trouble_status
+            val = self.elk.panel.system_trouble_status
         for status in SYSTEM_TROUBLE_STATUS:
             SYSTEM_TROUBLE_STATUS[status]['value'] = False
-        for status in changeset[key].split(','):
-            if status in SYSTEM_TROUBLE_STATUS:
-                SYSTEM_TROUBLE_STATUS[status]['value'] = True
-            else:
-                msg = f"{self.lpfx} Unknown system trouble status '{stutus}"
-                LOGGER.error(msg)
-                self.inc_error(msg)
+        if val != "":
+            for status in val.split(','):
+                if status in SYSTEM_TROUBLE_STATUS:
+                    SYSTEM_TROUBLE_STATUS[status]['value'] = True
+                else:
+                    msg = f"{self.lpfx} Unknown system trouble status '{status}' in '{val}'"
+                    LOGGER.error(msg)
+                    self.inc_error(msg)
         for status in SYSTEM_TROUBLE_STATUS:
             self.setDriver(SYSTEM_TROUBLE_STATUS[status]['driver'],SYSTEM_TROUBLE_STATUS[status]['value'])
 
     def query_all(self):
         LOGGER.info(f'{self.lpfx}')
-        self.query()
-        for node in self.poly.getNodes():
-            self.poly.getNode(node).reportDrivers()
+        try:
+            self.query()
+            for node in self.poly.getNodes():
+                self.poly.getNode(node).reportDrivers()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def connected(self):
         LOGGER.info(f"{self.lpfx} Connected!!!")
