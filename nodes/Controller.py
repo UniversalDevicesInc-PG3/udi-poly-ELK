@@ -241,6 +241,7 @@ class Controller(Node):
         if val != "":
             LOGGER.warning(f'{self.lpfx} Setting System Trouble Status for: {val}')
             for status in val.split(','):
+                status = status.strip()
                 if status in SYSTEM_TROUBLE_STATUS:
                     LOGGER.warning(f'{self.lpfx} Setting System Trouble Status for: {status}')
                     SYSTEM_TROUBLE_STATUS[status]['value'] = 1
