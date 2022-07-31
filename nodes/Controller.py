@@ -417,8 +417,11 @@ class Controller(Node):
         # We don't care about email messages
         if msg_code == 'EM':
             return
+        if msg_code == 'KF' and data == '0000000000000':
+            LOGGER.warning(f"{self.lpfx} Received unknown message which is known to come from M1 Touch app: {msg_code}:{data}")
+            return
         self.set_st(7)
-        msg = f"{self.lpfx} Unknown message {msg_code}: {data}!!!"
+        msg = f"{self.lpfx} Unknown message {msg_code}: {data}"
         LOGGER.error(msg)
         self.inc_error(msg)
 
