@@ -7,8 +7,11 @@ from node_funcs import get_valid_node_name
 from nodes import BaseNode,ZoneNode,KeypadNode
 from elkm1_lib.const import (
     Max,
+    ArmedStatus,
+    ZoneType,
     ZoneLogicalStatus,
     ZonePhysicalStatus,
+    ChimeMode,
 )
 
 # For faster lookups
@@ -44,15 +47,15 @@ class AreaNode(BaseNode):
             self.set_drivers(force=True)
             self.reportDrivers()
             # elkm1_lib uses zone numbers starting at zero.
-            for zn in range(Max.ZONES.value):
-                LOGGER.debug(f'{self.lpfx} index={zn} area={self.controller.elk.zones[zn].area} definition={self.controller.elk.zones[zn].definition}')
-                # Add zones that are in my area, and are defined.
-                if self.controller.elk.zones[zn].definition > 0 and self.controller.elk.zones[zn].area == self.elk.index:
-                    LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
-                    address = f'zone_{zn+1}'
-                    node = self.controller.add_node(address, ZoneNode(self.controller, self, address, self.controller.elk.zones[zn]))
-                    if node is not None:
-                        self._zone_nodes[zn] = node
+#            for zn in range(Max.ZONES.value):
+#                LOGGER.debug(f'{self.lpfx} index={zn} area={self.controller.elk.zones[zn].area} definition={self.controller.elk.zones[zn].definition}')
+#                # Add zones that are in my area, and are defined.
+#                if self.controller.elk.zones[zn].definition !=  ZoneType.DISABLED and self.controller.elk.zones[zn].area == self.elk.index:
+#                    LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
+#                    address = f'zone_{zn+1}'
+#                    node = self.controller.add_node(address, ZoneNode(self.controller, self, address, self.controller.elk.zones[zn]))
+#                    if node is not None:
+#                        self._zone_nodes[zn] = node
             for n in range(Max.KEYPADS.value):
                 if self.controller.elk.keypads[n].area == self.elk.index:
                     LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding keypad node {n} '{self.controller.elk.keypads[n]}'")
@@ -82,18 +85,25 @@ class AreaNode(BaseNode):
     # Area:callback: area_1:Home: cs={'last_log': {'event': 1174, 'number': 1, 'index': 0, 'timestamp': '2021-02-06T14:47:00+00:00', 'user_number': 1}}
     # user_number=1 was me
     def callback(self, element, changeset):
-        LOGGER.info(f'{self.lpfx} cs={changeset}')
+        LOGGER.warning(f'{self.lpfx} cs={changeset}')
         try:
-            if 'alarm_state' in changeset:
-                self.set_alarm_state(changeset['alarm_state'])
-            if 'armed_status' in changeset:
-                self.set_armed_status(changeset['armed_status'])
-            if 'arm_up_state' in changeset:
-                self.set_arm_up_state(changeset['arm_up_state'])
-            # Need to investigate this more, do we really need this if keypad callback is setting it?
-            if 'last_log' in changeset:
-                if 'user_number' in changeset['last_log']:
-                    self.set_user(int(changeset['last_log']['user_number']))
+            for cs in changeset:
+                if cs == 'alarm_state':
+                    self.set_alarm_state(changeset[cs])
+                elif cs == 'armed_status':
+                    self.set_armed_status(changeset[cs])
+                elif cs == 'arm_up_state':
+                    self.set_arm_up_state(changeset[cs])
+                elif cs == 'last_log':
+                    # Need to investigate this more, do we really need this if keypad callback is setting it?
+                    if 'user_number' in changeset[cs]:
+                        self.set_user(int(changeset[cs]['user_number']))
+                elif cs == 'chime_mode':
+                    # chime_mode=('Chime', <ChimeMode.Chime: 1>)
+                    # So pass element 1 which is the enum
+                    self.set_chime_mode(changeset[cs])
+                else:
+                    LOGGER.warning(f'{self.lpfx} Unknown callback {cs}={changeset[cs]}')
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
@@ -105,11 +115,11 @@ class AreaNode(BaseNode):
         self.set_alarm_state(force=force)
         self.set_armed_status(force=force)
         self.set_arm_up_state(force=force)
+        self.set_chime_mode(force=force)
         self.set_poll_voltages(force=force)
         self.set_entry_exit_trigger(force=force)
         self.set_driver('GV3',self.zones_violated,force=force)
         self.set_driver('GV4',self.zones_bypassed,force=force)
-        #self.setDriver('GV2', pyelk.chime_mode)
 
     # This is called by Keypad or callback
     def set_user(self, val, force=False, reportCmd=True):
@@ -133,17 +143,17 @@ class AreaNode(BaseNode):
         if self.entry_exit_trigger:
             LOGGER.debug(f'{self.lpfx} alarm_state={self.elk.alarm_state} zone.definition={self.controller.elk.zones[val].definition} armed_status={self.elk.armed_status}')
             # Say nothing for 'Non Alarm'
-            if not int(self.controller.elk.zones[val].definition) == 16:
+            if self.controller.elk.zones[val].definition != ZoneType.NON_ALARM:
                 LOGGER.debug("a")
                 # Mode Stay, Away, Night, or Vacation?
-                if int(self.elk.armed_status) == 1 or int(self.elk.armed_status) == 2 or int(self.elk.armed_status) == 4 or int(self.elk.armed_status) == 6:
+                if self.elk.armed_status == ArmedStatus.ARMED_AWAY or self.elk.armed_status == ArmedStatus.ARMED_STAY or self.elk.armed_status == ArmedStatus.ARMED_STAY_INSTANT or self.elk.armed_status == ArmedStatus.ARMED_TO_NIGHT_INSTANT or self.elk.armed_status == ArmedStatus.ARMED_TO_VACATION:
                     LOGGER.debug("b")
                     # Send for Entry/Exit Delay
-                    if int(self.controller.elk.zones[val].definition) == 1 or int(self.controller.elk.zones[val].definition) == 2: 
+                    if self.controller.elk.zones[val].definition == ZoneType.BURGLAR_ENTRY_EXIT_1 or int(self.controller.elk.zones[val].definition) == ZoneType.BURGLAR_ENTRY_EXIT_2: 
                         LOGGER.debug("c")
                         self.set_last_triggered_zone(val)
                 # Night mode?
-                elif int(self.elk.armed_status) == 4:
+                elif self.elk.armed_status == ArmedStatus.ARMED_TO_NIGHT:
                     LOGGER.debug("d")
                     # Send for Interior Night Delay
                     if int(self.controller.elk.zones[val].definition) == 7:
@@ -185,6 +195,10 @@ class AreaNode(BaseNode):
     def set_arm_up_state(self,val=None,force=False):
         LOGGER.info(f'{self.lpfx} {val}')
         self.set_driver('GV1', val, restore=False,default=self.elk.arm_up_state,force=force)
+
+    def set_chime_mode(self,val=None,force=False):
+        LOGGER.warning(f'{self.lpfx} {val} elk.chime_mode={self.elk.chime_mode}')
+        self.set_driver('GV2', val, restore=False,default=self.elk.chime_mode,force=force)
 
     def set_poll_voltages(self,val=None, force=False):
         LOGGER.info(f'{self.lpfx} {val}')

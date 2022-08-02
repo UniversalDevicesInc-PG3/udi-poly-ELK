@@ -61,7 +61,10 @@
       <range uom="25" subset="-1,0-18" nls="ALARM" />
   </editor>
   <editor id="chime">
-      <range uom="25" subset="-1,0-7" nls="CHIME" />
+      <range uom="25" subset="-1-3" nls="CHIME" />
+  </editor>
+  <editor id="chime_e">
+      <range uom="25" subset="0-3" nls="CHIME" />
   </editor>
   <!-- Last User -->
   <editor id="I_LAST_USER">

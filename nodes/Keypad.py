@@ -60,6 +60,7 @@ class KeypadNode(BaseNode):
             self.set_drivers(force=True,reportCmd=False)
             self.reportDrivers()
             self.elk.add_callback(self.callback)
+            self.elk.get_chime_mode()
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
@@ -90,10 +91,11 @@ class KeypadNode(BaseNode):
 
     def set_drivers(self,force=False,reportCmd=True):
         LOGGER.debug(f'{self.lpfx} force={force} reportCmd={reportCmd}')
-        self.set_driver(DNAMES['status'],1,force=force)
-        self.set_user(force=force)
-        self.set_temperature(force=force)
-        self.set_key(force=force)
+        self.elk.get_chime_mode()
+#        self.set_driver(DNAMES['status'],1,force=force)
+#        self.set_user(force=force)
+#        self.set_temperature(force=force)
+#        self.set_key(force=force)
 
     def set_key(self,val=None,force=False):
         LOGGER.debug(f'{self.lpfx} val={val} force={force}')
@@ -121,9 +123,14 @@ class KeypadNode(BaseNode):
         LOGGER.debug(f'{self.lpfx}')
         self.query()
 
+    def cmd_key_chime(self,command):
+        LOGGER.debug(f'{self.lpfx}')
+        self.elk.press_chime_key()
+
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     id = 'keypad'
     commands = {
         'QUERY': cmd_query,
+        'KEY_CHIME': cmd_key_chime,
     }

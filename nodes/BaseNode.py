@@ -19,9 +19,13 @@ class BaseNode(Node):
         LOGGER.debug(f'{self.lpfx} does not have set_drivers')
 
     def query(self):
-        LOGGER.info(f'{self.lpfx}')
-        self.set_drivers()
-        self.reportDrivers()
+        try:
+            LOGGER.info(f'{self.lpfx}')
+            self.set_drivers(force=True)
+            self.reportDrivers()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def shortPoll(self):
         pass
@@ -40,39 +44,41 @@ class BaseNode(Node):
     otherwise use the default.
     """
     def set_driver(self,mdrv,val,default=None,restore=True,force=False,report=True,prec=0,uom=None):
-        LOGGER.debug(f'{self.lpfx} {mdrv},{val} default={default} force={force},report={report}')
-        if val is None:
-            # No val passed in, restore from DB 
-            if default is None or restore is True:
-                # Restore from DB for existing nodes
-                try:
-                    val = self.getDriver(mdrv)
-                    LOGGER.info(f'{self.lpfx} Using getDriver({mdrv})={val}')
-                except:
-                    LOGGER.warning(f'{self.lpfx} getDriver({mdrv}) failed which can happen on new nodes, using {default}')
+        try:
+            LOGGER.debug(f'{self.lpfx} {mdrv},{val} default={default} force={force},report={report}')
+            if val is None:
+                # No val passed in, restore from DB 
+                if default is None or restore is True:
+                    # Restore from DB for existing nodes
+                    try:
+                        val = self.getDriver(mdrv)
+                        LOGGER.info(f'{self.lpfx} Using getDriver({mdrv})={val}')
+                    except:
+                        LOGGER.warning(f'{self.lpfx} getDriver({mdrv}) failed which can happen on new nodes, using {default}')
+                else:
+                    # Use the passed in default since that comes from the elk object.
+                    val = default
+            if hasattr(val,'value'):
+                val = val.value
+            if prec == 0:
+                if val in ELK_TO_INDEX:
+                    val = ELK_TO_INDEX[val]
+                else:
+                    try:
+                        val = int(val)
+                    except Exception as err:
+                        msg = f'{self.lpfx} Error converting driver {mdrv} val={val} to integer, will use default={default} for {mdrv}'
+                        LOGGER.error(msg,exc_info=True)
+                        self.inc_error(msg)
             else:
-                # Use the passed in default since that comes from the elk object.
-                val = default
-        if prec == 0:
-            if val in ELK_TO_INDEX:
-                val = ELK_TO_INDEX[val]
-            else:
                 try:
-                    val = int(val)
+                    val = myfloat(val,prec)
                 except Exception as err:
-                    msg = f'{self.lpfx} Error converting {val} to integer, will use default={default} for {mdrv}'
+                    msg = f'{self.lpfx} Error converting driver {mdrv} val={val} to float, will use default={default} for {mdrv}'
                     LOGGER.error(msg,exc_info=True)
                     self.inc_error(msg)
-        else:
-            try:
-                val = myfloat(val,prec)
-            except Exception as err:
-                msg = f'{self.lpfx} Error converting {val} to float, will use default={default} for {mdrv}'
-                LOGGER.error(msg,exc_info=True)
-                self.inc_error(msg)
-        try:
             if not mdrv in self.__my_drivers or val != self.__my_drivers[mdrv] or force:
-                self.setDriver(mdrv,val,report=report,uom=uom)
+                self.setDriver(mdrv,val,report=report,uom=uom,force=force)
                 try:
                     info = ''
                     if self.id in NODE_DEF_MAP and mdrv in NODE_DEF_MAP[self.id]:

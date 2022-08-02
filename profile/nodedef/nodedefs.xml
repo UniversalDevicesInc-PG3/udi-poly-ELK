@@ -95,6 +95,9 @@
               <cmd id="SET_POLL_VOLTAGES">
                 <p id="" editor="bool" init="GV5" />
               </cmd>
+              <cmd id="SET_CHIME_MODE">
+                <p id="" editor="chime_e" init="GV2" />
+              </cmd>
               <cmd id="SET_ENTRY_EXIT_TRIGGER">
                 <p id="" editor="bool" init="GV10" />
               </cmd>
@@ -280,6 +283,7 @@
             </sends>
             <accepts>
               <cmd id="QUERY" />
+              <cmd id="KEY_CHIME" />
           </accepts>
         </cmds>
     </nodeDef>

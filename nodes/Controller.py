@@ -15,8 +15,10 @@ from const import SPEAK_WORDS,SPEAK_PHRASES,SYSTEM_TROUBLE_STATUS
 
 # sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
-from elkm1_lib.const import Max
-
+from elkm1_lib.const import (
+    Max,
+    ZoneType
+)
 class Controller(Node):
     def __init__(self, poly, primary, address, name):
         self.ready = False
@@ -469,12 +471,9 @@ class Controller(Node):
         self.set_drivers(force=True)
         self.elk.connect()
         self.elk.run()
-        #future = asyncio.run_coroutine_threadsafe(self.elk_start_run(), loop)
-        #LOGGER.info(f'future={future}')
-        #self.elk = future.result()
 
     #def kc_handler(keypad, key):
-    #  LOGGER.debug(f"{keypad} {key}")
+    #  LOGGER.warning(f"{keypad} {key}")
 
     async def elk_start_run(self):
         self.elk.run()
@@ -653,7 +652,7 @@ class Controller(Node):
         sphrases = list()
         if self.config_st:
             for zn in range(Max.ZONES.value):
-                if self.elk.zones[zn].definition > 0:
+                if self.elk.zones[zn].definition != ZoneType.DISABLED:
                     SPEAK_PHRASES[zn+1] = self.elk.zones[zn].name
         else:
             LOGGER.warning(f"{self.lpfx} Can't generate full profile until configuration is complete")

@@ -144,6 +144,7 @@ ST-keypad-ST-NAME = Keypad Status
 ST-keypad-GV1-NAME = Last User
 ST-keypad-GV2-NAME = Temperature
 ST-keypad-GV3-NAME = Last Keypress
+CMD-keypad-KEY_CHIME-NAME = Chime
 
 # keypad
 ND-keypadT-NAME = ELK Keypad With Temperature
@@ -152,6 +153,7 @@ ST-keypadT-ST-NAME = Keypad Status
 ST-keypadT-GV1-NAME = Last User
 ST-keypadT-GV2-NAME = Temperature
 ST-keypadT-GV3-NAME = Last Keypress
+CMD-keypadT-KEY_CHIME-NAME = Chime
 
 # area
 ND-area-NAME = Area Node
@@ -181,6 +183,7 @@ CMD-area-CLEAR_MESSAGE-NAME = Clear Message
 CMD-area-SET_POLL_VOLTAGES-NAME = Set Poll Voltages
 CMD-area-SET_ENTRY_EXIT_TRIGGER-NAME = Set Additional Trigger
 CMD-area-GV11-NAME = Display Message
+CMD-area-SET_CHIME_MODE-NAME = Set Chime Mode
 CMDP-Beep-NAME = Beep
 CMDP-Clear-NAME = Clear
 CMDP-OffTimer-NAME = Off Timer
@@ -249,15 +252,10 @@ ARMUP-5 = Force Armed
 ARMUP-6 = Armed With Bypass
 
 CHIME--1 = Unknown
-CHIME-0 = Silent
-CHIME-1 = Single Beep
-CHIME-2 = Constantly Beeping
-CHIME-3 = Single Beep while Constantly Beeping
-CHIME-4 = Single Chime
-CHIME-5 = Single Chime with Single Beep
-CHIME-6 = Single Chime with Constantly Beeping
-CHIME-7 = Single Chime with Single Beep and Constantly Beeping
-
+CHIME-0 = Off
+CHIME-1 = Chime
+CHIME-2 = Voice
+CHIME-3 = ChimeAndVoice
 
 # zone
 ND-zone-NAME = Zone Node
