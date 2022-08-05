@@ -171,15 +171,10 @@ By default only the area one, is added, change the areas configuraion if you hav
   - The last user to access any keypad with a code.  See "Syncing profile changes" section for more information.
 - Chime Mode
   - driver:GV2
-  - Unknown
-  - Silent
-  - Single Beep
-  - Constantly Beeping
-  - Single Beep while Constantly Beeping
-  - Single Chime
-  - Single Chime with Single Beep
-  - Single Chime with Constantly Beeping
-  - Single Chime with Single Beep and Constantly Beeping
+    - Off
+    - Chime
+    - Voice
+    - ChimeAndVoice
 - Additional Trigger
   - driver:GV10
   - The ELK only sends a triggered zone when a violated zone actually triggers an alarm. If this option is True, which is the default, the Node server will also set Last Triggered Zone when an approriate zone is violated and the ELK is in an Alarm State.
@@ -235,6 +230,17 @@ There is a Keypad node for each keypad found and they are by default grouped und
 - Last KeyPress
   - The last key pressed on the keypad
   - driver: GV3
+- Last Key
+  - The last key pressed on the keypad
+  - driver: GV3
+- Last Function Key
+  - The last function pressed on the keypad
+  - driver: GV4
+  - Includes: F1, F2, F3, F4, F5, F6, Astrick, and Chime
+
+Commands:
+  - Query
+  - Chime, presses the chime button on the keypad
 
 #### Zone Node
 
@@ -374,11 +380,13 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
-- 3.4.0: 07/28/2022 - BETA
+- 3.4.1: 08/04/2022 - BETA
   - More documentation cleanup, still needs more.
-    - Added driver's to many Nodes, still more to go.
+    - Added driver's to many Nodes, still more to go
   - When node is queried the values are passed to PG3 with force option so they always update ISY
-    - This helps set initial ISY driver values during query-all on restart
+    - This helps set initial ISY driver values during query-all on ISY restart
+  - Updates to work with latest elkm1_lib
+  - [Allow user to control Chime Mode](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/14)
   - [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78)
     - See [ELK Controller](#ElkController) System Trouble Status
   - [Add Remote Programming Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/80)
@@ -386,10 +394,6 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
   - [Allow Elk NS to Recognize Keypad Presses](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues)
   - [Add ERROR driver to controller](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/62)
     - See [ELK Controller](#ELKController) Node server errors
-  - []()
-  - []()
-  - []()
-  - []()
 - 3.3.8: 07/25/2022
   - Fixed to work with udi-interface 3.0.47
   - Fixed longPoll/shortPoll not working properly

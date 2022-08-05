@@ -47,15 +47,15 @@ class AreaNode(BaseNode):
             self.set_drivers(force=True)
             self.reportDrivers()
             # elkm1_lib uses zone numbers starting at zero.
-#            for zn in range(Max.ZONES.value):
-#                LOGGER.debug(f'{self.lpfx} index={zn} area={self.controller.elk.zones[zn].area} definition={self.controller.elk.zones[zn].definition}')
-#                # Add zones that are in my area, and are defined.
-#                if self.controller.elk.zones[zn].definition !=  ZoneType.DISABLED and self.controller.elk.zones[zn].area == self.elk.index:
-#                    LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
-#                    address = f'zone_{zn+1}'
-#                    node = self.controller.add_node(address, ZoneNode(self.controller, self, address, self.controller.elk.zones[zn]))
-#                    if node is not None:
-#                        self._zone_nodes[zn] = node
+            for zn in range(Max.ZONES.value):
+                LOGGER.debug(f'{self.lpfx} index={zn} area={self.controller.elk.zones[zn].area} definition={self.controller.elk.zones[zn].definition}')
+                # Add zones that are in my area, and are defined.
+                if self.controller.elk.zones[zn].definition !=  ZoneType.DISABLED and self.controller.elk.zones[zn].area == self.elk.index:
+                    LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding zone node {zn} '{self.controller.elk.zones[zn].name}'")
+                    address = f'zone_{zn+1}'
+                    node = self.controller.add_node(address, ZoneNode(self.controller, self, address, self.controller.elk.zones[zn]))
+                    if node is not None:
+                        self._zone_nodes[zn] = node
             for n in range(Max.KEYPADS.value):
                 if self.controller.elk.keypads[n].area == self.elk.index:
                     LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding keypad node {n} '{self.controller.elk.keypads[n]}'")
@@ -85,7 +85,7 @@ class AreaNode(BaseNode):
     # Area:callback: area_1:Home: cs={'last_log': {'event': 1174, 'number': 1, 'index': 0, 'timestamp': '2021-02-06T14:47:00+00:00', 'user_number': 1}}
     # user_number=1 was me
     def callback(self, element, changeset):
-        LOGGER.warning(f'{self.lpfx} cs={changeset}')
+        LOGGER.info(f'{self.lpfx} cs={changeset}')
         try:
             for cs in changeset:
                 if cs == 'alarm_state':
@@ -100,8 +100,9 @@ class AreaNode(BaseNode):
                         self.set_user(int(changeset[cs]['user_number']))
                 elif cs == 'chime_mode':
                     # chime_mode=('Chime', <ChimeMode.Chime: 1>)
-                    # So pass element 1 which is the enum
-                    self.set_chime_mode(changeset[cs])
+                    # elk.chime_mode=('OFF', <ChimeMode.OFF: 0>)
+                    LOGGER.debug(f"key={changeset[cs][0]} val={changeset[cs][1]}")
+                    self.set_chime_mode(changeset[cs][1])
                 else:
                     LOGGER.warning(f'{self.lpfx} Unknown callback {cs}={changeset[cs]}')
         except Exception as ex:
@@ -198,7 +199,7 @@ class AreaNode(BaseNode):
 
     def set_chime_mode(self,val=None,force=False):
         LOGGER.warning(f'{self.lpfx} {val} elk.chime_mode={self.elk.chime_mode}')
-        self.set_driver('GV2', val, restore=False,default=self.elk.chime_mode,force=force)
+        self.set_driver('GV2', val, restore=False,default=self.elk.chime_mode[1],force=force)
 
     def set_poll_voltages(self,val=None, force=False):
         LOGGER.info(f'{self.lpfx} {val}')

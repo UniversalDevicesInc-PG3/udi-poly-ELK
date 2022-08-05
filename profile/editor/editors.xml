@@ -21,6 +21,9 @@
   <editor id="keyp">
     <range uom="25" subset="-2-0,11-28" nls="KEY"/>
   </editor>
+  <editor id="fkey">
+    <range uom="25" subset="0,8" nls="FKEY"/>
+  </editor>
   <editor id="sp_words">
     <range uom="25" subset="1-472" nls="SPW"/>
   </editor>

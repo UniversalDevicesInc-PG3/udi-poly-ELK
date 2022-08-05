@@ -23,8 +23,8 @@ class LightNode(BaseNode):
             super(LightNode, self).__init__(controller, controller.address, address, name)
             controller.poly.subscribe(controller.poly.START, self.start, address)
         except Exception as ex:
-            LOGGER.error(f'{self.lpfx}',exc_info=True)
-            self.inc_error(f"{self.lpfx} {ex}")
+            LOGGER.error('LightNode:init',exc_info=True)
+            self.inc_error(f"LightNode:init {ex}")
 
     def start(self):
         try:

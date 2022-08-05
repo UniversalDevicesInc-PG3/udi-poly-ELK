@@ -13,8 +13,8 @@ class ZoneOffNode(BaseNode):
             super(ZoneOffNode, self).__init__(controller, parent_address, address, name)
             controller.poly.subscribe(controller.poly.START, self.start, address)
         except Exception as ex:
-            LOGGER.error(f'{self.lpfx}',exc_info=True)
-            self.inc_error(f"{self.lpfx} {ex}")
+            LOGGER.error(f'ZoneOffNode:init',exc_info=True)
+            self.inc_error("ZoneOffNode:init: {ex}")
 
     def start(self):
         try:

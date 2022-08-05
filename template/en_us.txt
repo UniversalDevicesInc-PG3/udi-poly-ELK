@@ -104,6 +104,16 @@ KEY-26: F6
 KEY-27: F5
 KEY-28: Data Key Mode
 
+FKEY-0: None
+FKEY-1: F1
+FKEY-2: F2
+FKEY-3: F3
+FKEY-4: F4
+FKEY-5: F5
+FKEY-6: F6
+FKEY-7: Astrick
+FKEY-8: Chime
+
 # Debug/Logger Modes
 CDM-9 = Debug + elkm1_lib
 CDM-10 = Debug
@@ -143,7 +153,8 @@ ND-keypad-ICON = Arm
 ST-keypad-ST-NAME = Keypad Status
 ST-keypad-GV1-NAME = Last User
 ST-keypad-GV2-NAME = Temperature
-ST-keypad-GV3-NAME = Last Keypress
+ST-keypad-GV3-NAME = Last Key
+ST-keypad-GV4-NAME = Last Function Key
 CMD-keypad-KEY_CHIME-NAME = Chime
 
 # keypad
@@ -153,6 +164,7 @@ ST-keypadT-ST-NAME = Keypad Status
 ST-keypadT-GV1-NAME = Last User
 ST-keypadT-GV2-NAME = Temperature
 ST-keypadT-GV3-NAME = Last Keypress
+ST-keypadT-GV4-NAME = Last Function Key
 CMD-keypadT-KEY_CHIME-NAME = Chime
 
 # area
