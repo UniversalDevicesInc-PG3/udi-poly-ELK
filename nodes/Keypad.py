@@ -93,7 +93,7 @@ class KeypadNode(BaseNode):
                 elif cs == 'last_function_key':
                     self.set_last_function_key(changeset[cs][1].value)
                 elif cs in ignore:
-                    LOGGER.debug(f"Noting to do for key={changeset[cs][0]} val={changeset[cs][1]}")
+                    LOGGER.debug(f"Nothing to do for key={cs} val={changeset[cs]}")
                 else:
                     LOGGER.warning(f'{self.lpfx} Unknown callback {cs}={changeset[cs]}')
         except Exception as ex:
@@ -155,7 +155,7 @@ class KeypadNode(BaseNode):
 
     def cmd_key_chime(self,command):
         LOGGER.debug(f'{self.lpfx}')
-        self.press_chime_key()
+        self.press_key_chime()
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]

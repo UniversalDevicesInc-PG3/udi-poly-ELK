@@ -107,7 +107,7 @@ class AreaNode(BaseNode):
                     LOGGER.debug(f"key={changeset[cs][0]} val={changeset[cs][1]}")
                     self.set_chime_mode(changeset[cs][1])
                 elif cs in ignore:
-                    LOGGER.debug(f"Noting to do for key={changeset[cs][0]} val={changeset[cs][1]}")
+                    LOGGER.debug(f"Noting to do for key={cs} val={changeset[cs]}")
                 else:
                     LOGGER.warning(f'{self.lpfx} Unknown callback {cs}={changeset[cs]}')
         except Exception as ex:
