@@ -383,16 +383,19 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 - 3.4.1: 08/04/2022 - BETA
   - More documentation cleanup, still needs more.
     - Added driver's to many Nodes, still more to go
-  - When node is queried the values are passed to PG3 with force option so they always update ISY
+  - When node is queried the values are passed to PG3 with force option so they always update the ISY
     - This helps set initial ISY driver values during query-all on ISY restart
   - Updates to work with latest elkm1_lib
   - [Allow user to control Chime Mode](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/14)
+    - Also allow setting desired Chime Mode on an area, which may require multiple chime button presses
+    - Note that an ISY reboot is required to get the proper values to show up for chime mode in notifications and UD Mobile
   - [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78)
     - See [ELK Controller](#ElkController) System Trouble Status
   - [Add Remote Programming Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/80)
     - See [ELK Controller](#ElkController) Remote Programming Status
   - [Allow Elk NS to Recognize Keypad Presses](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues)
   - [Add ERROR driver to controller](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/62)
+    - Attempt to trap all errors and show status on ISY and in PG3 UI
     - See [ELK Controller](#ELKController) Node server errors
 - 3.3.8: 07/25/2022
   - Fixed to work with udi-interface 3.0.47

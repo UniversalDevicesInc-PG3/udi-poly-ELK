@@ -144,9 +144,14 @@ class KeypadNode(BaseNode):
         LOGGER.debug(f'{self.lpfx}')
         self.query()
 
-    def cmd_key_chime(self,command):
+    # For others to call
+    def press_key_chime(self):
         LOGGER.debug(f'{self.lpfx}')
         self.elk.press_chime_key()
+
+    def cmd_key_chime(self,command):
+        LOGGER.debug(f'{self.lpfx}')
+        self.press_chime_key()
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]

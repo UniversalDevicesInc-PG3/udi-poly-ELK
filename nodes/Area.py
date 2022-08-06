@@ -30,9 +30,10 @@ class AreaNode(BaseNode):
         self.zones_violated = 0
         self.zones_logical_status = [None] * Max.ZONES.value
         self.zones_physical_status = [None] * Max.ZONES.value
-        self._zone_nodes = {}
-        self._keypad_nodes = {}
+        self._zone_nodes = list()
+        self._keypad_nodes = list()
         self.poll_voltages = False
+        self.requested_chime_mode = None
         self.ready = False
         name        = get_valid_node_name(self.elk.name)
         if name == "":
@@ -55,14 +56,14 @@ class AreaNode(BaseNode):
                     address = f'zone_{zn+1}'
                     node = self.controller.add_node(address, ZoneNode(self.controller, self, address, self.controller.elk.zones[zn]))
                     if node is not None:
-                        self._zone_nodes[zn] = node
+                        self._zone_nodes.append(node)
             for n in range(Max.KEYPADS.value):
                 if self.controller.elk.keypads[n].area == self.elk.index:
                     LOGGER.info(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} adding keypad node {n} '{self.controller.elk.keypads[n]}'")
                     address = f'keypad_{n+1}'
                     node = self.controller.add_node(address,KeypadNode(self.controller, self, address, self.controller.elk.keypads[n]))
                     if node is not None:
-                        self._keypad_nodes[n] = node
+                        self._keypad_nodes.append(node)
                 else:
                     LOGGER.debug(f"{self.lpfx} area {self.elk.index} {self.elk.name} node={self.name} skipping keypad node {n} '{self.controller.elk.keypads[n]}'")
         except Exception as ex:
@@ -77,7 +78,7 @@ class AreaNode(BaseNode):
             return False
         if self.poll_voltages:
             for zn in self._zone_nodes:
-                self._zone_nodes[zn].shortPoll(poll_voltage=self.poll_voltages)
+                zn.shortPoll(poll_voltage=self.poll_voltages)
 
     def longPoll(self):
         pass
@@ -200,6 +201,16 @@ class AreaNode(BaseNode):
     def set_chime_mode(self,val=None,force=False):
         LOGGER.warning(f'{self.lpfx} {val} elk.chime_mode={self.elk.chime_mode}')
         self.set_driver('GV2', val, restore=False,default=self.elk.chime_mode[1],force=force)
+        if (self.requested_chime_mode is not None):
+            if (int(self.get_driver('GV2')) == int(self.requested_chime_mode)):
+                self.requested_chime_mode = None
+            else:
+                # Press the button again, but give it a sec
+                time.sleep(1)
+                self._keypad_nodes[0].press_key_chime()
+
+    def get_chime_mode(self):
+        return self.get_driver('GV2')
 
     def set_poll_voltages(self,val=None, force=False):
         LOGGER.info(f'{self.lpfx} {val}')
@@ -312,6 +323,21 @@ class AreaNode(BaseNode):
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
 
+    def cmd_set_chime_mode(self,command):
+        LOGGER.debug(f'command={command}')
+        # command={'address': 'area_1', 'cmd': 'SET_CHIME_MODE', 'value': '3', 'uom': '25', 'query': {}}
+        try:
+            val = command.get('value')
+            if (int(self.get_chime_mode()) == int(val)):
+                LOGGER.warning(f'{self.lpfx} Already in chime_mode {val}')
+                return
+            self.requested_chime_mode = val
+            # Just press the button, and callback will handle it from here.
+            self._keypad_nodes[0].press_key_chime()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
+
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
@@ -338,4 +364,5 @@ class AreaNode(BaseNode):
             'SET_ENTRY_EXIT_TRIGGER': cmd_set_entry_exit_trigger,
             'CLEAR_MESSAGE': cmd_clear_message,
             'GV11': cmd_display_message,
+            'SET_CHIME_MODE': cmd_set_chime_mode,
     }

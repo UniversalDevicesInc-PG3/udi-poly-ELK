@@ -15,7 +15,7 @@ class BaseNode(Node):
         self.lpfx = f'{address}:{name}:'
         super(BaseNode, self).__init__(controller.poly, primary_address, address, name)
 
-    def set_drivers(self):
+    def set_drivers(self,force=False):
         LOGGER.debug(f'{self.lpfx} does not have set_drivers')
 
     def query(self):

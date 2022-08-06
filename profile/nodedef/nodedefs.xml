@@ -303,6 +303,7 @@
             </sends>
             <accepts>
               <cmd id="QUERY" />
+              <cmd id="KEY_CHIME" />
           </accepts>
         </cmds>
     </nodeDef>
