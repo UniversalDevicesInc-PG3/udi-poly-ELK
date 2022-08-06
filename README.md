@@ -380,6 +380,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.4.3: 08/06/2022
+  - Error out early if Python version is not up to date.
 - 3.4.2: 08/06/2022
   - Fix Arming and some benign warnings
 - 3.4.1: 08/05/2022
