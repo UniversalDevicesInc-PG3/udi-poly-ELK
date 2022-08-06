@@ -12,6 +12,7 @@ from elkm1_lib.const import (
     ZoneLogicalStatus,
     ZonePhysicalStatus,
     ChimeMode,
+    ArmLevel,
 )
 
 # For faster lookups
@@ -88,6 +89,7 @@ class AreaNode(BaseNode):
     def callback(self, element, changeset):
         LOGGER.info(f'{self.lpfx} cs={changeset}')
         try:
+            ignore = ['is_exit','timer1','timer2']
             for cs in changeset:
                 if cs == 'alarm_state':
                     self.set_alarm_state(changeset[cs])
@@ -104,6 +106,8 @@ class AreaNode(BaseNode):
                     # elk.chime_mode=('OFF', <ChimeMode.OFF: 0>)
                     LOGGER.debug(f"key={changeset[cs][0]} val={changeset[cs][1]}")
                     self.set_chime_mode(changeset[cs][1])
+                elif cs in ignore:
+                    LOGGER.debug(f"Noting to do for key={changeset[cs][0]} val={changeset[cs][1]}")
                 else:
                     LOGGER.warning(f'{self.lpfx} Unknown callback {cs}={changeset[cs]}')
         except Exception as ex:
@@ -199,7 +203,7 @@ class AreaNode(BaseNode):
         self.set_driver('GV1', val, restore=False,default=self.elk.arm_up_state,force=force)
 
     def set_chime_mode(self,val=None,force=False):
-        LOGGER.warning(f'{self.lpfx} {val} elk.chime_mode={self.elk.chime_mode}')
+        LOGGER.info(f'{self.lpfx} {val} elk.chime_mode={self.elk.chime_mode}')
         self.set_driver('GV2', val, restore=False,default=self.elk.chime_mode[1],force=force)
         if (self.requested_chime_mode is not None):
             if (int(self.get_driver('GV2')) == int(self.requested_chime_mode)):
@@ -227,7 +231,7 @@ class AreaNode(BaseNode):
             val = command.get('value')
             LOGGER.info(f'{self.lpfx} elk.arm({val},****')
             # val is a string, not integer :(
-            self.elk.arm(val,self.controller.user_code)
+            self.elk.arm(ArmLevel(val),self.controller.user_code)
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")

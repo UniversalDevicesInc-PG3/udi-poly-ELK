@@ -2,6 +2,7 @@
 from udi_interface import LOGGER
 from nodes import BaseNode
 from node_funcs import get_valid_node_name
+import time
 
 from elkm1_lib.const import (
     Max,
@@ -72,6 +73,7 @@ class KeypadNode(BaseNode):
         LOGGER.info(f'{self.lpfx} changeset={changeset}')
         # Catch this since it causes the ELK connection to crash
         try:
+            ignore = ['last_user_time','code']
             for cs in changeset:
                 if cs == 'last_user':
                     self.set_user(int(changeset[cs]) + 1)
@@ -90,6 +92,8 @@ class KeypadNode(BaseNode):
                         i += 2
                 elif cs == 'last_function_key':
                     self.set_last_function_key(changeset[cs][1].value)
+                elif cs in ignore:
+                    LOGGER.debug(f"Noting to do for key={changeset[cs][0]} val={changeset[cs][1]}")
                 else:
                     LOGGER.warning(f'{self.lpfx} Unknown callback {cs}={changeset[cs]}')
         except Exception as ex:
