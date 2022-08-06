@@ -380,7 +380,7 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
-- 3.4.1: 08/04/2022 - BETA
+- 3.4.1: 08/05/2022
   - More documentation cleanup, still needs more.
     - Added driver's to many Nodes, still more to go
   - When node is queried the values are passed to PG3 with force option so they always update the ISY
