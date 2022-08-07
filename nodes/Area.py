@@ -107,7 +107,7 @@ class AreaNode(BaseNode):
                     LOGGER.debug(f"key={changeset[cs][0]} val={changeset[cs][1]}")
                     self.set_chime_mode(changeset[cs][1])
                 elif cs in ignore:
-                    LOGGER.debug(f"Noting to do for key={cs} val={changeset[cs]}")
+                    LOGGER.debug(f"Nothing to do for key={cs} val={changeset[cs]}")
                 else:
                     LOGGER.warning(f'{self.lpfx} Unknown callback {cs}={changeset[cs]}')
         except Exception as ex:
@@ -204,14 +204,18 @@ class AreaNode(BaseNode):
 
     def set_chime_mode(self,val=None,force=False):
         LOGGER.info(f'{self.lpfx} {val} elk.chime_mode={self.elk.chime_mode}')
-        self.set_driver('GV2', val, restore=False,default=self.elk.chime_mode[1],force=force)
-        if (self.requested_chime_mode is not None):
-            if (int(self.get_driver('GV2')) == int(self.requested_chime_mode)):
-                self.requested_chime_mode = None
-            else:
-                # Press the button again, but give it a sec
-                time.sleep(1)
-                self._keypad_nodes[0].press_key_chime()
+        try:
+            self.set_driver('GV2', val, restore=False,default=self.elk.chime_mode[1],force=force)
+            if (self.requested_chime_mode is not None):
+                if (int(self.get_driver('GV2')) == int(self.requested_chime_mode)):
+                    self.requested_chime_mode = None
+                else:
+                    # Press the button again, but give it a sec
+                    time.sleep(1)
+                    self._keypad_nodes[0].press_key_chime()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
 
     def get_chime_mode(self):
         return self.get_driver('GV2')

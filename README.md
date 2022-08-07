@@ -405,6 +405,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.4.6: 08/07/2022
+  - Fix press chime key for latest elkm1_lib
 - 3.4.5: 08/07/2022
   - Update elkm1_lib version
 - 3.4.4: 08/06/2022

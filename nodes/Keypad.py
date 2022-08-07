@@ -6,6 +6,7 @@ import time
 
 from elkm1_lib.const import (
     Max,
+    FunctionKeys
 )
 
 DNAMES = {
@@ -148,7 +149,7 @@ class KeypadNode(BaseNode):
         LOGGER.debug(f'{self.lpfx}')
         self.query()
 
-    # For others to call
+    # For others to call, AreaNode uses this.
     def press_key_chime(self):
         LOGGER.debug(f'{self.lpfx}')
         self.elk.press_function_key(FunctionKeys.CHIME)

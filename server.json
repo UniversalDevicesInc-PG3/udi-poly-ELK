@@ -24,7 +24,7 @@
         {
             "title": "ELK: A NodeServer for ISY and ELK Alarm Panel Integration",
             "author": "JimBoCA",
-            "version": "3.4.5",
+            "version": "3.4.6",
             "date": "November 12, 2021",
             "source": "https://github.com/jimboca/udi-poly-elk/tree/pg3",
             "license": "https://github.com/jimboca/udi-poly-elk/blob/pg3/LICENSE"
