@@ -113,7 +113,7 @@ This has the following status:
     - driver:GV23  Display Message In Keypad Line 2
     - driver:GV24  Fire
     - You can add this to a notificaiton:
-    ```
+```
 ${sys.node.n004_controller.GV3}: AC Fail
 ${sys.node.n004_controller.GV4}: Box Tamper
 ${sys.node.n004_controller.GV5}: Fail To Communicate
