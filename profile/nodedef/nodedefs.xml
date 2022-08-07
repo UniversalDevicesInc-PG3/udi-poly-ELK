@@ -30,6 +30,7 @@
         <st id="GV22" editor="bool" />
         <st id="GV23" editor="bool" />
         <st id="GV24" editor="bool" />
+        <st id="GV25" editor="bool" />
       </sts>
       <cmds>
           <sends>

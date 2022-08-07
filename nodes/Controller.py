@@ -170,9 +170,10 @@ class Controller(Node):
                     LOGGER.info(f"{key}={changeset[key]}")
                     # TODO: Toggle something to show we are receiving this?
                 elif key == 'remote_programming_status':
-                    self.set_remote_programming_status(changeset[key])
+                    # Controller:callback: ELK Controller: cs={'remote_programming_status': <ElkRPStatus.CONNECTED: 1>}
+                    self.set_remote_programming_status(changeset[key].value)
                 elif key == 'system_trouble_status':
-                    self.set_system_trouble_status(changeset[key])
+                    self.set_system_trouble_status(changeset[key].value)
                 else:
                     LOGGER.warning(f'{self.lpfx} Unhandled  callback: cs={changeset}')
         except Exception as ex:

@@ -112,7 +112,32 @@ This has the following status:
     - driver:GV22  Display Message In Keypad Line 1
     - driver:GV23  Display Message In Keypad Line 2
     - driver:GV24  Fire
-
+    - You can add this to a notificaiton:
+    ```
+${sys.node.n004_controller.GV3}: AC Fail
+${sys.node.n004_controller.GV4}: Box Tamper
+${sys.node.n004_controller.GV5}: Fail To Communicate
+${sys.node.n004_controller.GV6}: EEProm Memory Error
+${sys.node.n004_controller.GV7}: Low Battery Control
+${sys.node.n004_controller.GV8}: Transmitter Low Battery
+${sys.node.n004_controller.GV9}: Over Current
+${sys.node.n004_controller.GV10}: Telephone Fault
+${sys.node.n004_controller.GV11}: Output 2
+${sys.node.n004_controller.GV12}: Missing Keypad
+${sys.node.n004_controller.GV13}: Zone Expander
+${sys.node.n004_controller.GV14}: Output Expander
+${sys.node.n004_controller.GV15}: ELKRP Remote Access
+${sys.node.n004_controller.GV16}: Common Area Not Armed
+${sys.node.n004_controller.GV17}: Flash Memory Error
+${sys.node.n004_controller.GV18}: Security Alert
+${sys.node.n004_controller.GV19}: Serial Port Expander
+${sys.node.n004_controller.GV20}: Lost Transmitter
+${sys.node.n004_controller.GV21}: GE Smoke CleanMe
+${sys.node.n004_controller.GV22}: Ethernet
+${sys.node.n004_controller.GV23}: Display Message In Keypad Line 1
+${sys.node.n004_controller.GV24}: Display Message In Keypad Line 2
+${sys.node.n004_controller.GV25}: Fire
+```
 
 #### Area Node
 
@@ -380,6 +405,9 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.4.4: 08/06/2022
+  - Fixes for latest elkm1 lib changes for remote programming status and system trouble.
+  - There was a duplicated driver number for system trouble status, so all starting with GV4 have been incremented. Please check if you are already using them.
 - 3.4.3: 08/06/2022
   - Error out early if Python version is not up to date.
 - 3.4.2: 08/06/2022
