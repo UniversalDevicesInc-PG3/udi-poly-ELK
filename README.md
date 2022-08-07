@@ -112,7 +112,7 @@ This has the following status:
     - driver:GV22  Display Message In Keypad Line 1
     - driver:GV23  Display Message In Keypad Line 2
     - driver:GV24  Fire
-    - You can add this to a notificaiton:
+    - You can add this to a notification, change 004 to your slot number (TODO: Post copy of NR here and program)
 ```
 ${sys.node.n004_controller.GV3}: AC Fail
 ${sys.node.n004_controller.GV4}: Box Tamper
@@ -405,6 +405,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.4.5: 08/07/2022
+  - Update elkm1_lib version
 - 3.4.4: 08/06/2022
   - Fixes for latest elkm1 lib changes for remote programming status and system trouble.
   - There was a duplicated driver number for system trouble status, so all starting with GV4 have been incremented. Please check if you are already using them.

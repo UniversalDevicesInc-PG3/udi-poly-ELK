@@ -151,7 +151,7 @@ class KeypadNode(BaseNode):
     # For others to call
     def press_key_chime(self):
         LOGGER.debug(f'{self.lpfx}')
-        self.elk.press_chime_key()
+        self.elk.press_function_key(FunctionKeys.CHIME)
 
     def cmd_key_chime(self,command):
         LOGGER.debug(f'{self.lpfx}')
