@@ -92,7 +92,11 @@ class KeypadNode(BaseNode):
                         self.set_key(kp[i+1])
                         i += 2
                 elif cs == 'last_function_key':
-                    self.set_last_function_key(changeset[cs][1].value)
+                    if hasattr(changeset[cs][1],'value'):
+                        self.set_last_function_key(changeset[cs][1].value)
+                    else:
+                        LOGGER.error(f'{self.lpfx}: Callback not sent enum, got {changeset[cs][1]} for cs={cs}',exc_info=True)
+                        self.inc_error(f"{self.lpfx} {ex}")
                 elif cs == 'temperature':
                     self.set_temperature(changeset[cs])
                 elif cs in ignore:

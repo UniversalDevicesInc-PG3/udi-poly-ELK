@@ -171,9 +171,17 @@ class Controller(Node):
                     # TODO: Toggle something to show we are receiving this?
                 elif key == 'remote_programming_status':
                     # Controller:callback: ELK Controller: cs={'remote_programming_status': <ElkRPStatus.CONNECTED: 1>}
-                    self.set_remote_programming_status(changeset[key].value)
+                    if hasattr(changeset[key],'value'):
+                        self.set_remote_programming_status(changeset[key].value)
+                    else:
+                        LOGGER.error(f'{self.lpfx}: Callback not sent enum, got {changeset[key]} for cs={cs}',exc_info=True)
+                        self.inc_error(f"{self.lpfx} {ex}")
                 elif key == 'system_trouble_status':
-                    self.set_system_trouble_status(changeset[key].value)
+                    if hasattr(changeset[key],'value'):
+                        self.set_system_trouble_status(changeset[key].value)
+                    else:
+                        LOGGER.error(f'{self.lpfx}: Callback not sent enum, got {changeset[key]} for cs={cs}',exc_info=True)
+                        self.inc_error(f"{self.lpfx} {ex}")
                 else:
                     LOGGER.warning(f'{self.lpfx} Unhandled  callback: cs={changeset}')
         except Exception as ex:
