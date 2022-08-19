@@ -93,6 +93,8 @@ class KeypadNode(BaseNode):
                         i += 2
                 elif cs == 'last_function_key':
                     self.set_last_function_key(changeset[cs][1].value)
+                elif cs == 'temperature':
+                    self.set_temperature(changeset[cs])
                 elif cs in ignore:
                     LOGGER.debug(f"Nothing to do for key={cs} val={changeset[cs]}")
                 else:

@@ -405,6 +405,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+. 3.4.9: 08/19/2022
+  - Fix [Support Keypad callback for temperature updates](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/83)
 - 3.4.8: 08/18/2022
   - Fix GV25 setting on controller
 - 3.4.7: 08/17/2022
