@@ -818,4 +818,5 @@ class Controller(Node):
         {"driver": "GV22", "value": 0, "uom": 2},
         {"driver": "GV23", "value": 0, "uom": 2},
         {"driver": "GV24", "value": 0, "uom": 2},
+        {"driver": "GV25", "value": 0, "uom": 2},
     ]

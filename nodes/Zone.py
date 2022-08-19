@@ -94,16 +94,22 @@ class ZoneNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def callback(self, obj, changeset):
-        LOGGER.debug(f'{self.lpfx} changeset={changeset}')
+        LOGGER.info(f'{self.lpfx} changeset={changeset}')
         try:
-            if 'triggered_alarm' in changeset:
-                self._set_triggered(1 if changeset['triggered_alarm'] is True else 0)
-            if 'physical_status' in changeset:
-                self._set_physical_status(changeset['physical_status'])
-            if 'logical_status' in changeset:
-                self._set_logical_status(changeset['logical_status'])
-            if 'voltage' in changeset:
-                self._set_voltage(changeset['voltage'])
+            ignore = []
+            for cs in changeset:
+                if cs == 'triggered_alarm':
+                    self._set_triggered(1 if changeset[cs] is True else 0)
+                elif cs == 'physical_status':
+                    self._set_physical_status(changeset[cs])
+                elif cs == 'logical_status':
+                    self._set_logical_status(changeset[cs])
+                elif 'voltage' in changeset:
+                    self._set_voltage(changeset[cs])
+                elif cs in ignore:
+                    LOGGER.debug(f"Nothing to do for key={cs} val={changeset[cs]}")
+                else:
+                    LOGGER.warning(f'{self.lpfx} Unknown callback {cs}={changeset[cs]}')
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
@@ -147,16 +153,16 @@ class ZoneNode(BaseNode):
         LOGGER.debug(f'{self.lpfx} val={val} current={self.physical_status} force={force} reportCmd={reportCmd}')
         # Only if we are not farcing the same value
         if (not force) and reportCmd:
-            LOGGER.debug(f'{self.lpfx} son={self.son} son={self.soff}')
-            if val == self.son:
-                LOGGER.debug(f'{self.lpfx} Send DON')
+            LOGGER.info(f'{self.lpfx} son={self.son} soff={self.soff}')
+            if val.value == self.son:
+                LOGGER.info(f'{self.lpfx} Send DON')
                 self.reportCmd("DON")
-            elif val == self.soff:
+            elif val.value == self.soff:
                 if self.offnode_obj is None:
-                    LOGGER.debug(f'{self.lpfx} Send DOF ')
+                    LOGGER.info(f'{self.lpfx} Send DOF ')
                     self.reportCmd("DOF")
                 else:
-                    LOGGER.debug(f'{self.lpfx} Send DOF to {self.offnode_obj.name}')
+                    LOGGER.info(f'{self.lpfx} Send DOF to {self.offnode_obj.name}')
                     self.offnode_obj.reportCmd("DOF")
         self.set_driver('GV0', val, force=force)
         self.physical_status = val

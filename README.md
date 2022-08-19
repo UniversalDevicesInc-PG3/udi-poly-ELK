@@ -405,6 +405,11 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.4.8: 08/18/2022
+  - Fix GV25 setting on controller
+- 3.4.7: 08/17/2022
+  - Fix bug not sending DON/DOF for Zones due to latest elkm1_lib
+  - Install released elkm1_lib instead of including in the release package now that is available
 - 3.4.6: 08/07/2022
   - Fix press chime key for latest elkm1_lib
 - 3.4.5: 08/07/2022
