@@ -174,14 +174,11 @@ class Controller(Node):
                     if hasattr(changeset[key],'value'):
                         self.set_remote_programming_status(changeset[key].value)
                     else:
-                        LOGGER.error(f'{self.lpfx}: Callback not sent enum, got {changeset[key]} for cs={cs}',exc_info=True)
+                        msg = f"Callback not sent enum, got {key}={changeset[key]}"
+                        LOGGER.error(f'{self.lpfx}: {msg}',exc_info=True)
                         self.inc_error(f"{self.lpfx} {ex}")
                 elif key == 'system_trouble_status':
-                    if hasattr(changeset[key],'value'):
-                        self.set_system_trouble_status(changeset[key].value)
-                    else:
-                        LOGGER.error(f'{self.lpfx}: Callback not sent enum, got {changeset[key]} for cs={cs}',exc_info=True)
-                        self.inc_error(f"{self.lpfx} {ex}")
+                    self.set_system_trouble_status(changeset[key])
                 else:
                     LOGGER.warning(f'{self.lpfx} Unhandled  callback: cs={changeset}')
         except Exception as ex:
@@ -242,13 +239,16 @@ class Controller(Node):
             val = self.elk.panel.remote_programming_status
         self.setDriver('GV2',val,force=force)
 
+    # This is sent a comma seperated list of all current system troubles
     def set_system_trouble_status(self,val=None,force=False):
         LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         if val is None:
             val = self.elk.panel.system_trouble_status
             LOGGER.debug(f'{self.lpfx} val={val}')
+        # Set all to off
         for status in SYSTEM_TROUBLE_STATUS:
             SYSTEM_TROUBLE_STATUS[status]['value'] = 0
+        # If we have any, then set them.
         if val != "":
             LOGGER.warning(f'{self.lpfx} Setting System Trouble Status for: {val}')
             for status in val.split(','):
@@ -425,8 +425,8 @@ class Controller(Node):
             self.inc_error(msg)
 
     def unknown(self, msg_code, data):
-        # We don't care about email messages
-        if msg_code == 'EM':
+        # We don't care about email messages, or alarm reports
+        if msg_code in ['EM','AR']:
             return
         if msg_code == 'KF' and data == '0000000000000':
             LOGGER.warning(f"{self.lpfx} Received unknown message which is known to come from M1 Touch app: {msg_code}:{data}")

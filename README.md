@@ -406,7 +406,10 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
 . 3.4.9: 08/19/2022
+  - Fix issues with [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78)
   - Fix [Support Keypad callback for temperature updates](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/83)
+  - Fix: Ignore AR messages from panel
+  - Fix: Callback receiving strings instead of enum from trouble reports
 - 3.4.8: 08/18/2022
   - Fix GV25 setting on controller
 - 3.4.7: 08/17/2022
