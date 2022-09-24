@@ -5,6 +5,7 @@ import logging
 import asyncio
 import os
 import markdown2
+import re
 from datetime import datetime
 from copy import deepcopy
 from threading import Thread
@@ -41,6 +42,7 @@ class Controller(Node):
         self.logger = LOGGER
         self.lpfx = self.name + ":"
         self.poly.Notices.clear()
+        self.tested = False
         self.handler_config_st = None
         self.handler_config_done_st = None
         # For the short/long poll threads, we run them in threads so the main
@@ -149,6 +151,10 @@ class Controller(Node):
         LOGGER.debug('start')
         for an in self._area_nodes:
             self._area_nodes[an].shortPoll()
+        if not self.tested:
+            LOGGER.warning('Sending Test Zone Trouble')
+            self.elk.panel._ss_handler("28SS000000000100000000000000000000010A001D")
+            self.tested = True
         LOGGER.debug('done')
 
     def longPoll(self):
@@ -241,6 +247,7 @@ class Controller(Node):
 
     # This is sent a comma seperated list of all current system troubles
     def set_system_trouble_status(self,val=None,force=False):
+        zp = re.compile(' zone ')
         LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         if val is None:
             val = self.elk.panel.system_trouble_status
@@ -249,21 +256,48 @@ class Controller(Node):
         for status in SYSTEM_TROUBLE_STATUS:
             SYSTEM_TROUBLE_STATUS[status]['value'] = 0
         # If we have any, then set them.
+        status_by_zone = dict()
         if val != "":
             LOGGER.warning(f'{self.lpfx} Setting System Trouble Status for: {val}')
             for status in val.split(','):
                 status = status.strip()
-                if status in SYSTEM_TROUBLE_STATUS:
-                    LOGGER.warning(f'{self.lpfx} Setting System Trouble Status for: {status}')
-                    SYSTEM_TROUBLE_STATUS[status]['value'] = 1
+                m = zp.search(status)
+                if m is None:
+                    if status in SYSTEM_TROUBLE_STATUS:
+                        LOGGER.warning(f'{self.lpfx} Setting System Trouble Status for: {status}')
+                        SYSTEM_TROUBLE_STATUS[status]['value'] = 1
+                    else:
+                        msg = f"{self.lpfx} Unknown system trouble status '{status}' in '{val}' m={m}"
+                        LOGGER.error(msg)
+                        self.inc_error(msg)
                 else:
-                    msg = f"{self.lpfx} Unknown system trouble status '{status}' in '{val}'"
-                    LOGGER.error(msg)
-                    self.inc_error(msg)
+                    zstatus = status[0:m.start()]
+                    zone = int(status[m.end():])
+                    if not zone in status_by_zone:
+                        status_by_zone[zone] = list()
+                    status_by_zone[zone].append(zstatus)
+        # Set all our trouble status's
         for status in SYSTEM_TROUBLE_STATUS:
             if SYSTEM_TROUBLE_STATUS[status]['value'] == 1:
                 LOGGER.warning(f'{self.lpfx} Setting System Trouble Status for: {status}=True')
             self.setDriver(SYSTEM_TROUBLE_STATUS[status]['driver'],SYSTEM_TROUBLE_STATUS[status]['value'],force=force)
+        # Set/clear trouble status on all zones
+        found = dict()
+        for zn in range(Max.ZONES.value):
+            found[zn] = False
+            for an in self._area_nodes:
+                znode = self._area_nodes[an].get_zone_node(zn)
+                if znode is not None:
+                    found[zn] = True
+                    if zn in status_by_zone:
+                        znode.set_system_trouble_status(status_by_zone[zn])
+                    else:
+                        znode.clear_system_trouble_status()
+        for zn in status_by_zone:
+            if not found[zn]:
+                msg = f'{self.lpfx} Got zone system trouble "{status_by_zone[zn]}" for unconfigured zone {zn}'
+                LOGGER.error(msg)
+                self.inc_error(msg)
 
     def query_all(self):
         LOGGER.info(f'{self.lpfx}')
@@ -805,11 +839,9 @@ class Controller(Node):
         {"driver": "GV1", "value": 0, "uom": 25},
         {"driver": "GV2", "value": 0, "uom": 25},
         {"driver": "GV3", "value": 0, "uom": 2},
-        {"driver": "GV4", "value": 0, "uom": 2},
         {"driver": "GV5", "value": 0, "uom": 2},
         {"driver": "GV6", "value": 0, "uom": 2},
         {"driver": "GV7", "value": 0, "uom": 2},
-        {"driver": "GV8", "value": 0, "uom": 2},
         {"driver": "GV9", "value": 0, "uom": 2},
         {"driver": "GV10", "value": 0, "uom": 2},
         {"driver": "GV11", "value": 0, "uom": 2},
@@ -819,12 +851,9 @@ class Controller(Node):
         {"driver": "GV15", "value": 0, "uom": 2},
         {"driver": "GV16", "value": 0, "uom": 2},
         {"driver": "GV17", "value": 0, "uom": 2},
-        {"driver": "GV18", "value": 0, "uom": 2},
         {"driver": "GV19", "value": 0, "uom": 2},
-        {"driver": "GV20", "value": 0, "uom": 2},
         {"driver": "GV21", "value": 0, "uom": 2},
         {"driver": "GV22", "value": 0, "uom": 2},
         {"driver": "GV23", "value": 0, "uom": 2},
         {"driver": "GV24", "value": 0, "uom": 2},
-        {"driver": "GV25", "value": 0, "uom": 2},
     ]

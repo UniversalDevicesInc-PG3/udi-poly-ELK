@@ -13,11 +13,9 @@ ST-ctl-ERR-NAME = NodeServer Errors
 ST-ctl-GV1-NAME = M1EXP Status
 ST-ctl-GV2-NAME = Remote Programming Status
 ST-ctl-GV3-NAME = AC Fail
-ST-ctl-GV4-NAME = Box Tamper
 ST-ctl-GV5-NAME = Fail To Communicate
 ST-ctl-GV6-NAME = EEProm Memory Error
 ST-ctl-GV7-NAME = Low Battery Control
-ST-ctl-GV8-NAME = Transmitter Low Battery
 ST-ctl-GV9-NAME = Over Current
 ST-ctl-GV10-NAME = Telephone Fault
 ST-ctl-GV11-NAME = Output 2
@@ -27,14 +25,11 @@ ST-ctl-GV14-NAME = Output Expander
 ST-ctl-GV15-NAME = ELKRP Remote Access
 ST-ctl-GV16-NAME = Common Area Not Armed
 ST-ctl-GV17-NAME = Flash Memory Error
-ST-ctl-GV18-NAME = Security Alert
 ST-ctl-GV19-NAME = Serial Port Expander
-ST-ctl-GV20-NAME = Lost Transmitter
 ST-ctl-GV21-NAME = GE Smoke CleanMe
 ST-ctl-GV22-NAME = Ethernet
 ST-ctl-GV23-NAME = Display Message In Keypad Line 1
 ST-ctl-GV24-NAME = Display Message In Keypad Line 2
-ST-ctl-GV25-NAME = Fire
 
 # Controller Status
 CST-0 = Disconnected
@@ -296,6 +291,12 @@ ND-zoneoff-NAME = Zone Node
 ND-zoneoff-ICON = Input
 ST-zoneoff-ST-NAME = Logical Status
 ST-zoneoff-GV0-NAME = Physical Status
+
+ST-zone-GV11-NAME = Box Tamper
+ST-zone-GV12-NAME = Transmitter Low Battery
+ST-zone-GV13-NAME = Security Alert
+ST-zone-GV14-NAME = Lost Transmitter
+ST-zone-GV15-NAME = Fire
 
 # pyElk: State
 # ISY-ELK: Physical Status

@@ -72,6 +72,12 @@ class AreaNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
         self.ready = True
 
+    def get_zone_node(self,zone_index):
+        for zn in self._zone_nodes:
+            if zn.elk.index == zone_index:
+                return zn
+        return None
+
     def shortPoll(self):
         # Only Poll Zones if we want voltages
         LOGGER.debug(f'{self.lpfx} ready={self.ready} poll_voltages={self.poll_voltages}')

@@ -127,11 +127,9 @@ ELK_TO_INDEX = {
 
 SYSTEM_TROUBLE_STATUS = {
     'AC Fail': { 'driver': 'GV3' },
-    'Box Tamper': { 'driver': 'GV4' },
     'Fail To Communicate': { 'driver': 'GV5' },
     'EEProm Memory Error': { 'driver': 'GV6' },
     'Low Battery Control': { 'driver': 'GV7' },
-    'Transmitter Low Battery': { 'driver': 'GV8' },
     'Over Current': { 'driver': 'GV9' },
     'Telephone Fault': { 'driver': 'GV10' },
     'Output 2': { 'driver': 'GV11' },
@@ -141,14 +139,19 @@ SYSTEM_TROUBLE_STATUS = {
     'ELKRP Remote Access': { 'driver': 'GV15' },
     'Common Area Not Armed': { 'driver': 'GV16' },
     'Flash Memory Error': { 'driver': 'GV17' },
-    'Security Alert': { 'driver': 'GV18' },
     'Serial Port Expander': { 'driver': 'GV19' },
-    'Lost Transmitter': { 'driver': 'GV20' },
     'GE Smoke CleanMe': { 'driver': 'GV21' },
     'Ethernet': { 'driver': 'GV22' },
     'Display Message In Keypad Line 1': { 'driver': 'GV23' },
     'Display Message In Keypad Line 2': { 'driver': 'GV24' },
-    'Fire': { 'driver': 'GV25' },
+}
+
+SYSTEM_TROUBLE_STATUS_ZONE = {
+    'Box Tamper': { 'driver': 'GV11' },
+    'Transmitter Low Battery': { 'driver': 'GV12' },
+    'Security Alert': { 'driver': 'GV13' },
+    'Lost Transmitter': { 'driver': 'GV14' },
+    'Fire': { 'driver': 'GV15' },
 }
 
 # The defined ELK Speak Words

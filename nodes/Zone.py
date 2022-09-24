@@ -2,6 +2,7 @@
 from udi_interface import LOGGER
 from nodes import BaseNode,ZoneOffNode
 from node_funcs import get_valid_node_name
+from const import SYSTEM_TROUBLE_STATUS_ZONE
 
 from elkm1_lib.const import (
     Max,
@@ -38,6 +39,12 @@ class ZoneNode(BaseNode):
         {'driver': 'CV',  'value': 0, 'uom': 72},
         # Poll Voltages
         {'driver': 'GV10', 'value': 0, 'uom': 2},
+        # System Troubles
+        {"driver": "GV11", "value": 0, "uom": 2},
+        {"driver": "GV12", "value": 0, "uom": 2},
+        {"driver": "GV13", "value": 0, "uom": 2},
+        {"driver": "GV14", "value": 0, "uom": 2},
+        {"driver": "GV15", "value": 0, "uom": 2},
     ]
 
     def __init__(self, controller, parent, address, elk):
@@ -129,6 +136,7 @@ class ZoneNode(BaseNode):
         self.set_voltage(force=force)
         self.set_poll_voltage(force=force)
         self.elk.get_voltage()
+        self.clear_system_trouble_status(force)
 
     """
         ZDCONF-0 = Send Both
@@ -257,6 +265,40 @@ class ZoneNode(BaseNode):
     def set_poll_voltage(self,val=None,force=False):
         LOGGER.info(f'{self.lpfx} val={val}')
         self.poll_voltage  = int(self.set_driver('GV10',val,0))
+
+    def clear_system_trouble_status(self,force=False):
+        try:
+            LOGGER.info(f'{self.lpfx} force={force}')
+            for status in SYSTEM_TROUBLE_STATUS_ZONE:
+                SYSTEM_TROUBLE_STATUS_ZONE[status]['value'] = 0
+            for status in SYSTEM_TROUBLE_STATUS_ZONE:
+                self.setDriver(SYSTEM_TROUBLE_STATUS_ZONE[status]['driver'],SYSTEM_TROUBLE_STATUS_ZONE[status]['value'],force=force)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
+
+    def set_system_trouble_status(self,status_list,force=False):
+        try:
+            LOGGER.info(f'{self.lpfx} status_list={status_list}')
+            for status in SYSTEM_TROUBLE_STATUS_ZONE:
+                SYSTEM_TROUBLE_STATUS_ZONE[status]['value'] = 0
+            for status in status_list:
+                if status in SYSTEM_TROUBLE_STATUS_ZONE:
+                    LOGGER.warning(f'{self.lpfx} Setting System Trouble Status for: {status}')
+                    SYSTEM_TROUBLE_STATUS_ZONE[status]['value'] = 1
+                else:
+                    msg = f"{self.lpfx} Unknown system trouble status zone '{status}'"
+                    LOGGER.error(msg)
+                    self.inc_error(msg)
+            # Set all our trouble status's
+            for status in SYSTEM_TROUBLE_STATUS_ZONE:
+                if SYSTEM_TROUBLE_STATUS_ZONE[status]['value'] == 1:
+                    LOGGER.warning(f'{self.lpfx} Setting System Trouble Status Zone for: {status}=True')
+                self.setDriver(SYSTEM_TROUBLE_STATUS_ZONE[status]['driver'],SYSTEM_TROUBLE_STATUS_ZONE[status]['value'],force=force)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
+
 
     def cmd_set_son(self,command):
         try:

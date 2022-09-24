@@ -9,11 +9,9 @@
         <st id="ERR" editor="counter" />
         <st id="GV2" editor="rpst" />
         <st id="GV3" editor="bool" />
-        <st id="GV4" editor="bool" />
         <st id="GV5" editor="bool" />
         <st id="GV6" editor="bool" />
         <st id="GV7" editor="bool" />
-        <st id="GV8" editor="bool" />
         <st id="GV9" editor="bool" />
         <st id="GV10" editor="bool" />
         <st id="GV11" editor="bool" />
@@ -23,14 +21,11 @@
         <st id="GV15" editor="bool" />
         <st id="GV16" editor="bool" />
         <st id="GV17" editor="bool" />
-        <st id="GV18" editor="bool" />
         <st id="GV19" editor="bool" />
-        <st id="GV20" editor="bool" />
         <st id="GV21" editor="bool" />
         <st id="GV22" editor="bool" />
         <st id="GV23" editor="bool" />
         <st id="GV24" editor="bool" />
-        <st id="GV25" editor="bool" />
       </sts>
       <cmds>
           <sends>
@@ -143,6 +138,12 @@
             <st id="GV7" editor="bool" />
             <!-- Poll Voltage -->
             <st id="GV10" editor="bool" />
+            <!-- System Trouble -->
+            <st id="GV11" editor="bool" />
+            <st id="GV12" editor="bool" />
+            <st id="GV13" editor="bool" />
+            <st id="GV14" editor="bool" />
+            <st id="GV15" editor="bool" />
         </sts>
         <cmds>
             <sends>
