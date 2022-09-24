@@ -90,53 +90,44 @@ This has the following status:
   - The True/False status of all available system troubles
   - drivers:
     - driver:GV3  AC Fail
-    - driver:GV4  Box Tamper
-    - driver:GV4  Fail To Communicate
-    - driver:GV5  EEProm Memory Error
-    - driver:GV6  Low Battery Control
-    - driver:GV7  Transmitter Low Battery
-    - driver:GV8  Over Current
-    - driver:GV9  Telephone Fault
-    - driver:GV10  Output 2
-    - driver:GV11  Missing Keypad
-    - driver:GV12  Zone Expander
-    - driver:GV13  Output Expander
-    - driver:GV14  ELKRP Remote Access
-    - driver:GV15  Common Area Not Armed
-    - driver:GV16  Flash Memory Error
-    - driver:GV17  Security Alert
-    - driver:GV18  Serial Port Expander
-    - driver:GV19  Lost Transmitter
-    - driver:GV20  GE Smoke CleanMe
-    - driver:GV21  Ethernet
-    - driver:GV22  Display Message In Keypad Line 1
-    - driver:GV23  Display Message In Keypad Line 2
-    - driver:GV24  Fire
-    - You can add this to a notification, change 004 to your slot number (TODO: Post copy of NR here and program)
+    - driver:GV5  Fail To Communicate
+    - driver:GV6  EEProm Memory Error
+    - driver:GV7  Low Battery Control
+    - driver:GV9  Over Current
+    - driver:GV10  Telephone Fault
+    - driver:GV11  Output 2
+    - driver:GV12  Missing Keypad
+    - driver:GV13  Zone Expander
+    - driver:GV14  Output Expander
+    - driver:GV15  ELKRP Remote Access
+    - driver:GV16  Common Area Not Armed
+    - driver:GV17  Flash Memory Error
+    - driver:GV19  Serial Port Expander
+    - driver:GV21  GE Smoke CleanMe
+    - driver:GV22  Ethernet
+    - driver:GV23  Display Message In Keypad Line 1
+    - driver:GV24  Display Message In Keypad Line 2
+
+    - You can add this to a notification, change # if you are not using that node to trigger the notification
 ```
-${sys.node.n004_controller.GV3}: AC Fail
-${sys.node.n004_controller.GV4}: Box Tamper
-${sys.node.n004_controller.GV5}: Fail To Communicate
-${sys.node.n004_controller.GV6}: EEProm Memory Error
-${sys.node.n004_controller.GV7}: Low Battery Control
-${sys.node.n004_controller.GV8}: Transmitter Low Battery
-${sys.node.n004_controller.GV9}: Over Current
-${sys.node.n004_controller.GV10}: Telephone Fault
-${sys.node.n004_controller.GV11}: Output 2
-${sys.node.n004_controller.GV12}: Missing Keypad
-${sys.node.n004_controller.GV13}: Zone Expander
-${sys.node.n004_controller.GV14}: Output Expander
-${sys.node.n004_controller.GV15}: ELKRP Remote Access
-${sys.node.n004_controller.GV16}: Common Area Not Armed
-${sys.node.n004_controller.GV17}: Flash Memory Error
-${sys.node.n004_controller.GV18}: Security Alert
-${sys.node.n004_controller.GV19}: Serial Port Expander
-${sys.node.n004_controller.GV20}: Lost Transmitter
-${sys.node.n004_controller.GV21}: GE Smoke CleanMe
-${sys.node.n004_controller.GV22}: Ethernet
-${sys.node.n004_controller.GV23}: Display Message In Keypad Line 1
-${sys.node.n004_controller.GV24}: Display Message In Keypad Line 2
-${sys.node.n004_controller.GV25}: Fire
+${sys.node.#.GV3}: AC Fail
+${sys.node.#.GV5}: Fail To Communicate
+${sys.node.#.GV6}: EEProm Memory Error
+${sys.node.#.GV7}: Low Battery Control
+${sys.node.#.GV9}: Over Current
+${sys.node.#.GV10}: Telephone Fault
+${sys.node.#.GV11}: Output 2
+${sys.node.#.GV12}: Missing Keypad
+${sys.node.#.GV13}: Zone Expander
+${sys.node.#.GV14}: Output Expander
+${sys.node.#.GV15}: ELKRP Remote Access
+${sys.node.#.GV16}: Common Area Not Armed
+${sys.node.#.GV17}: Flash Memory Error
+${sys.node.#.GV19}: Serial Port Expander
+${sys.node.#.GV21}: GE Smoke CleanMe
+${sys.node.#.GV22}: Ethernet
+${sys.node.#.GV23}: Display Message In Keypad Line 1
+${sys.node.#.GV24}: Display Message In Keypad Line 2
 ```
 
 #### Area Node
@@ -313,6 +304,22 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
 - Poll Voltage
   - driver:GV10
   - If the Area Poll Voltage is enabled, then setting this to True for the Zone will poll the voltage on each short poll.
+- System Trouble Status
+  - The True/False status of all available system troubles
+  - drivers:
+    - driver:GV4  Box Tamper
+    - driver:GV7  Transmitter Low Battery
+    - driver:GV17  Security Alert
+    - driver:GV19  Lost Transmitter
+    - driver:GV25  Fire
+    - You can add this to a notification, change # if you are not using that node to trigger the notification
+```
+${sys.node.#.GV4}: Box Tamper
+${sys.node.#.GV8}: Transmitter Low Battery
+${sys.node.#.GV18}: Security Alert
+${sys.node.#.GV20}: Lost Transmitter
+${sys.node.#.GV25}: Fire
+``` 
 
 #### Zone Off Node
 
@@ -405,6 +412,9 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.5.0: 09/24/2022
+  - Enhancement: [Support Zone Specific System Trouble](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/86)
+
 . 3.4.9: 08/19/2022
   - Fix issues with [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78)
   - Fix [Support Keypad callback for temperature updates](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/83)
