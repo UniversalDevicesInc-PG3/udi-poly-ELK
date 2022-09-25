@@ -71,7 +71,7 @@ class ZoneNode(BaseNode):
             LOGGER.info(f'ZoneNode:init:{name} temperature={self.elk.temperature} has_temperature={self.has_temperature}')
             if self.has_temperature:
                 self.id = 'zoneT'
-                self.drivers.append({'driver': 'CLITEMP', 'value': -40, 'uom': self.controller.temperature_uom})
+                self.drivers.append({'driver': 'CLITEMP', 'value': self.elk.temperature, 'uom': self.controller.temperature_uom})
             super(ZoneNode, self).__init__(controller, parent.address, address, name)
             controller.poly.subscribe(controller.poly.START, self.start, address)
             LOGGER.debug("{self.lpfx}: exit: name={self.name} address={self.address}")

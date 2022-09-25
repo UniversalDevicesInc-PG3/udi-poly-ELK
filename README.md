@@ -428,6 +428,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.5.2: 09/25/2022
+  - Fix: Properly initialize temperature for Zone and Keypad
 - 3.5.1: 09/25/2022
   - Fix For: [Support Zone Specific System Trouble](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/86)
     - Now reporting correct zone numbers

@@ -50,7 +50,7 @@ class KeypadNode(BaseNode):
             LOGGER.debug(f'KeypadNode:init: name="{name}" uom={self.uoms}')
             if self.has_temperature:
                 self.id = 'keypadT'
-                self.drivers.append({'driver': DNAMES['temperature'], 'value': -40, 'uom': self.uoms[DNAMES['temperature']]})
+                self.drivers.append({'driver': DNAMES['temperature'], 'value': self.elk.temperature, 'uom': self.uoms[DNAMES['temperature']]})
             LOGGER.debug(f'KeypadNode:init: name="{name}" drivers={self.drivers}')
             super(KeypadNode, self).__init__(controller, parent.address, address, name)
             controller.poly.subscribe(controller.poly.START, self.start, address)
