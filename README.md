@@ -435,6 +435,7 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
     - See [Zone](#zone-node) Trigger documentation above
   - Enhancement: [Support Zone Temperature](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/65)
     - See [Zone](#zone-node) Temperature documentation above
+  - Fix: [Controller queried before panel was ready on Polisy reboot](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/85)
 . 3.4.9: 08/19/2022
   - Fix issues with [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78)
   - Fix [Support Keypad callback for temperature updates](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/83)

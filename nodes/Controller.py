@@ -214,6 +214,8 @@ class Controller(Node):
 
     def query(self):
         LOGGER.info(f'{self.lpfx}')
+        if self.elk is None:
+            logger.error(f'{self.lpfx} query called before node ready, ignoring...')
         try:
             self.check_params()
             self.set_drivers(force=True)
