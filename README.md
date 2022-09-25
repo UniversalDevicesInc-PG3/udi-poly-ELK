@@ -319,7 +319,20 @@ ${sys.node.#.GV8}: Transmitter Low Battery
 ${sys.node.#.GV18}: Security Alert
 ${sys.node.#.GV20}: Lost Transmitter
 ${sys.node.#.GV25}: Fire
-``` 
+```
+  - Toggle Bypass
+    - Toggles the bypass state of the zone.  The ELK API doesn't tell us if a zone is bypassable so we have know way of knowing if this should be presented to the user or will actually work.
+  - Trigger
+    - This sends a zt command to the Elk, which is documented as follows:
+```
+This command allows a 3rd party integration device to trigger an alarm condition on a EOL hardwired zone
+defined with any of the Burglary zone types and many other zone types up to zone type 26. This command
+creates a virtual momentary open condition on the zone as if the EOL hardwired loop had been physically opened.
+This requires M1 Ver. 4.5.23, 5.1.23 or later.
+NOTE: The zt command cannot create a virtual short condition and therefore cannot trigger an alarm
+condition for zone types that require a short. E.G. Fire zone alarms cannot be triggered via this command.
+```
+    Be careful with this, I found if you "trigger" a zone when the system is not armed, then later you arm the system your alarm will go off.  This prints a warning to the log, so you can easily tell when this happens.
 
 #### Zone Off Node
 
@@ -414,7 +427,9 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 ## Release Notes
 - 3.5.0: 09/24/2022
   - Enhancement: [Support Zone Specific System Trouble](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/86)
-
+    - See [Zone](#zone-node) System Trouble documentation above
+  - Enhancement: [Allow user to trigger alarms](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/82)
+    - See [Zone](#zone-node) Trigger documentation above
 . 3.4.9: 08/19/2022
   - Fix issues with [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78)
   - Fix [Support Keypad callback for temperature updates](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/83)

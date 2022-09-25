@@ -152,6 +152,7 @@
             </sends>
             <accepts>
               <cmd id="QUERY" />
+              <cmd id="TRIGGER" />
               <cmd id="SET_BYPASS" />
               <!-- <cmd id="CLEAR_BYPASS" /> -->
               <!--- <cmd id="SET_ONOFF">

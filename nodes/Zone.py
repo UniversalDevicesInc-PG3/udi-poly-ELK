@@ -352,6 +352,14 @@ class ZoneNode(BaseNode):
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
 
+    def cmd_trigger(self,command):
+        try:
+            LOGGER.warning(f'{self.lpfx} Calling trigger...')
+            self.elk.trigger()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
+
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
 
@@ -363,5 +371,6 @@ class ZoneNode(BaseNode):
         'SET_BYPASS': cmd_set_bypass,
         'CLEAR_BYPASS': cmd_clear_bypass,
         'SET_OFFNODE': cmd_set_offnode,
-        'SET_POLL_VOLTAGE': cmd_set_poll_voltage
+        'SET_POLL_VOLTAGE': cmd_set_poll_voltage,
+        'TRIGGER': cmd_trigger
     }

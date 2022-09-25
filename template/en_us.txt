@@ -286,6 +286,7 @@ CMD-zone-SET_BYPASS-NAME = Toggle Bypass
 CMD-zone-SET_SON-NAME = Set Send On For
 CMD-zone-SET_SOFF-NAME = Set Send Off For 
 CMD-zone-SET_POLL_VOLTAGE-NAME = Set Poll Voltage 
+CMD-zone-TRIGGER-NAME = Trigger
 # zone off
 ND-zoneoff-NAME = Zone Node
 ND-zoneoff-ICON = Input
