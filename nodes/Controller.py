@@ -39,6 +39,7 @@ class Controller(Node):
         self._light_nodes = {}
         self._counter_nodes = {}
         self._task_nodes = {}
+        self.system_trouble_save = {}
         self.logger = LOGGER
         self.lpfx = self.name + ":"
         self.poly.Notices.clear()
@@ -295,9 +296,15 @@ class Controller(Node):
                         znode.clear_system_trouble_status()
         for zn in status_by_zone:
             if not found[zn]:
-                msg = f'{self.lpfx} Got zone system trouble "{status_by_zone[zn]}" for unconfigured zone {zn}'
+                msg = f'{self.lpfx} Got zone system trouble "{status_by_zone[zn]}" for unconfigured zone {zn} this can happen on startup, will try to clear it when zone comes online'
                 LOGGER.error(msg)
                 self.inc_error(msg)
+                self.system_trouble_save[zn]
+
+    def get_system_trouble_status_for_zone(self,zn):
+        if zn in self.system_trouble_save:
+            return self.system_trouble_save[zn]
+        return list()
 
     def query_all(self):
         LOGGER.info(f'{self.lpfx}')

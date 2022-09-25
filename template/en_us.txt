@@ -280,6 +280,11 @@ ST-zone-GV8-NAME = Send On For
 ST-zone-GV9-NAME = Send Off For
 ST-zone-GV10-NAME = Poll voltage
 ST-zone-CV-NAME = Voltage
+ST-zone-GV11-NAME = Box Tamper
+ST-zone-GV12-NAME = Transmitter Low Battery
+ST-zone-GV13-NAME = Security Alert
+ST-zone-GV14-NAME = Lost Transmitter
+ST-zone-GV15-NAME = Fire
 CMD-zone-SET_ONOFF-NAME = Set Send On/Off Mode
 CMD-zone-SET_OFFNODE-NAME = Use Off Node
 CMD-zone-SET_BYPASS-NAME = Toggle Bypass
@@ -287,17 +292,43 @@ CMD-zone-SET_SON-NAME = Set Send On For
 CMD-zone-SET_SOFF-NAME = Set Send Off For 
 CMD-zone-SET_POLL_VOLTAGE-NAME = Set Poll Voltage 
 CMD-zone-TRIGGER-NAME = Trigger
+
+# zone with temperature
+ND-zoneT-NAME = Zone With Temperature Node
+ND-zoneT-ICON = Sensor
+ST-zoneT-ST-NAME = Logical Status
+ST-zoneT-GV0-NAME = Physical Status
+ST-zoneT-GV1-NAME = Triggered Alarm
+ST-zoneT-GV2-NAME = Area
+ST-zoneT-GV3-NAME = Definition
+ST-zoneT-GV4-NAME = Alarm
+# ST-zoneT-GV5-NAME = Send On/Off
+ST-zoneT-GV6-NAME = Bypassed
+ST-zoneT-GV7-NAME = Off Node
+ST-zoneT-GV8-NAME = Send On For
+ST-zoneT-GV9-NAME = Send Off For
+ST-zoneT-GV10-NAME = Poll voltage
+ST-zoneT-CV-NAME = Voltage
+ST-zoneT-GV11-NAME = Box Tamper
+ST-zoneT-GV12-NAME = Transmitter Low Battery
+ST-zoneT-GV13-NAME = Security Alert
+ST-zoneT-GV14-NAME = Lost Transmitter
+ST-zoneT-GV15-NAME = Fire
+ST-zoneT-CLITEMP-NAME = Temperature
+CMD-zoneT-SET_ONOFF-NAME = Set Send On/Off Mode
+CMD-zoneT-SET_OFFNODE-NAME = Use Off Node
+CMD-zoneT-SET_BYPASS-NAME = Toggle Bypass
+CMD-zoneT-SET_SON-NAME = Set Send On For
+CMD-zoneT-SET_SOFF-NAME = Set Send Off For 
+CMD-zoneT-SET_POLL_VOLTAGE-NAME = Set Poll Voltage 
+CMD-zoneT-TRIGGER-NAME = Trigger
+
+
 # zone off
 ND-zoneoff-NAME = Zone Node
 ND-zoneoff-ICON = Input
 ST-zoneoff-ST-NAME = Logical Status
 ST-zoneoff-GV0-NAME = Physical Status
-
-ST-zone-GV11-NAME = Box Tamper
-ST-zone-GV12-NAME = Transmitter Low Battery
-ST-zone-GV13-NAME = Security Alert
-ST-zone-GV14-NAME = Lost Transmitter
-ST-zone-GV15-NAME = Fire
 
 # pyElk: State
 # ISY-ELK: Physical Status

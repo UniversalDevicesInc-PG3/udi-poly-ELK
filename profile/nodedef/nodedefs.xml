@@ -175,6 +175,74 @@
     </nodeDef>
 
     <!-- zone -->
+    <nodeDef id="zoneT" nls="zone">
+        <editors />
+        <sts>
+            <!-- logical status -->
+            <st id="ST" editor="zlst" />
+            <!-- physical status -->
+            <st id="GV0" editor="zpst" />
+            <!-- Zone Voltage -->
+            <st id="CV" editor="zvolt" />
+            <!-- Zone Temperature -->
+            <st id="CLITEMP" editor="I_TEMP" />
+            <!-- Triggered -->
+            <st id="GV1" editor="bool" />
+            <!-- Bypassed -->
+            <!-- <st id="GV6" editor="bool" />-->
+            <!-- area -->
+            <st id="GV2" editor="area" />
+            <!-- definition type -->
+            <st id="GV3" editor="ztype" />
+            <!-- alarm configuration -->
+            <!--<st id="GV4" editor="zalarm" />-->
+            <!-- DON/DOF Config -->
+            <!-- No longer used <st id="GV5" editor="zdconf" /> -->
+            <!-- Send On -->
+            <st id="GV8" editor="zsonoff" />
+            <!-- Send Off -->
+            <st id="GV9" editor="zsonoff" />
+            <!-- Off Node -->
+            <st id="GV7" editor="bool" />
+            <!-- Poll Voltage -->
+            <st id="GV10" editor="bool" />
+            <!-- System Trouble -->
+            <st id="GV11" editor="bool" />
+            <st id="GV12" editor="bool" />
+            <st id="GV13" editor="bool" />
+            <st id="GV14" editor="bool" />
+            <st id="GV15" editor="bool" />
+        </sts>
+        <cmds>
+            <sends>
+              <cmd id="DON" />
+              <cmd id="DOF" />
+            </sends>
+            <accepts>
+              <cmd id="QUERY" />
+              <cmd id="TRIGGER" />
+              <cmd id="SET_BYPASS" />
+              <!-- <cmd id="CLEAR_BYPASS" /> -->
+              <!--- <cmd id="SET_ONOFF">
+                <p id="" editor="zdconf" init="GV5" />
+              </cmd> -->
+              <cmd id="SET_SON">
+                <p id="" editor="zsonoff" init="GV8" />
+              </cmd>
+              <cmd id="SET_SOFF">
+                <p id="" editor="zsonoff" init="GV9" />
+              </cmd>
+              <cmd id="SET_OFFNODE">
+                <p id="" editor="bool" init="GV7" />
+              </cmd>
+              <cmd id="SET_POLL_VOLTAGE">
+                <p id="" editor="bool" init="GV10" />
+              </cmd>
+            </accepts>
+        </cmds>
+    </nodeDef>
+
+    <!-- zone -->
     <nodeDef id="zoneoff" nls="zone">
         <editors />
         <sts>

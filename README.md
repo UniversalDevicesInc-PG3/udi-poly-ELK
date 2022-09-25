@@ -241,7 +241,7 @@ There is a Keypad node for each keypad found and they are by default grouped und
   - The last user to enter access code at the keyboard, which is also propagated up the the Area Last User
   - driver: GV1
 - Temperature
-  - The temperature from the keypad, or -40F is keypad doesn't report temperature.
+  - The temperature from the keypad, only shown if the keypad reports temperature.
   - driver: GV2
 - Last KeyPress
   - The last key pressed on the keypad
@@ -280,6 +280,9 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
 - Voltage
   - driver:CV
   - The current Zone Voltage.  Note this is not updated on change, it must be Polled.  By default this is polling is disabled, to enable set "Poll Voltages" on the Zone's Area.  The values are only updated on Short Poll intervals, which can be set in the Node Server Configuration Page.  It is also updated on a Zone query, so you can write ISY progrmas to force the query if you want faster updates, or just to update a single zone.
+- Temperature
+  - The temperature from the zone, only shown if the zone reports a temperature. Current versions of the ELK system report -60 if the zone doesn't support temperature.
+  - driver: CLITEMP
 - Triggered Alarm
   - driver:GV1
   - The zone has caused an alarm to be triggered.  This comes directly from the ELK and only turns on if the zone triggers and alarm immediatly, if the zone has entry delay it will not set triggered when zone is violated, or when entry delay times out causing an alarm.
@@ -430,6 +433,8 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
     - See [Zone](#zone-node) System Trouble documentation above
   - Enhancement: [Allow user to trigger alarms](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/82)
     - See [Zone](#zone-node) Trigger documentation above
+  - Enhancement: [Support Zone Temperature](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/65)
+    - See [Zone](#zone-node) Temperature documentation above
 . 3.4.9: 08/19/2022
   - Fix issues with [ELM M1G System Trouble Status](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/78)
   - Fix [Support Keypad callback for temperature updates](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/83)

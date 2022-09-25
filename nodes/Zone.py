@@ -62,12 +62,22 @@ class ZoneNode(BaseNode):
         self.offnode = None
         self.offnode_obj = None
         self.logger    = controller.logger
-        name        = get_valid_node_name(self.elk.name)
-        if name == "":
-            name = f'Zone_{self.elk.index + 1}'
-        super(ZoneNode, self).__init__(controller, parent.address, address, name)
-        controller.poly.subscribe(controller.poly.START, self.start, address)
-        LOGGER.debug("{self.lpfx}: exit: name={self.name} address={self.address}")
+        try:
+            name        = get_valid_node_name(self.elk.name)
+            if name == "":
+                name = f'Zone_{self.elk.index + 1}'
+            self.has_temperature = False if self.elk.temperature == -60 else True
+            #self.has_temperature = True # Just for Testing!!!
+            LOGGER.info(f'ZoneNode:init:{name} temperature={self.elk.temperature} has_temperature={self.has_temperature}')
+            if self.has_temperature:
+                self.id = 'zoneT'
+                self.drivers.append({'driver': 'CLITEMP', 'value': -40, 'uom': self.controller.temperature_uom})
+            super(ZoneNode, self).__init__(controller, parent.address, address, name)
+            controller.poly.subscribe(controller.poly.START, self.start, address)
+            LOGGER.debug("{self.lpfx}: exit: name={self.name} address={self.address}")
+        except Exception as ex:
+            LOGGER.error('ZoneNode:init',exc_info=True)
+            self.inc_error(f"ZoneNode:init {ex}")
 
     def start(self):
         LOGGER.debug(f'{self.lpfx} {self.elk}')
@@ -113,6 +123,8 @@ class ZoneNode(BaseNode):
                     self._set_logical_status(changeset[cs])
                 elif 'voltage' in changeset:
                     self._set_voltage(changeset[cs])
+                elif cs == 'temperature':
+                    self.set_temperature(changeset[cs])
                 elif cs in ignore:
                     LOGGER.debug(f"Nothing to do for key={cs} val={changeset[cs]}")
                 else:
@@ -135,8 +147,12 @@ class ZoneNode(BaseNode):
         self.set_triggered(force=force)
         self.set_voltage(force=force)
         self.set_poll_voltage(force=force)
+        self.set_temperature(force=force)
         self.elk.get_voltage()
-        self.clear_system_trouble_status(force)
+        self.set_system_trouble_status(
+            self.controller.get_system_trouble_status_for_zone(self.elk.index),
+            force
+        )
 
     """
         ZDCONF-0 = Send Both
@@ -196,6 +212,14 @@ class ZoneNode(BaseNode):
         if self.offnode_obj is not None:
             self.offnode_obj.set_driver('ST', val, force=force)
         self.area.set_zone_logical_status(self.elk.index,val)
+
+    def set_temperature(self,val=None,force=False,reportCmd=True):
+        LOGGER.info(f'{self.lpfx} has_temperature={self.has_temperature}')
+        if not self.has_temperature:
+            return
+        if val is None:
+            val = self.elk.temperature
+        self.set_driver('CLITEMP', val, report=reportCmd, force=force, uom=self.controller.temperature_uom, prec=1)
 
     def set_voltage(self,val=None,force=False):
         LOGGER.debug(f'{self.lpfx} val={val} elk.voltage={self.elk.voltage}')
