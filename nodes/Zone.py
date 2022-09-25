@@ -150,7 +150,7 @@ class ZoneNode(BaseNode):
         self.set_temperature(force=force)
         self.elk.get_voltage()
         self.set_system_trouble_status(
-            self.controller.get_system_trouble_status_for_zone(self.elk.index),
+            self.controller.get_system_trouble_status_for_zone(self.elk.index+1),
             force
         )
 

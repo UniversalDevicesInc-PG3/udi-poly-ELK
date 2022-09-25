@@ -43,7 +43,7 @@ class Controller(Node):
         self.logger = LOGGER
         self.lpfx = self.name + ":"
         self.poly.Notices.clear()
-        self.tested = False
+        self.tested = True
         self.handler_config_st = None
         self.handler_config_done_st = None
         # For the short/long poll threads, we run them in threads so the main
@@ -154,7 +154,11 @@ class Controller(Node):
             self._area_nodes[an].shortPoll()
         if not self.tested:
             LOGGER.warning('Sending Test Zone Trouble')
-            self.elk.panel._ss_handler("28SS000000000100000000000000000000010A001D")
+                                   #28SS000000000100000000000000000000010A00
+            # This tests Fire zone 17, which is likely not configured yet.
+            self.elk.panel._ss_handler("000000000100000000000000000000010A")
+            # This tests zone 1 which should be configured by now.
+            #self.elk.panel._ss_handler("0000000000000000000000000000000001")
             self.tested = True
         LOGGER.debug('done')
 
@@ -241,7 +245,17 @@ class Controller(Node):
         now = datetime.now()
         self.errors += val
         self.setDriver('ERR',self.errors)
-        self.poly.Notices['ns_error'] = f"ERROR: {now.strftime('%m/%d/%Y %H:%M:%S')} See log for: {err_str}"
+        if err_str is not None:
+            self.err_notice('ns_error',err_str)
+
+    def err_notice(self,name,err_str):
+            self.poly.Notices[name] = f"ERROR: {datetime.now().strftime('%m/%d/%Y %H:%M:%S')} See log for: {err_str}"
+
+    def dec_error(self,val=None):
+        if val is None:
+            val = 1
+        self.errors -= val
+        self.setDriver('ERR',self.errors)
 
     def set_remote_programming_status(self,val=None,force=False):
         if val is None:
@@ -286,7 +300,7 @@ class Controller(Node):
             self.setDriver(SYSTEM_TROUBLE_STATUS[status]['driver'],SYSTEM_TROUBLE_STATUS[status]['value'],force=force)
         # Set/clear trouble status on all zones
         found = dict()
-        for zn in range(Max.ZONES.value):
+        for zn in range(1,Max.ZONES.value+1):
             found[zn] = False
             for an in self._area_nodes:
                 znode = self._area_nodes[an].get_zone_node(zn)
@@ -300,12 +314,18 @@ class Controller(Node):
             if not found[zn]:
                 msg = f'{self.lpfx} Got zone system trouble "{status_by_zone[zn]}" for unconfigured zone {zn} this can happen on startup, will try to clear it when zone comes online'
                 LOGGER.error(msg)
-                self.inc_error(msg)
-                self.system_trouble_save[zn]
+                self.inc_error(None)
+                # Add our message, so we can clear it if the zone is seen later.
+                self.err_notice(f'stbz_{zn}',msg)
+                self.system_trouble_save[zn] = status_by_zone[zn]
 
     def get_system_trouble_status_for_zone(self,zn):
         if zn in self.system_trouble_save:
-            return self.system_trouble_save[zn]
+            # Delete the message because the node now exists
+            self.poly.Notices.delete(f'stbz_{zn}')
+            ret = self.system_trouble_save[zn]
+            del self.system_trouble_save[zn]
+            return ret
         return list()
 
     def query_all(self):

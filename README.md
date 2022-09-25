@@ -428,6 +428,10 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.5.1: 09/25/2022
+  - Fix For: [Support Zone Specific System Trouble](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/86)
+    - Now reporting correct zone numbers
+  - Fix: [Unconfigured Zone Error](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/88)
 - 3.5.0: 09/24/2022
   - Enhancement: [Support Zone Specific System Trouble](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/86)
     - See [Zone](#zone-node) System Trouble documentation above

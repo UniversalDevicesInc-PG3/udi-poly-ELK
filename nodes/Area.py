@@ -74,7 +74,7 @@ class AreaNode(BaseNode):
 
     def get_zone_node(self,zone_index):
         for zn in self._zone_nodes:
-            if zn.elk.index == zone_index:
+            if zn.elk.index + 1 == zone_index:
                 return zn
         return None
 
