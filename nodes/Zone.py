@@ -384,6 +384,12 @@ class ZoneNode(BaseNode):
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
 
+    def cmd_don(self,command):
+        LOGGER.debug(f'{self.lpfx} Zones do nothing when DON received')
+
+    def cmd_dof(self,command):
+        LOGGER.debug(f'{self.lpfx} Zones do nothing when DOF received')
+
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
 
@@ -396,5 +402,7 @@ class ZoneNode(BaseNode):
         'CLEAR_BYPASS': cmd_clear_bypass,
         'SET_OFFNODE': cmd_set_offnode,
         'SET_POLL_VOLTAGE': cmd_set_poll_voltage,
-        'TRIGGER': cmd_trigger
+        'TRIGGER': cmd_trigger,
+        'DON': cmd_don,
+        'DOF': cmd_dof,
     }
