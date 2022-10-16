@@ -428,7 +428,7 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
-- 3.5.3: Not released yes
+- 3.5.3: 10/16/2022
   - Fix: [Triggered and Violated zone not showing on area](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/89)
   - Fix: [node command DOF not defined](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/87)
 - 3.5.2: 09/25/2022
