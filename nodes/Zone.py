@@ -207,7 +207,7 @@ class ZoneNode(BaseNode):
         LOGGER.debug(f'{self.lpfx} val={val}')
         self.set_driver('ST', val)
         self.logical_status = val
-        if val == 2:
+        if val == ZoneLogicalStatus.VIOLATED:
             self.area.set_last_violated_zone(self.elk.index)
         if self.offnode_obj is not None:
             self.offnode_obj.set_driver('ST', val, force=force)
@@ -253,11 +253,11 @@ class ZoneNode(BaseNode):
         self._set_triggered(val=val,force=force)
 
     def _set_triggered(self,val,force=False):
+        LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         if val == 1:
             self.area.set_last_triggered_zone(self.elk.index)
         if val == self.triggered and not force:
             return
-        LOGGER.debug(f'{self.lpfx} val={val} force={force}')
         self.set_driver('GV1', val, force=force)
         self.triggered = val
 

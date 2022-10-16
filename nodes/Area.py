@@ -156,17 +156,13 @@ class AreaNode(BaseNode):
             LOGGER.debug(f'{self.lpfx} alarm_state={self.elk.alarm_state} zone.definition={self.controller.elk.zones[val].definition} armed_status={self.elk.armed_status}')
             # Say nothing for 'Non Alarm'
             if self.controller.elk.zones[val].definition != ZoneType.NON_ALARM:
-                LOGGER.debug("a")
                 # Mode Stay, Away, Night, or Vacation?
                 if self.elk.armed_status == ArmedStatus.ARMED_AWAY or self.elk.armed_status == ArmedStatus.ARMED_STAY or self.elk.armed_status == ArmedStatus.ARMED_STAY_INSTANT or self.elk.armed_status == ArmedStatus.ARMED_TO_NIGHT_INSTANT or self.elk.armed_status == ArmedStatus.ARMED_TO_VACATION:
-                    LOGGER.debug("b")
                     # Send for Entry/Exit Delay
                     if self.controller.elk.zones[val].definition == ZoneType.BURGLAR_ENTRY_EXIT_1 or int(self.controller.elk.zones[val].definition) == ZoneType.BURGLAR_ENTRY_EXIT_2: 
-                        LOGGER.debug("c")
                         self.set_last_triggered_zone(val)
                 # Night mode?
                 elif self.elk.armed_status == ArmedStatus.ARMED_TO_NIGHT:
-                    LOGGER.debug("d")
                     # Send for Interior Night Delay
                     if int(self.controller.elk.zones[val].definition) == 7:
                         self.set_last_triggered_zone(val)
