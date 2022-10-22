@@ -159,7 +159,7 @@ class AreaNode(BaseNode):
                 # Mode Stay, Away, Night, or Vacation?
                 if self.elk.armed_status == ArmedStatus.ARMED_AWAY or self.elk.armed_status == ArmedStatus.ARMED_STAY or self.elk.armed_status == ArmedStatus.ARMED_STAY_INSTANT or self.elk.armed_status == ArmedStatus.ARMED_TO_NIGHT_INSTANT or self.elk.armed_status == ArmedStatus.ARMED_TO_VACATION:
                     # Send for Entry/Exit Delay
-                    if self.controller.elk.zones[val].definition == ZoneType.BURGLAR_ENTRY_EXIT_1 or int(self.controller.elk.zones[val].definition) == ZoneType.BURGLAR_ENTRY_EXIT_2: 
+                    if self.controller.elk.zones[val].definition == ZoneType.BURGLAR_ENTRY_EXIT_1 or self.controller.elk.zones[val].definition == ZoneType.BURGLAR_ENTRY_EXIT_2: 
                         self.set_last_triggered_zone(val)
                 # Night mode?
                 elif self.elk.armed_status == ArmedStatus.ARMED_TO_NIGHT:
