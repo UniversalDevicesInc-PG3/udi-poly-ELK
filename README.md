@@ -428,6 +428,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.5.5: 10/23/2022
+  - Fix another bug related to fix for [Triggered and Violated zone not showing on area](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/89) which shows error "int() argument must be a string, a bytes-like object or a number, not 'ZoneType'"
 - 3.5.4: 10/22/2022
   - Fix bug related to fix for [Triggered and Violated zone not showing on area](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/89) which shows error "int() argument must be a string, a bytes-like object or a number, not 'ZoneType'"
 - 3.5.3: 10/16/2022

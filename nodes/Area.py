@@ -164,7 +164,7 @@ class AreaNode(BaseNode):
                 # Night mode?
                 elif self.elk.armed_status == ArmedStatus.ARMED_TO_NIGHT:
                     # Send for Interior Night Delay
-                    if int(self.controller.elk.zones[val].definition) == 7:
+                    if self.controller.elk.zones[val].definition == ZoneType.BURGLAR_INTERIOR_NIGHT or self.controller.elk.zones[val].definition == ZoneType.BURGLAR_INTERIOR_NIGHT_DELAY:
                         self.set_last_triggered_zone(val)
 
     # This is only called by Zone's when it triggers an alarm
