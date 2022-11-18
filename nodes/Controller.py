@@ -96,7 +96,7 @@ class Controller(Node):
         configurationHelp = './configdoc.md';
         if os.path.isfile(configurationHelp):
 	        cfgdoc = markdown2.markdown_path(configurationHelp)
-	        self.poly.setCustomParamsDoc(cfgdoc)
+            self.poly.setCustomParamsDoc(cfgdoc)
         else:
             msg = f'config doc not found? {configurationHelp}'
             LOGGER.error(msg)
@@ -219,7 +219,7 @@ class Controller(Node):
     def query(self):
         LOGGER.info(f'{self.lpfx}')
         if self.elk is None:
-            logger.error(f'{self.lpfx} query called before node ready, ignoring...')
+            LOGGER.error(f'{self.lpfx} query called before node ready, ignoring...')
         try:
             self.check_params()
             self.set_drivers(force=True)
