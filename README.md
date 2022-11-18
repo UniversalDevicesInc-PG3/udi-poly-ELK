@@ -428,7 +428,7 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
-- 3.5.6: 11/17/2022
+- 3.5.7: 11/17/2022
   - Fix crash that can happen on startup
 - 3.5.5: 10/23/2022
   - Fix another bug related to fix for [Triggered and Violated zone not showing on area](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/89) which shows error "int() argument must be a string, a bytes-like object or a number, not 'ZoneType'"

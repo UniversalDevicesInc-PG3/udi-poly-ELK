@@ -95,7 +95,7 @@ class Controller(Node):
 
         configurationHelp = './configdoc.md';
         if os.path.isfile(configurationHelp):
-	        cfgdoc = markdown2.markdown_path(configurationHelp)
+            cfgdoc = markdown2.markdown_path(configurationHelp)
             self.poly.setCustomParamsDoc(cfgdoc)
         else:
             msg = f'config doc not found? {configurationHelp}'
