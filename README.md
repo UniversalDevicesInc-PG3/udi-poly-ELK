@@ -317,11 +317,11 @@ Currently every Zone in the Area will be added as a Node if the Zone Definition 
     - driver:GV25  Fire
     - You can add this to a notification, change # if you are not using that node to trigger the notification
 ```
-${sys.node.#.GV4}: Box Tamper
-${sys.node.#.GV8}: Transmitter Low Battery
-${sys.node.#.GV18}: Security Alert
-${sys.node.#.GV20}: Lost Transmitter
-${sys.node.#.GV25}: Fire
+Box Tamper:              ${sys.node.#.GV11}
+Transmitter Low Battery: ${sys.node.#.GV12}
+Security Alert:          ${sys.node.#.GV13}
+Lost Transmitter:        ${sys.node.#.GV14}
+Fire:                    ${sys.node.#.GV15}
 ```
   - Toggle Bypass
     - Toggles the bypass state of the zone.  The ELK API doesn't tell us if a zone is bypassable so we have know way of knowing if this should be presented to the user or will actually work.
