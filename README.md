@@ -428,6 +428,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.5.8: 01/15/2023
+  - Fix elkm1_lib version
 - 3.5.7: 11/17/2022
   - Fix crash that can happen on startup
 - 3.5.5: 10/23/2022
