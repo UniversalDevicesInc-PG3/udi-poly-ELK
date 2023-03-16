@@ -206,6 +206,8 @@ class AreaNode(BaseNode):
 
     def set_chime_mode(self,val=None,force=False):
         LOGGER.info(f'{self.lpfx} {val} elk.chime_mode={self.elk.chime_mode}')
+        if val is None and self.elk.chime_mode is None:
+            LOGGER.warning(f'{self.lpfx} setting chime mode {val} and elk.chime_mode={self.elk.chime_mode}')
         try:
             self.set_driver('GV2', val, restore=False,default=self.elk.chime_mode[1],force=force)
             if (self.requested_chime_mode is not None):

@@ -11,11 +11,12 @@ from copy import deepcopy
 from threading import Thread
 from node_funcs import *
 from nodes import AreaNode,OutputNode,LightNode,CounterNode,TaskNode
-from udi_interface import Node,LOGGER,Custom,LOG_HANDLER
+from udi_interface import Node,LOGGER,Custom,LOG_HANDLER,ISY
 from const import SPEAK_WORDS,SPEAK_PHRASES,SYSTEM_TROUBLE_STATUS
 
 # sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
+from elkm1_lib.lights import Light
 from elkm1_lib.const import (
     Max,
     ZoneType
@@ -40,12 +41,15 @@ class Controller(Node):
         self._counter_nodes = {}
         self._task_nodes = {}
         self.system_trouble_save = {}
+        self.lights_to_trigger = {}
         self.logger = LOGGER
         self.lpfx = self.name + ":"
         self.poly.Notices.clear()
         self.tested = True
+        self.isy = None
         self.handler_config_st = None
         self.handler_config_done_st = None
+        self.sent_cstr = None
         # For the short/long poll threads, we run them in threads so the main
         # process is always available for controlling devices
         self.short_event = False
@@ -95,8 +99,8 @@ class Controller(Node):
 
         configurationHelp = './configdoc.md';
         if os.path.isfile(configurationHelp):
-            cfgdoc = markdown2.markdown_path(configurationHelp)
-            self.poly.setCustomParamsDoc(cfgdoc)
+            self.cfgdoc = markdown2.markdown_path(configurationHelp)
+            self.poly.setCustomParamsDoc(self.cfgdoc)
         else:
             msg = f'config doc not found? {configurationHelp}'
             LOGGER.error(msg)
@@ -108,6 +112,11 @@ class Controller(Node):
         LOGGER.debug(f'{self.lpfx} enter')
         self.poly.addLogLevel('DEBUG_MODULES',9,'Debug + Modules')
         self.handler_config_done_st = True
+        # Example of exported lights
+        self.lights_exported = {
+            #17: "n004_68ff7b0554c0",
+            #18: "n004_d807b6e69428"
+        }
         LOGGER.debug(f'{self.lpfx} exit')
 
     def heartbeat(self):
@@ -171,27 +180,46 @@ class Controller(Node):
     # This is the callback for the panel
     def callback(self, element, changeset):
         try:
-            LOGGER.info(f'{self.lpfx} cs={changeset}')
-            # cs={'elkm1_version': '5.3.10', 'xep_version': '2.0.44'}
-            #cs={'user_code_length': 4, 'temperature_units': 'F'}
-            for key in changeset:
-                if key == 'elkm1_version' or key == 'xep_version' or key == 'user_code_length' or key == 'temperature_units':
-                    LOGGER.info(f"{key}={changeset[key]}")
-                elif key == 'real_time_clock':
-                    LOGGER.info(f"{key}={changeset[key]}")
-                    # TODO: Toggle something to show we are receiving this?
-                elif key == 'remote_programming_status':
-                    # Controller:callback: ELK Controller: cs={'remote_programming_status': <ElkRPStatus.CONNECTED: 1>}
-                    if hasattr(changeset[key],'value'):
-                        self.set_remote_programming_status(changeset[key].value)
-                    else:
-                        msg = f"Callback not sent enum, got {key}={changeset[key]}"
-                        LOGGER.error(f'{self.lpfx}: {msg}',exc_info=True)
-                        self.inc_error(f"{self.lpfx} {ex}")
-                elif key == 'system_trouble_status':
-                    self.set_system_trouble_status(changeset[key])
+            LOGGER.info(f'{self.lpfx} element={element} type={type(element)} cs={changeset}')
+            # Is it an exported light?
+            if isinstance(element,Light):
+                LOGGER.info(f'{self.lpfx} Got light: element={element} cs={changeset}')
+                if element.index in self.lights_to_trigger:
+                    node = self.lights_to_trigger[element.index]
+                    for key in changeset:
+                        if key == 'status':
+                            val = int(changeset[key])
+                            cmd = ''
+                            if val == 0:
+                                res = node.turn_off()
+                            elif val == 1:
+                                res = node.turn_on()
+                            else:
+                                res = node.turn_on(val)
+                            LOGGER.info(f'res={res}')
                 else:
-                    LOGGER.warning(f'{self.lpfx} Unhandled  callback: cs={changeset}')
+                    LOGGER.error(f'{self.lpfx} Got unknown trigger light {element.index}')
+            else:
+                # cs={'elkm1_version': '5.3.10', 'xep_version': '2.0.44'}
+                #cs={'user_code_length': 4, 'temperature_units': 'F'}
+                for key in changeset:
+                    if key == 'elkm1_version' or key == 'xep_version' or key == 'user_code_length' or key == 'temperature_units':
+                        LOGGER.info(f"{key}={changeset[key]}")
+                    elif key == 'real_time_clock':
+                        LOGGER.info(f"{key}={changeset[key]}")
+                        # TODO: Toggle something to show we are receiving this?
+                    elif key == 'remote_programming_status':
+                        # Controller:callback: ELK Controller: cs={'remote_programming_status': <ElkRPStatus.CONNECTED: 1>}
+                        if hasattr(changeset[key],'value'):
+                            self.set_remote_programming_status(changeset[key].value)
+                        else:
+                            msg = f"Callback not sent enum, got {key}={changeset[key]}"
+                            LOGGER.error(f'{self.lpfx}: {msg}',exc_info=True)
+                            self.inc_error(f"{self.lpfx} {ex}")
+                    elif key == 'system_trouble_status':
+                        self.set_system_trouble_status(changeset[key])
+                    else:
+                        LOGGER.warning(f'{self.lpfx} Unhandled  callback: cs={changeset}')
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
@@ -208,6 +236,29 @@ class Controller(Node):
 #        logging.getLogger("elkm1_lib.proto").setLevel(slevel)
 #        logging.getLogger("elkm1_lib").setLevel(slevel)
         LOGGER.info(f'exit: level={level}')
+
+    def init_isy(self):
+        if self.isy is None:
+            self.isy = ISY(self.poly)
+            while not self.isy.valid:
+                LOGGER.info(f"{self.lpfx} Waiting for isy.valid... {self.isy.valid}")
+                time.sleep(2)
+            self.pyisy = self.isy.pyisy()
+        LOGGER.info(f"{self.lpfx} got isy={self.isy} pyisy={self.pyisy} pyisy.connected={self.pyisy.connected}")
+        if not self.pyisy.connected:
+            msg = 'Failed to connect to ISY see log file'
+            LOGGER.error(msg)
+            self.inc_error(msg)
+        for name, node in self.pyisy.nodes:
+            LOGGER.debug(f"{self.lpfx} name={name} node={node}")
+
+    def is_isy_node(self,value):
+        try:
+            ret = self.pyisy.nodes[value]
+        except: 
+            ret = False
+        LOGGER.debug(f'{self.lpfx} got={ret}')
+        return ret
 
     def set_st(self, st, force=False):
         LOGGER.debug(f"{self.lpfx} elk_st={self.elk_st} st={st}")
@@ -380,27 +431,28 @@ class Controller(Node):
         return node
         
     def sync_complete(self):
-        LOGGER.warning(f"{self.lpfx} Sync of panel is complete, adding nodes...")
+        LOGGER.info(f"{self.lpfx} Sync of panel is complete...")
+        LOGGER.info(f"{self.lpfx} Connecting to ISY...")
         # Ferce this again to make sure because when node starts up the first connected set_st may get overridden :(
         self.set_st(5)
         # TODO: Add driver for sync complete status, or put in ST?
         LOGGER.info(f"{self.lpfx} adding areas...")
-        for an in range(Max.AREAS.value):
-            if an in self._area_nodes:
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Area {an+1} because it already defined."
-                )
-            elif is_in_list(an+1, self.use_areas_list) is False:
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Area {an+1} because it is not in areas range {self.use_areas} in configuration"
-                )
-            else:
-                LOGGER.info(f"{self.lpfx} Adding Area {an}")
-                address = f'area_{an + 1}'
-                node = self.add_node(address,AreaNode(self, address, self.elk.areas[an]))
-                if node is not None:
-                    self._area_nodes[an] = node
-        LOGGER.info("adding areas done, adding outputs...")
+#        for an in range(Max.AREAS.value):
+#            if an in self._area_nodes:
+#                LOGGER.info(
+#                    f"{self.lpfx} Skipping Area {an+1} because it already defined."
+#                )
+#            elif is_in_list(an+1, self.use_areas_list) is False:
+#                LOGGER.info(
+#                    f"{self.lpfx} Skipping Area {an+1} because it is not in areas range {self.use_areas} in configuration"
+#                )
+#            else:
+#                LOGGER.info(f"{self.lpfx} Adding Area {an}")
+#                address = f'area_{an + 1}'
+#                node = self.add_node(address,AreaNode(self, address, self.elk.areas[an]))
+#                if node is not None:
+#                    self._area_nodes[an] = node
+#        LOGGER.info("adding areas done, adding outputs...")
         # elkm1_lib uses zone numbers starting at zero.
         for n in range(Max.OUTPUTS.value):
             if n in self._output_nodes:
@@ -421,20 +473,41 @@ class Controller(Node):
         # elkm1_lib uses zone numbers starting at zero.
         for n in range(Max.LIGHTS.value):
             LOGGER.debug(f"Check light: {self.elk.lights[n]} is_default_name={self.elk.lights[n].is_default_name()}")
+            if self.elk.lights[n].is_default_name():
+                LOGGER.info(
+                    f"{self.lpfx} Skipping Light {n+1} because it set to default name"
+                )
+                continue
             if n in self._light_nodes:
                 LOGGER.info(
                     f"{self.lpfx} Skipping Light {n+1} because it already defined."
                 )
-            elif self.elk.lights[n].is_default_name():
+                continue
+            # Need the isy/pyisy object defined to check
+            self.init_isy()
+            if n+1 in self.lights_exported:
                 LOGGER.info(
-                    f"{self.lpfx} Skipping Light {n+1} because it set to default name"
+                    f"{self.lpfx} Skipping Light {n+1} {self.elk.lights[n].name} because it's an exported light from IoP that I will trigger"
                 )
+                self.lights_to_trigger[n] = self.is_isy_node(self.lights_exported[n+1])
+                # Add callback to myself to handle an exported light.
+                self.elk.lights[n].add_callback(self.callback)
             else:
-                LOGGER.info(f"{self.lpfx} Adding Light {n}")
-                address = f'light_{n + 1}'
-                node = self.add_node(address,LightNode(self, address, self.elk.lights[n]))
-                if node is not None:
-                    self._output_nodes[n] = node
+                default_address = f'light_{n + 1}'
+                node = self.is_isy_node(self.elk.lights[n].name)
+                if node is False or node.address.endswith('_'+default_address):
+                    LOGGER.warning(f"{self.lpfx} No node address or name match for '{self.elk.lights[n].name}'")
+                    self.lights_to_trigger[n] = None
+                    if node.address == default_address:
+                        LOGGER.warning(f"{self.lpfx} Deleting previously added node for Light {n} name='{node.name}'")
+                        self.delNode(node.address)
+                else:
+                    LOGGER.info(
+                        f"{self.lpfx} Skipping Light {n+1} {self.elk.lights[n].name} {node.address} because it's an existing light in IoP that I will trigger"
+                    )
+                    self.lights_to_trigger[n] = node
+                    # Add callback to myself to handle an exported light.
+                    self.elk.lights[n].add_callback(self.callback)
         LOGGER.info("adding lights done")
         for n in range(Max.COUNTERS.value):
             LOGGER.debug(f"Check counter: {self.elk.counters[n]} is_default_name={self.elk.counters[n].is_default_name()}")
@@ -476,6 +549,37 @@ class Controller(Node):
             self.profile_done = True
         LOGGER.warning(f'{self.lpfx} All nodes added, ready to go...')
         self.ready = True
+        self.update_config_docs()
+
+    def update_config_docs(self):
+        # '<style> table { cellpadding: 10px } </style>'
+        hstr = 'https' if self.isy._isy_https else 'http'
+        self.config_info = [
+        '<h1>ELK To ISY Table</h1>',
+        '<p>This table is refreshed after node server syncs with the elk, so it may be out of date for a few seconds</p>',
+        '<p>If you want the ELK Lights to Control ISY Lights then add a Light in ElkRP2 whose name matches an existing ISY node name or address',
+        f'To see a list of all your node names and address click <a href="{hstr}://{self.isy._isy_ip}:{self.isy._isy_port}/rest/nodes">ISY Nodes</a></p>'
+        '<table border=1>',
+        '<tr><th colspan=2><center>ELK<th colspan=3><center>ISY</tr>',
+        '<tr><th><center>Id<th><center>Name<th><center>Address<th><center>Name<th><center>Type</tr>']
+        for n in self.lights_to_trigger:
+            node = self.lights_to_trigger[n]
+            self.config_info.append(f'<tr><td>&nbsp;{n+1}&nbsp;<td>{self.elk.lights[n].name}')
+            if node is None:
+                self.config_info.append('<td>&nbsp;None&nbsp;<td>&nbsp;None&nbsp;<td>&nbsp;None&nbsp;')
+            else:
+                self.config_info.append(f'<td>&nbsp;{node.address}&nbsp;<td>&nbsp;{node.name}&nbsp;<td>&nbsp;{node.type}&nbsp;')
+            self.config_info.append('</tr>')
+        self.config_info.append('</table>')
+        #
+        # Set the Custom Config Doc when it changes
+        #
+        s = "\n"
+        cstr = s.join(self.config_info)
+        if self.sent_cstr != cstr:
+            self.poly.setCustomParamsDoc(self.cfgdoc+cstr)
+            self.sent_cstr = cstr
+
 
     def timeout(self, msg_code):
         msg = f"{self.lpfx} Timeout sending message {msg_code}!!!"

@@ -343,9 +343,11 @@ By default only a Zone node is created.  When you enable a Zone "Use Off Node" t
 
 #### Light Node
 
-There will be a Light node created under the Controller for each Light that is not using the default name.  So if you named the light in the ELK it will show up.
+The Lights configured on the ELK do not create Light nodes on the ISY.  In versions prior to 3.6.0 it did, but not anymore.
 
-This does not yet include support which the ISY had for [Support ELK Export](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/67).  Please comment on that issue if you would like it supported.
+You can have the Elk Control existing ISY lights by configuring a Light in ElkRP whose name matches the name or address of an existing light on the ISY.  The "Configuration" page of the node server provides more information, and creates a table shpwing the status of the Elk to ISY light matches.
+
+This does not yet include support which the ISY had for [Support ELK Export](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/67).  Please comment on that issue if you would like it supported or discuss in the forum [Elk NS Lights question](https://forum.universal-devices.com/topic/40807-elk-ns-lights-question/)
 
 #### Output Node
 
@@ -428,6 +430,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.6.0: 03/15/2023
+  - Add support for ELK Lights see [Light Node](#light-node) above for more information.
 - 3.5.8: 01/15/2023
   - Fix elkm1_lib version
 - 3.5.7: 11/17/2022
