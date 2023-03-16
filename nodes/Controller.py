@@ -6,6 +6,7 @@ import asyncio
 import os
 import markdown2
 import re
+from pyisy import constants as pyisy_constants
 from datetime import datetime
 from copy import deepcopy
 from threading import Thread
@@ -189,7 +190,6 @@ class Controller(Node):
                     for key in changeset:
                         if key == 'status':
                             val = int(changeset[key])
-                            cmd = ''
                             if val == 0:
                                 res = node.turn_off()
                             elif val == 1:
@@ -224,6 +224,27 @@ class Controller(Node):
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
 
+    # This is the callback for when a light changes
+    # push the change to the elk if necessary
+    def node_changed(self,node):
+        LOGGER.info('%s node=%s' % (self.lpfx, node))
+        # Set all the defaults
+        # node.status will be 0-255
+        LOGGER.info('%s status=%s, changed to %s' % (self.lpfx, node['address'], node['status']));
+        if node['status'] == pyisy_constants.ISY_VALUE_UNKNOWN:
+            bri = 0
+        else:
+            bri = int(node['status'])
+        # Get the node from the list
+        light = None
+        for n in self.lights_to_trigger:
+            if self.lights_to_trigger[n] is not None and self.lights_to_trigger[n].address == node['address']:
+                if self.elk.lights[n].status == bri:
+                    LOGGER.debug('%s Elk light already at %s' % (self.lpfx, bri))
+                else:
+                    LOGGER.debug('%s Setting Elk light to %s' % (self.lpfx, bri))
+                    self.elk.lights[n].level(bri)
+
     def handler_log_level(self,level):
         LOGGER.info(f'enter: level={level}')
         if level['level'] < 10:
@@ -249,8 +270,8 @@ class Controller(Node):
             msg = 'Failed to connect to ISY see log file'
             LOGGER.error(msg)
             self.inc_error(msg)
-        for name, node in self.pyisy.nodes:
-            LOGGER.debug(f"{self.lpfx} name={name} node={node}")
+        #for name, node in self.pyisy.nodes:
+        #    LOGGER.debug(f"{self.lpfx} name={name} node={node}")
 
     def is_isy_node(self,value):
         try:
@@ -429,7 +450,7 @@ class Controller(Node):
             LOGGER.error(msg)
             self.inc_error(msg)
         return node
-        
+
     def sync_complete(self):
         LOGGER.info(f"{self.lpfx} Sync of panel is complete...")
         LOGGER.info(f"{self.lpfx} Connecting to ISY...")
@@ -503,11 +524,15 @@ class Controller(Node):
                         self.delNode(node.address)
                 else:
                     LOGGER.info(
-                        f"{self.lpfx} Skipping Light {n+1} {self.elk.lights[n].name} {node.address} because it's an existing light in IoP that I will trigger"
+                        f"{self.lpfx} Adding ISY Sync Light {n+1} {self.elk.lights[n].name} {node.address} because it's an existing light in IoP that I will trigger"
                     )
                     self.lights_to_trigger[n] = node
-                    # Add callback to myself to handle an exported light.
+                    # Add ELK callback to myself to handle an exported light.
                     self.elk.lights[n].add_callback(self.callback)
+                    # Add PyISY callback for when the node changes
+                    node.status_events.subscribe(self.node_changed)
+            self.pyisy.auto_update = True
+
         LOGGER.info("adding lights done")
         for n in range(Max.COUNTERS.value):
             LOGGER.debug(f"Check counter: {self.elk.counters[n]} is_default_name={self.elk.counters[n].is_default_name()}")
@@ -553,32 +578,37 @@ class Controller(Node):
 
     def update_config_docs(self):
         # '<style> table { cellpadding: 10px } </style>'
-        hstr = 'https' if self.isy._isy_https else 'http'
-        self.config_info = [
-        '<h1>ELK To ISY Table</h1>',
-        '<p>This table is refreshed after node server syncs with the elk, so it may be out of date for a few seconds</p>',
-        '<p>If you want the ELK Lights to Control ISY Lights then add a Light in ElkRP2 whose name matches an existing ISY node name or address',
-        f'To see a list of all your node names and address click <a href="{hstr}://{self.isy._isy_ip}:{self.isy._isy_port}/rest/nodes">ISY Nodes</a></p>'
-        '<table border=1>',
-        '<tr><th colspan=2><center>ELK<th colspan=3><center>ISY</tr>',
-        '<tr><th><center>Id<th><center>Name<th><center>Address<th><center>Name<th><center>Type</tr>']
-        for n in self.lights_to_trigger:
-            node = self.lights_to_trigger[n]
-            self.config_info.append(f'<tr><td>&nbsp;{n+1}&nbsp;<td>{self.elk.lights[n].name}')
-            if node is None:
-                self.config_info.append('<td>&nbsp;None&nbsp;<td>&nbsp;None&nbsp;<td>&nbsp;None&nbsp;')
-            else:
-                self.config_info.append(f'<td>&nbsp;{node.address}&nbsp;<td>&nbsp;{node.name}&nbsp;<td>&nbsp;{node.type}&nbsp;')
-            self.config_info.append('</tr>')
-        self.config_info.append('</table>')
-        #
-        # Set the Custom Config Doc when it changes
-        #
-        s = "\n"
-        cstr = s.join(self.config_info)
-        if self.sent_cstr != cstr:
-            self.poly.setCustomParamsDoc(self.cfgdoc+cstr)
-            self.sent_cstr = cstr
+        if self.isy is not None and self.isy.valid:
+            hstr = 'https' if self.isy._isy_https else 'http'
+            self.config_info = [
+            '<h1>ELK To ISY Table</h1>',
+            '<p>This table is refreshed after node server syncs with the elk, so it may be out of date for a few seconds</p>',
+            '<p>If you want the ELK Lights to Control ISY Lights then add a Light in ElkRP2 whose name matches an existing ISY node name or address',
+            f'To see a list of all your node names and address click <a href="{hstr}://{self.isy._isy_ip}:{self.isy._isy_port}/rest/nodes">ISY Nodes</a></p>'
+            '<table border=1>',
+            '<tr><th colspan=2><center>ELK<th colspan=3><center>ISY</tr>',
+            '<tr><th><center>Id<th><center>Name<th><center>Address<th><center>Name<th><center>Type</tr>']
+            for n in self.lights_to_trigger:
+                node = self.lights_to_trigger[n]
+                self.config_info.append(f'<tr><td>&nbsp;{n+1}&nbsp;<td>{self.elk.lights[n].name}')
+                if node is None:
+                    self.config_info.append('<td>&nbsp;None&nbsp;<td>&nbsp;None&nbsp;<td>&nbsp;&nbsp;')
+                else:
+                    self.config_info.append(f'<td>&nbsp;{node.address}&nbsp;<td>&nbsp;{node.name}&nbsp;<td>&nbsp;{type(node).__name__}&nbsp;')
+                self.config_info.append('</tr>')
+            self.config_info.append('</table>')
+            #
+            # Set the Custom Config Doc when it changes
+            #
+            s = "\n"
+            cstr = s.join(self.config_info)
+            if self.sent_cstr != cstr:
+                self.poly.setCustomParamsDoc(self.cfgdoc+cstr)
+                self.sent_cstr = cstr
+        else:
+            msg = f"ISY {self.isy} is not initialized, see log"
+            self.inc_error(msg)
+            LOGGER.error(msg)
 
 
     def timeout(self, msg_code):

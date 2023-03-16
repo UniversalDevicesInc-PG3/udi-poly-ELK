@@ -343,7 +343,7 @@ By default only a Zone node is created.  When you enable a Zone "Use Off Node" t
 
 #### Light Node
 
-The Lights configured on the ELK do not create Light nodes on the ISY.  In versions prior to 3.6.0 it did, but not anymore.
+The Lights configured on the ELK do not create Light nodes on the ISY.  In versions prior to 3.6.0 it did, but not anymore.  The ISY Light nodes should be deleted, but if they are not, then find them in the node server Nodes page and click the delete box to the right of the node.
 
 You can have the Elk Control existing ISY lights by configuring a Light in ElkRP whose name matches the name or address of an existing light on the ISY.  The "Configuration" page of the node server provides more information, and creates a table shpwing the status of the Elk to ISY light matches.
 
