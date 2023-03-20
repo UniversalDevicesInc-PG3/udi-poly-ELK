@@ -532,7 +532,6 @@ class Controller(Node):
                     # Add PyISY callback for when the node changes
                     node.status_events.subscribe(self.node_changed)
             self.pyisy.auto_update = True
-
         LOGGER.info("adding lights done")
         for n in range(Max.COUNTERS.value):
             LOGGER.debug(f"Check counter: {self.elk.counters[n]} is_default_name={self.elk.counters[n].is_default_name()}")
