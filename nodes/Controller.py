@@ -6,6 +6,7 @@ import asyncio
 import os
 import markdown2
 import re
+import pkg_resources
 from pyisy import constants as pyisy_constants
 from datetime import datetime
 from copy import deepcopy
@@ -190,12 +191,25 @@ class Controller(Node):
                     for key in changeset:
                         if key == 'status':
                             val = int(changeset[key])
+                            res = False
                             if val == 0:
-                                res = node.turn_off()
+                                if node.status == 0:
+                                    LOGGER.info(f'{self.lpfx} Node {node.address} already off')
+                                else:
+                                    LOGGER.info(f'{self.lpfx} Turning node {node.address} off')
+                                    res = node.turn_off()
                             elif val == 1:
-                                res = node.turn_on()
+                                if node.status == 0:
+                                    LOGGER.info(f'{self.lpfx} Turning node {node.address} on')
+                                    res = node.turn_on()
+                                else:
+                                    LOGGER.info(f'{self.lpfx} Node {node.address} already on')
                             else:
-                                res = node.turn_on(val)
+                                if node.status == val:
+                                    LOGGER.info(f'{self.lpfx} Node {node.address} already at {val}')
+                                else:
+                                    LOGGER.info(f'{self.lpfx} Setting {node.address} to {val}')
+                                    res = node.turn_on(val)
                             LOGGER.info(f'res={res}')
                 else:
                     LOGGER.error(f'{self.lpfx} Got unknown trigger light {element.index}')
@@ -230,7 +244,7 @@ class Controller(Node):
         LOGGER.info('%s node=%s' % (self.lpfx, node))
         # Set all the defaults
         # node.status will be 0-255
-        LOGGER.info('%s status=%s, changed to %s' % (self.lpfx, node['address'], node['status']));
+        LOGGER.info('%s ISY node %s changed to %s' % (self.lpfx, node['address'], node['status']));
         if node['status'] == pyisy_constants.ISY_VALUE_UNKNOWN:
             bri = 0
         else:
@@ -259,6 +273,8 @@ class Controller(Node):
         LOGGER.info(f'exit: level={level}')
 
     def init_isy(self):
+        pyisy_version = pkg_resources.get_distribution("pyisy").version
+        LOGGER.warning(f"pyisy_version={pyisy_version}")
         if self.isy is None:
             self.isy = ISY(self.poly)
             while not self.isy.valid:
@@ -458,22 +474,22 @@ class Controller(Node):
         self.set_st(5)
         # TODO: Add driver for sync complete status, or put in ST?
         LOGGER.info(f"{self.lpfx} adding areas...")
-#        for an in range(Max.AREAS.value):
-#            if an in self._area_nodes:
-#                LOGGER.info(
-#                    f"{self.lpfx} Skipping Area {an+1} because it already defined."
-#                )
-#            elif is_in_list(an+1, self.use_areas_list) is False:
-#                LOGGER.info(
-#                    f"{self.lpfx} Skipping Area {an+1} because it is not in areas range {self.use_areas} in configuration"
-#                )
-#            else:
-#                LOGGER.info(f"{self.lpfx} Adding Area {an}")
-#                address = f'area_{an + 1}'
-#                node = self.add_node(address,AreaNode(self, address, self.elk.areas[an]))
-#                if node is not None:
-#                    self._area_nodes[an] = node
-#        LOGGER.info("adding areas done, adding outputs...")
+        for an in range(Max.AREAS.value):
+            if an in self._area_nodes:
+                LOGGER.info(
+                    f"{self.lpfx} Skipping Area {an+1} because it already defined."
+                )
+            elif is_in_list(an+1, self.use_areas_list) is False:
+                LOGGER.info(
+                    f"{self.lpfx} Skipping Area {an+1} because it is not in areas range {self.use_areas} in configuration"
+                )
+            else:
+                LOGGER.info(f"{self.lpfx} Adding Area {an}")
+                address = f'area_{an + 1}'
+                node = self.add_node(address,AreaNode(self, address, self.elk.areas[an]))
+                if node is not None:
+                    self._area_nodes[an] = node
+        LOGGER.info("adding areas done, adding outputs...")
         # elkm1_lib uses zone numbers starting at zero.
         for n in range(Max.OUTPUTS.value):
             if n in self._output_nodes:
@@ -519,9 +535,9 @@ class Controller(Node):
                 if node is False or node.address.endswith('_'+default_address):
                     LOGGER.warning(f"{self.lpfx} No node address or name match for '{self.elk.lights[n].name}'")
                     self.lights_to_trigger[n] = None
-                    if node.address == default_address:
+                    if node.address.endswith('_'+default_address):
                         LOGGER.warning(f"{self.lpfx} Deleting previously added node for Light {n} name='{node.name}'")
-                        self.delNode(node.address)
+                        self.poly.delNode(node.address)
                 else:
                     LOGGER.info(
                         f"{self.lpfx} Adding ISY Sync Light {n+1} {self.elk.lights[n].name} {node.address} because it's an existing light in IoP that I will trigger"
@@ -531,7 +547,8 @@ class Controller(Node):
                     self.elk.lights[n].add_callback(self.callback)
                     # Add PyISY callback for when the node changes
                     node.status_events.subscribe(self.node_changed)
-            self.pyisy.auto_update = True
+        LOGGER.info(f'{self.lpfx} Enabling pyisy auto_update...')
+        self.pyisy.auto_update = True
         LOGGER.info("adding lights done")
         for n in range(Max.COUNTERS.value):
             LOGGER.debug(f"Check counter: {self.elk.counters[n]} is_default_name={self.elk.counters[n].is_default_name()}")

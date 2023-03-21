@@ -1,3 +1,4 @@
-udi_interface>=3.0.47
+udi_interface>=3.0.55
 elkm1_lib>=2.1.0,<2.2.0
 markdown2
+pyisy >= 2.1.4,< 3.0.0
