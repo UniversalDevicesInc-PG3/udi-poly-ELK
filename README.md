@@ -345,9 +345,9 @@ By default only a Zone node is created.  When you enable a Zone "Use Off Node" t
 
 The Lights configured on the ELK do not create Light nodes on the ISY.  In versions prior to 3.6.0 it did, but not anymore.  The ISY Light nodes should be deleted, but if they are not, then find them in the node server Nodes page and click the delete box to the right of the node.
 
-You can have the Elk Control existing ISY lights by configuring a Light in ElkRP whose name matches the name or address of an existing light on the ISY.  The "Configuration" page of the node server provides more information, and creates a table shpwing the status of the Elk to ISY light matches.
+You can the Elk Control existing ISY lights and ISY Light status reflected back to the Elk by configuring a Light in ElkRP whose name matches the name or address of an existing light on the ISY.  The "Configuration" page of the node server provides more information, and creates a table shpwing the status of the Elk to ISY light matches.
 
-This does not yet include support which the ISY had for [Support ELK Export](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/67).  Please comment on that issue if you would like it supported or discuss in the forum [Elk NS Lights question](https://forum.universal-devices.com/topic/40807-elk-ns-lights-question/)
+This does not include support which the ISY had for [Support ELK Export](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/67).  There is no easy way to define this in the Admin Console.  We could allow tagging a Light for Export using the "Notes" on an ISY node, and then allow passing back a file based on that.  The effort required for this doesn't seem worth it at this point. Please discss in the form [Elk NS Lights question](https://forum.universal-devices.com/topic/40807-elk-ns-lights-question/).
 
 #### Output Node
 
