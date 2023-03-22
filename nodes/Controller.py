@@ -597,10 +597,10 @@ class Controller(Node):
         if self.isy is not None and self.isy.valid:
             hstr = 'https' if self.isy._isy_https else 'http'
             self.config_info = [
-            '<h1>ELK To ISY Table</h1>',
+            '<h1>ELK To ISY Light Table</h1>',
             '<p>This table is refreshed after node server syncs with the elk, so it may be out of date for a few seconds</p>',
             '<p>If you want the ELK Lights to Control ISY Lights then add a Light in ElkRP2 whose name matches an existing ISY node name or address',
-            f'To see a list of all your node names and address click <a href="{hstr}://{self.isy._isy_ip}:{self.isy._isy_port}/rest/nodes">ISY Nodes</a></p>'
+            f'To see a list of all your node names and address click <a href="{hstr}://{self.isy._isy_ip}:{self.isy._isy_port}/rest/nodes" target="_blank">ISY Nodes</a></p>'
             '<table border=1>',
             '<tr><th colspan=2><center>ELK<th colspan=3><center>ISY</tr>',
             '<tr><th><center>Id<th><center>Name<th><center>Address<th><center>Name<th><center>Type</tr>']
