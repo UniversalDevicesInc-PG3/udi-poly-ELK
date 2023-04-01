@@ -290,11 +290,13 @@ class Controller(Node):
         #    LOGGER.debug(f"{self.lpfx} name={name} node={node}")
 
     def is_isy_node(self,value):
-        try:
-            ret = self.pyisy.nodes[value]
-        except: 
-            ret = False
-        LOGGER.debug(f'{self.lpfx} got={ret}')
+        ret = None
+        for (_, child) in self.pyisy.nodes:
+            ctype = type(child).__name__
+            if ctype != 'Folder' and child.name == value:
+                ret = child
+                LOGGER.debug(f'{self.lpfx} ctype={ctype} got={ret}')
+        LOGGER.info(f'{self.lpfx} for={value} got={ret}')
         return ret
 
     def set_st(self, st, force=False):
@@ -532,7 +534,7 @@ class Controller(Node):
             else:
                 default_address = f'light_{n + 1}'
                 node = self.is_isy_node(self.elk.lights[n].name)
-                if node is False or node.address.endswith('_'+default_address):
+                if node is None or node.address.endswith('_'+default_address):
                     LOGGER.warning(f"{self.lpfx} No node address or name match for '{self.elk.lights[n].name}'")
                     self.lights_to_trigger[n] = None
                     if node.address.endswith('_'+default_address):
