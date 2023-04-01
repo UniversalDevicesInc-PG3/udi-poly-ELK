@@ -430,7 +430,7 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
-- 3.6.2: 03/31/2023
+- 3.6.3: 03/31/2023
   - Fix bug causing crash if a ELK Light name matches a folder name
 - 3.6.0: 03/15/2023
   - Add support for ELK Lights see [Light Node](#light-node) above for more information.

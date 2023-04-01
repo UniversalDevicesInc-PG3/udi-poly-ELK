@@ -536,6 +536,7 @@ class Controller(Node):
                 default_address = f'light_{n + 1}'
                 node = self.is_isy_node(self.elk.lights[n].name)
                 if node is None:
+                    self.lights_to_trigger[n] = None
                     LOGGER.warning(f"{self.lpfx} No node address or name match for '{self.elk.lights[n].name}'")
                 elif node.address.endswith('_'+default_address):
                     self.lights_to_trigger[n] = None
