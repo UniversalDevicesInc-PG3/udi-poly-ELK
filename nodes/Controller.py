@@ -293,6 +293,7 @@ class Controller(Node):
         ret = None
         for (_, child) in self.pyisy.nodes:
             ctype = type(child).__name__
+            LOGGER.debug(f'{self.lpfx} ctype={ctype} check={child} name={child.name}')
             if ctype != 'Folder' and child.name == value:
                 ret = child
                 LOGGER.debug(f'{self.lpfx} ctype={ctype} got={ret}')
@@ -534,12 +535,12 @@ class Controller(Node):
             else:
                 default_address = f'light_{n + 1}'
                 node = self.is_isy_node(self.elk.lights[n].name)
-                if node is None or node.address.endswith('_'+default_address):
+                if node is None:
                     LOGGER.warning(f"{self.lpfx} No node address or name match for '{self.elk.lights[n].name}'")
+                elif node.address.endswith('_'+default_address):
                     self.lights_to_trigger[n] = None
-                    if node.address.endswith('_'+default_address):
-                        LOGGER.warning(f"{self.lpfx} Deleting previously added node for Light {n} name='{node.name}'")
-                        self.poly.delNode(node.address)
+                    LOGGER.warning(f"{self.lpfx} Deleting previously added node for Light {n} name='{node.name}'")
+                    self.poly.delNode(node.address)
                 else:
                     LOGGER.info(
                         f"{self.lpfx} Adding ISY Sync Light {n+1} {self.elk.lights[n].name} {node.address} because it's an existing light in IoP that I will trigger"
