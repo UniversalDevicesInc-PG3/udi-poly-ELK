@@ -273,31 +273,45 @@ class Controller(Node):
         LOGGER.info(f'exit: level={level}')
 
     def init_isy(self):
-        if self.isy is None:
-            pyisy_version = pkg_resources.get_distribution("pyisy").version
-            LOGGER.warning(f"pyisy_version={pyisy_version}")
-            self.isy = ISY(self.poly)
-            while not self.isy.valid:
-                LOGGER.info(f"{self.lpfx} Waiting for isy.valid... {self.isy.valid}")
-                time.sleep(2)
-            self.pyisy = self.isy.pyisy()
-        LOGGER.info(f"{self.lpfx} got isy={self.isy} pyisy={self.pyisy} pyisy.connected={self.pyisy.connected}")
-        if not self.pyisy.connected:
-            msg = 'Failed to connect to ISY see log file'
-            LOGGER.error(msg)
-            self.inc_error(msg)
-        #for name, node in self.pyisy.nodes:
-        #    LOGGER.debug(f"{self.lpfx} name={name} node={node}")
+        try:
+            if self.isy is None:
+                self.pyisy = None
+                pyisy_version = pkg_resources.get_distribution("pyisy").version
+                LOGGER.warning(f"pyisy_version={pyisy_version}")
+                self.isy = ISY(self.poly)
+                while not self.isy.valid:
+                    LOGGER.info(f"{self.lpfx} Waiting for isy.valid... {self.isy.valid}")
+                    time.sleep(2)
+            if self.isy is not None and self.pyisy is None:
+                self.pyisy = self.isy.pyisy()
+            LOGGER.info(f"{self.lpfx} got isy={self.isy} pyisy={self.pyisy} pyisy.connected={self.pyisy.connected}")
+            if self.pyisy.connected:
+                return True
+            else:
+                msg = 'Failed to connect to ISY see log file'
+                LOGGER.error(msg)
+                self.inc_error(msg)
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
+        return False
 
     def is_isy_node(self,value):
         ret = None
-        for (_, child) in self.pyisy.nodes:
-            ctype = type(child).__name__
-            LOGGER.debug(f'{self.lpfx} ctype={ctype} check={child} name={child.name}')
-            if ctype != 'Folder' and (child.name == value or child.address == value):
-                ret = child
-                LOGGER.debug(f'{self.lpfx} ctype={ctype} got={ret}')
-        LOGGER.info(f'{self.lpfx} for={value} got={ret}')
+        # Need the isy/pyisy object defined to check
+        if self.isy is None and not self.init_isy():
+            return ret
+        try:
+            for (_, child) in self.pyisy.nodes:
+                ctype = type(child).__name__
+                LOGGER.debug(f'{self.lpfx} ctype={ctype} check={child} name={child.name}')
+                if ctype != 'Folder' and (child.name == value or child.address == value):
+                    ret = child
+                    LOGGER.debug(f'{self.lpfx} ctype={ctype} got={ret}')
+            LOGGER.info(f'{self.lpfx} for={value} got={ret}')
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
         return ret
 
     def set_st(self, st, force=False):
@@ -510,49 +524,59 @@ class Controller(Node):
                 if node is not None:
                     self._output_nodes[n] = node
         LOGGER.info("adding outputs done")
-        # elkm1_lib uses zone numbers starting at zero.
-        for n in range(Max.LIGHTS.value):
-            LOGGER.debug(f"Check light: {self.elk.lights[n]} is_default_name={self.elk.lights[n].is_default_name()}")
-            if self.elk.lights[n].is_default_name():
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Light {n+1} because it set to default name"
-                )
-                continue
-            if n in self._light_nodes:
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Light {n+1} because it already defined."
-                )
-                continue
-            # Need the isy/pyisy object defined to check
-            self.init_isy()
-            if n+1 in self.lights_exported:
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Light {n+1} {self.elk.lights[n].name} because it's an exported light from IoP that I will trigger"
-                )
-                self.lights_to_trigger[n] = self.is_isy_node(self.lights_exported[n+1])
-                # Add callback to myself to handle an exported light.
-                self.elk.lights[n].add_callback(self.callback)
-            else:
-                default_address = f'light_{n + 1}'
-                node = self.is_isy_node(self.elk.lights[n].name)
-                if node is None:
-                    self.lights_to_trigger[n] = None
-                    LOGGER.warning(f"{self.lpfx} No node address or name match for '{self.elk.lights[n].name}'")
-                elif node.address.endswith('_'+default_address):
-                    self.lights_to_trigger[n] = None
-                    LOGGER.warning(f"{self.lpfx} Deleting previously added node for Light {n} name='{node.name}'")
-                    self.poly.delNode(node.address[5:])
-                else:
+        LOGGER.info("adding lights")
+        try:
+            # elkm1_lib uses zone numbers starting at zero.
+            need_pyisy = False
+            for n in range(Max.LIGHTS.value):
+                LOGGER.debug(f"Check light: {self.elk.lights[n]} is_default_name={self.elk.lights[n].is_default_name()}")
+                if self.elk.lights[n].is_default_name():
                     LOGGER.info(
-                        f"{self.lpfx} Adding ISY Sync Light {n+1} {self.elk.lights[n].name} {node.address} because it's an existing light in IoP that I will trigger"
+                        f"{self.lpfx} Skipping Light {n+1} because it set to default name"
                     )
-                    self.lights_to_trigger[n] = node
-                    # Add ELK callback to myself to handle an exported light.
+                    continue
+                if n in self._light_nodes:
+                    LOGGER.info(
+                        f"{self.lpfx} Skipping Light {n+1} because it already defined."
+                    )
+                    continue
+                if n+1 in self.lights_exported:
+                    LOGGER.info(
+                        f"{self.lpfx} Skipping Light {n+1} {self.elk.lights[n].name} because it's an exported light from IoP that I will trigger"
+                    )
+                    self.lights_to_trigger[n] = self.is_isy_node(self.lights_exported[n+1])
+                    # Add callback to myself to handle an exported light.
                     self.elk.lights[n].add_callback(self.callback)
-                    # Add PyISY callback for when the node changes
-                    node.status_events.subscribe(self.node_changed)
-        LOGGER.info(f'{self.lpfx} Enabling pyisy auto_update...')
-        self.pyisy.auto_update = True
+                else:
+                    default_address = f'light_{n + 1}'
+                    node = self.is_isy_node(self.elk.lights[n].name)
+                    if node is None:
+                        self.lights_to_trigger[n] = None
+                        LOGGER.warning(f"{self.lpfx} No node address or name match for '{self.elk.lights[n].name}'")
+                    elif node.address.endswith('_'+default_address):
+                        self.lights_to_trigger[n] = None
+                        LOGGER.warning(f"{self.lpfx} Deleting previously added node for Light {n} name='{node.name}'")
+                        self.poly.delNode(node.address[5:])
+                    else:
+                        need_pyisy = True
+                        LOGGER.info(
+                            f"{self.lpfx} Adding ISY Sync Light {n+1} {self.elk.lights[n].name} {node.address} because it's an existing light in IoP that I will trigger"
+                        )
+                        self.lights_to_trigger[n] = node
+                        # Add ELK callback to myself to handle an exported light.
+                        self.elk.lights[n].add_callback(self.callback)
+                        # Add PyISY callback for when the node changes
+                        node.status_events.subscribe(self.node_changed)
+            if self.isy is not None:
+                if need_pyisy:
+                    LOGGER.info(f'{self.lpfx} Enabling pyisy auto_update...')
+                    self.pyisy.auto_update = True
+                else:
+                    LOGGER.info(f'{self.lpfx} No ELK<->ISY Nodes, shuting down PyISY')
+                    self.pyisy = None
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
         LOGGER.info("adding lights done")
         for n in range(Max.COUNTERS.value):
             LOGGER.debug(f"Check counter: {self.elk.counters[n]} is_default_name={self.elk.counters[n].is_default_name()}")
