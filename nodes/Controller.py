@@ -273,9 +273,9 @@ class Controller(Node):
         LOGGER.info(f'exit: level={level}')
 
     def init_isy(self):
-        pyisy_version = pkg_resources.get_distribution("pyisy").version
-        LOGGER.warning(f"pyisy_version={pyisy_version}")
         if self.isy is None:
+            pyisy_version = pkg_resources.get_distribution("pyisy").version
+            LOGGER.warning(f"pyisy_version={pyisy_version}")
             self.isy = ISY(self.poly)
             while not self.isy.valid:
                 LOGGER.info(f"{self.lpfx} Waiting for isy.valid... {self.isy.valid}")
