@@ -430,6 +430,10 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.6.5: 04/01/2023
+  - Fix crash if no Elk lights are defined
+  - Add many traps to catch future errors in Light code
+  - Shutdown PyISY if no Elk<->Lights defined
 - 3.6.4: 03/31/2023
   - Fix bug causing crash if a ELK Light name matches a folder name
 - 3.6.0: 03/15/2023
