@@ -5,6 +5,7 @@ ND-controller-ICON = GenericCtl
 CMD-ctl-QUERY-NAME = Query
 CMD-ctl-QUERY_ALL-NAME = Query All
 CMD-ctl-DISCOVER-NAME = Re-Discover
+CMD-ctl-EXPORT-NAME = Export
 CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
 CMD-ctl-SPEAK_WORD-NAME = Speak Word
 CMD-ctl-SPEAK_PHRASE-NAME = Speak Phrase

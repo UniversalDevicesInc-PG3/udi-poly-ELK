@@ -39,7 +39,6 @@ class Controller(Node):
         self._area_nodes = {}
         self._output_nodes = {}
         self._keypad_nodes = {}
-        self._light_nodes = {}
         self._counter_nodes = {}
         self._task_nodes = {}
         self.system_trouble_save = {}
@@ -80,6 +79,18 @@ class Controller(Node):
         self.n_queue.append(data['address'])
         # Start up ELK connection when controller node is all done being added.
         if (data['address'] == self.address):
+            LOGGER.info(f'{self.lpfx} Checking for old ndoes to remove...')
+            try:
+                # Check for our old nodes to remove
+                for i in range(1,256):
+                    address = f'light_{i}'
+                    node = self.poly.getNodeNameFromDb(address)
+                    if node is not None:
+                        LOGGER.warning(f"{self.lpfx} Deleting previously added node for Light address='{address}' {node}")
+                        self.poly.delNode(address)
+            except Exception as ex:
+                LOGGER.error(f'{self.lpfx}',exc_info=True)
+                self.inc_error(f"{self.lpfx} {ex}")
             LOGGER.info(f'{self.lpfx} Calling elk_start')
             self.elk_start()
 
@@ -114,11 +125,6 @@ class Controller(Node):
         LOGGER.debug(f'{self.lpfx} enter')
         self.poly.addLogLevel('DEBUG_MODULES',9,'Debug + Modules')
         self.handler_config_done_st = True
-        # Example of exported lights
-        self.lights_exported = {
-            #17: "n004_68ff7b0554c0",
-            #18: "n004_d807b6e69428"
-        }
         LOGGER.debug(f'{self.lpfx} exit')
 
     def heartbeat(self):
@@ -186,33 +192,45 @@ class Controller(Node):
             # Is it an exported light?
             if isinstance(element,Light):
                 LOGGER.info(f'{self.lpfx} Got light: element={element} cs={changeset}')
-                if element.index in self.lights_to_trigger:
-                    node = self.lights_to_trigger[element.index]
-                    for key in changeset:
-                        if key == 'status':
-                            val = int(changeset[key])
-                            res = False
-                            if val == 0:
-                                if node.status == 0:
-                                    LOGGER.info(f'{self.lpfx} Node {node.address} already off')
-                                else:
-                                    LOGGER.info(f'{self.lpfx} Turning node {node.address} off')
-                                    res = node.turn_off()
-                            elif val == 1:
-                                if node.status == 0:
-                                    LOGGER.info(f'{self.lpfx} Turning node {node.address} on')
-                                    res = node.turn_on()
-                                else:
-                                    LOGGER.info(f'{self.lpfx} Node {node.address} already on')
-                            else:
-                                if node.status == val:
-                                    LOGGER.info(f'{self.lpfx} Node {node.address} already at {val}')
-                                else:
-                                    LOGGER.info(f'{self.lpfx} Setting {node.address} to {val}')
-                                    res = node.turn_on(val)
-                            LOGGER.info(f'res={res}')
+                id = element.index + 1
+                if id in self.lights_to_trigger:
+                    address = self.lights_to_trigger[id]
+                    if address is None:
+                        msg = f"Trigger {id} is {self.lights_to_trigger[id]}"
+                        LOGGER.error(f'{self.lpfx}: {msg}')
+                        self.inc_error(f"{msg}")
+                    else:
+                        node = self.pyisy.nodes.get_by_id(address)
+                        if node is None:
+                            msg = f"No ISY device with address={address} got={node}"
+                            LOGGER.error(f'{self.lpfx}: {msg}')
+                            self.inc_error(f"{msg}")
+                        else:
+                            for key in changeset:
+                                if key == 'status':
+                                    val = int(changeset[key])
+                                    res = False
+                                    if val == 0:
+                                        if node.status == 0:
+                                            LOGGER.info(f'{self.lpfx} Node {node.address} already off')
+                                        else:
+                                            LOGGER.info(f'{self.lpfx} Turning node {node.address} off')
+                                            res = node.turn_off()
+                                    elif val == 1:
+                                        if node.status == 0:
+                                            LOGGER.info(f'{self.lpfx} Turning node {node.address} on')
+                                            res = node.turn_on()
+                                        else:
+                                            LOGGER.info(f'{self.lpfx} Node {node.address} already on')
+                                    else:
+                                        if node.status == val:
+                                            LOGGER.info(f'{self.lpfx} Node {node.address} already at {val}')
+                                        else:
+                                            LOGGER.info(f'{self.lpfx} Setting {node.address} to {val}')
+                                            res = node.turn_on(val)
+                                    LOGGER.info(f'res={res}')
                 else:
-                    LOGGER.error(f'{self.lpfx} Got unknown trigger light {element.index}')
+                    LOGGER.error(f'{self.lpfx} Got unknown trigger light {id}: {self.lights_to_trigger}')
             else:
                 # cs={'elkm1_version': '5.3.10', 'xep_version': '2.0.44'}
                 #cs={'user_code_length': 4, 'temperature_units': 'F'}
@@ -252,7 +270,7 @@ class Controller(Node):
         # Get the node from the list
         light = None
         for n in self.lights_to_trigger:
-            if self.lights_to_trigger[n] is not None and self.lights_to_trigger[n].address == node['address']:
+            if self.lights_to_trigger[n] is not None and self.lights_to_trigger[n] == node['address']:
                 if self.elk.lights[n].status == bri:
                     LOGGER.debug('%s Elk light already at %s' % (self.lpfx, bri))
                 else:
@@ -304,7 +322,7 @@ class Controller(Node):
         try:
             for (_, child) in self.pyisy.nodes:
                 ctype = type(child).__name__
-                LOGGER.debug(f'{self.lpfx} ctype={ctype} check={child} name={child.name}')
+                #LOGGER.debug(f'{self.lpfx} ctype={ctype} check={child} name={child.name}')
                 if ctype != 'Folder' and (child.name == value or child.address == value):
                     ret = child
                     LOGGER.debug(f'{self.lpfx} ctype={ctype} got={ret}')
@@ -486,143 +504,132 @@ class Controller(Node):
 
     def sync_complete(self):
         LOGGER.info(f"{self.lpfx} Sync of panel is complete...")
-        LOGGER.info(f"{self.lpfx} Connecting to ISY...")
-        # Ferce this again to make sure because when node starts up the first connected set_st may get overridden :(
-        self.set_st(5)
-        # TODO: Add driver for sync complete status, or put in ST?
-        LOGGER.info(f"{self.lpfx} adding areas...")
-        for an in range(Max.AREAS.value):
-            if an in self._area_nodes:
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Area {an+1} because it already defined."
-                )
-            elif is_in_list(an+1, self.use_areas_list) is False:
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Area {an+1} because it is not in areas range {self.use_areas} in configuration"
-                )
-            else:
-                LOGGER.info(f"{self.lpfx} Adding Area {an}")
-                address = f'area_{an + 1}'
-                node = self.add_node(address,AreaNode(self, address, self.elk.areas[an]))
-                if node is not None:
-                    self._area_nodes[an] = node
-        LOGGER.info("adding areas done, adding outputs...")
-        # elkm1_lib uses zone numbers starting at zero.
-        for n in range(Max.OUTPUTS.value):
-            if n in self._output_nodes:
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Output {n+1} because it already defined."
-                )
-            elif is_in_list(n+1, self.use_outputs_list) is False:
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Output {n+1} because it is not in outputs range {self.use_outputs} in configuration"
-                )
-            else:
-                LOGGER.info(f"{self.lpfx} Adding Output {n}")
-                address = f'output_{n + 1}'
-                node = self.add_node(address,OutputNode(self, address, self.elk.outputs[n]))
-                if node is not None:
-                    self._output_nodes[n] = node
-        LOGGER.info("adding outputs done")
-        LOGGER.info("adding lights")
-        try:
-            # elkm1_lib uses zone numbers starting at zero.
-            need_pyisy = False
-            for n in range(Max.LIGHTS.value):
-                LOGGER.debug(f"Check light: {self.elk.lights[n]} is_default_name={self.elk.lights[n].is_default_name()}")
-                if self.elk.lights[n].is_default_name():
+        if (True):  # Used when debugging
+            # Ferce this again to make sure because when node starts up the first connected set_st may get overridden :(
+            self.set_st(5)
+            # TODO: Add driver for sync complete status, or put in ST?
+            LOGGER.info(f"{self.lpfx} adding areas...")
+            for an in range(Max.AREAS.value):
+                if an in self._area_nodes:
                     LOGGER.info(
-                        f"{self.lpfx} Skipping Light {n+1} because it set to default name"
+                        f"{self.lpfx} Skipping Area {an+1} because it already defined."
                     )
-                    continue
-                if n in self._light_nodes:
+                elif is_in_list(an+1, self.use_areas_list) is False:
                     LOGGER.info(
-                        f"{self.lpfx} Skipping Light {n+1} because it already defined."
+                        f"{self.lpfx} Skipping Area {an+1} because it is not in areas range {self.use_areas} in configuration"
                     )
-                    continue
-                if n+1 in self.lights_exported:
-                    LOGGER.info(
-                        f"{self.lpfx} Skipping Light {n+1} {self.elk.lights[n].name} because it's an exported light from IoP that I will trigger"
-                    )
-                    self.lights_to_trigger[n] = self.is_isy_node(self.lights_exported[n+1])
-                    # Add callback to myself to handle an exported light.
-                    self.elk.lights[n].add_callback(self.callback)
                 else:
-                    default_address = f'light_{n + 1}'
-                    node = self.is_isy_node(self.elk.lights[n].name)
-                    if node is None:
-                        self.lights_to_trigger[n] = None
-                        LOGGER.warning(f"{self.lpfx} No node address or name match for '{self.elk.lights[n].name}'")
-                    elif node.address.endswith('_'+default_address):
-                        self.lights_to_trigger[n] = None
-                        LOGGER.warning(f"{self.lpfx} Deleting previously added node for Light {n} name='{node.name}'")
-                        self.poly.delNode(node.address[5:])
-                    else:
+                    LOGGER.info(f"{self.lpfx} Adding Area {an}")
+                    address = f'area_{an + 1}'
+                    node = self.add_node(address,AreaNode(self, address, self.elk.areas[an]))
+                    if node is not None:
+                        self._area_nodes[an] = node
+            LOGGER.info("adding areas done, adding outputs...")
+            # elkm1_lib uses zone numbers starting at zero.
+            for n in range(Max.OUTPUTS.value):
+                if n in self._output_nodes:
+                    LOGGER.info(
+                        f"{self.lpfx} Skipping Output {n+1} because it already defined."
+                    )
+                elif is_in_list(n+1, self.use_outputs_list) is False:
+                    LOGGER.info(
+                        f"{self.lpfx} Skipping Output {n+1} because it is not in outputs range {self.use_outputs} in configuration"
+                    )
+                else:
+                    LOGGER.info(f"{self.lpfx} Adding Output {n}")
+                    address = f'output_{n + 1}'
+                    node = self.add_node(address,OutputNode(self, address, self.elk.outputs[n]))
+                    if node is not None:
+                        self._output_nodes[n] = node
+            LOGGER.info("adding outputs done")
+            LOGGER.info("adding lights")
+            try:
+                # elkm1_lib uses zone numbers starting at zero.
+                need_pyisy = False
+                for n in range(Max.LIGHTS.value):
+                    LOGGER.debug(f"Check light: {self.elk.lights[n]} is_default_name={self.elk.lights[n].is_default_name()}")
+                    if self.elk.lights[n].is_default_name():
+                        LOGGER.info(
+                            f"{self.lpfx} Skipping Light {n+1} because it set to default name"
+                        )
+                        continue
+                    if n+1 in self.lights_exported:
                         need_pyisy = True
                         LOGGER.info(
-                            f"{self.lpfx} Adding ISY Sync Light {n+1} {self.elk.lights[n].name} {node.address} because it's an existing light in IoP that I will trigger"
+                            f"{self.lpfx} Skipping Light {n+1} {self.elk.lights[n].name} because it's an exported light from IoP that I will trigger"
                         )
-                        self.lights_to_trigger[n] = node
-                        # Add ELK callback to myself to handle an exported light.
-                        self.elk.lights[n].add_callback(self.callback)
-                        # Add PyISY callback for when the node changes
-                        node.status_events.subscribe(self.node_changed)
-            if self.isy is not None:
-                if need_pyisy:
-                    LOGGER.info(f'{self.lpfx} Enabling pyisy auto_update...')
-                    self.pyisy.auto_update = True
+                    else:
+                        if self.Params['check_elk_lights'] == "true":
+                            node = self.is_isy_node(self.elk.lights[n].name)
+                            if node is None:
+                                self.lights_to_trigger[n] = None
+                                LOGGER.warning(f"{self.lpfx} No node address or name match for '{self.elk.lights[n].name}'")
+                            else:
+                                need_pyisy = True
+                                LOGGER.info(
+                                    f"{self.lpfx} Adding ISY Sync Light {n+1} {self.elk.lights[n].name} {node.address} because it's an existing light in IoP that I will trigger"
+                                )
+                                self.lights_to_trigger[n] = node.address
+                                # Add ELK callback to myself to handle an exported light.
+                                self.elk.lights[n].add_callback(self.callback)
+                                # Add PyISY callback for when the node changes
+                                node.status_events.subscribe(self.node_changed)
+                if self.isy is not None:
+                    if need_pyisy:
+                        LOGGER.info(f'{self.lpfx} Enabling pyisy auto_update...')
+                        self.pyisy.auto_update = True
+                    else:
+                        LOGGER.info(f'{self.lpfx} No ELK<->ISY Nodes, shuting down PyISY')
+                        #self.pyisy = None
+            except Exception as ex:
+                LOGGER.error(f'{self.lpfx}',exc_info=True)
+                self.inc_error(f"{self.lpfx} {ex}")
+            LOGGER.info("adding lights done")
+            for n in range(Max.COUNTERS.value):
+                LOGGER.debug(f"Check counter: {self.elk.counters[n]} is_default_name={self.elk.counters[n].is_default_name()}")
+                if n in self._counter_nodes:
+                    LOGGER.info(
+                        f"{self.lpfx} Skipping Counter {n+1} because it already defined."
+                    )
+                elif self.elk.counters[n].is_default_name():
+                    LOGGER.info(
+                        f"{self.lpfx} Skipping Counter {n+1} because it set to default name"
+                    )
                 else:
-                    LOGGER.info(f'{self.lpfx} No ELK<->ISY Nodes, shuting down PyISY')
-                    self.pyisy = None
-        except Exception as ex:
-            LOGGER.error(f'{self.lpfx}',exc_info=True)
-            self.inc_error(f"{self.lpfx} {ex}")
-        LOGGER.info("adding lights done")
-        for n in range(Max.COUNTERS.value):
-            LOGGER.debug(f"Check counter: {self.elk.counters[n]} is_default_name={self.elk.counters[n].is_default_name()}")
-            if n in self._counter_nodes:
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Counter {n+1} because it already defined."
-                )
-            elif self.elk.counters[n].is_default_name():
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Counter {n+1} because it set to default name"
-                )
-            else:
-                LOGGER.info(f"{self.lpfx} Adding Counter {n}")
-                address = f'counter_{n + 1}'
-                node = self.add_node(address,CounterNode(self, address, self.elk.counters[n]))
-                if node is not None:
-                    self._output_nodes[n] = node
-        LOGGER.info("adding counters done")
-        for n in range(Max.TASKS.value):
-            LOGGER.debug(f"Check task: {self.elk.tasks[n]} is_default_name={self.elk.tasks[n].is_default_name()}")
-            if n in self._task_nodes:
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Task {n+1} because it already defined."
-                )
-            elif self.elk.tasks[n].is_default_name():
-                LOGGER.info(
-                    f"{self.lpfx} Skipping Task {n+1} because it set to default name"
-                )
-            else:
-                LOGGER.info(f"{self.lpfx} Adding Task {n}")
-                address = f'task_{n + 1}'
-                node = self.add_node(address,TaskNode(self, address, self.elk.tasks[n]))
-                if node is not None:
-                    self._output_nodes[n] = node
-        LOGGER.info("adding tasks done")
-        # Only update profile on restart
-        if not self.profile_done:
-            self.write_profile()
-            self.profile_done = True
-        LOGGER.warning(f'{self.lpfx} All nodes added, ready to go...')
+                    LOGGER.info(f"{self.lpfx} Adding Counter {n}")
+                    address = f'counter_{n + 1}'
+                    node = self.add_node(address,CounterNode(self, address, self.elk.counters[n]))
+                    if node is not None:
+                        self._output_nodes[n] = node
+            LOGGER.info("adding counters done")
+            for n in range(Max.TASKS.value):
+                LOGGER.debug(f"Check task: {self.elk.tasks[n]} is_default_name={self.elk.tasks[n].is_default_name()}")
+                if n in self._task_nodes:
+                    LOGGER.info(
+                        f"{self.lpfx} Skipping Task {n+1} because it already defined."
+                    )
+                elif self.elk.tasks[n].is_default_name():
+                    LOGGER.info(
+                        f"{self.lpfx} Skipping Task {n+1} because it set to default name"
+                    )
+                else:
+                    LOGGER.info(f"{self.lpfx} Adding Task {n}")
+                    address = f'task_{n + 1}'
+                    node = self.add_node(address,TaskNode(self, address, self.elk.tasks[n]))
+                    if node is not None:
+                        self._output_nodes[n] = node
+            LOGGER.info("adding tasks done")
+            # Only update profile on restart
+            if not self.profile_done:
+                self.write_profile()
+                self.profile_done = True
+            LOGGER.warning(f'{self.lpfx} All nodes added, ready to go...')
         self.ready = True
         self.update_config_docs()
 
     def update_config_docs(self):
         # '<style> table { cellpadding: 10px } </style>'
-        if self.isy is not None and self.isy.valid:
+        if self.init_isy():
             hstr = 'https' if self.isy._isy_https else 'http'
             self.config_info = [
             '<h1>ELK To ISY Light Table</h1>',
@@ -633,7 +640,7 @@ class Controller(Node):
             '<tr><th colspan=2><center>ELK<th colspan=3><center>ISY</tr>',
             '<tr><th><center>Id<th><center>Name<th><center>Address<th><center>Name<th><center>Type</tr>']
             for n in self.lights_to_trigger:
-                node = self.lights_to_trigger[n]
+                node = self.pyisy.nodes[self.lights_to_trigger[n]]
                 self.config_info.append(f'<tr><td>&nbsp;{n+1}&nbsp;<td>{self.elk.lights[n].name}')
                 if node is None:
                     self.config_info.append('<td>&nbsp;None&nbsp;<td>&nbsp;None&nbsp;<td>&nbsp;&nbsp;')
@@ -729,6 +736,42 @@ class Controller(Node):
         self.elk.run()
         return elk
 
+    def export(self):
+        LOGGER.info(f"{self.lpfx} start")
+        # Need the isy/pyisy object defined to check
+        if self.isy is None and not self.init_isy():
+            return False
+        for (_, node) in self.pyisy.nodes:
+            if node.description is not None:
+                LOGGER.debug(f"{self.lpfx} check {node.name} description={node.description}")
+                n = re.sub(r'ELKID=([0-9]+)',r'\1',node.description,flags=re.IGNORECASE).strip()
+                LOGGER.debug(f"{self.lpfx} got {n}")
+                self.lights_exported[int(n)] = node.address
+        self.export_process()
+        LOGGER.info(f"{self.lpfx} done")
+    
+    def export_process(self):
+        LOGGER.info(f"{self.lpfx} Processing exports")
+        self.update_config_docs()
+        # Need the isy/pyisy object defined to check
+        if self.isy is None and not self.init_isy():
+            return False
+        for n in self.lights_exported:
+            if self.pyisy.nodes.get_by_id(self.lights_exported[n]) is None:
+                msg = f"ELKID={n} address={self.lights_exported[n]} not found in ISY?"
+                LOGGER.error(f'{self.lpfx} {msg}')
+                self.inc_error(msg)
+                LOGGER.error(self.pyisy.nodes[self.lights_exported[n]])
+            else:
+                LOGGER.info(f"{self.lpfx} Adding ELKID={n} address={self.lights_exported[n]}")
+                node = self.pyisy.nodes[self.lights_exported[n]]
+                self.lights_to_trigger[n] = node.address
+                # Add callback to myself to handle an exported light.
+                self.elk.lights[int(n)-1].add_callback(self.callback)
+                # Add PyISY callback for when the node changes
+                node.status_events.subscribe(self.node_changed)
+        LOGGER.info(f"{self.lpfx} Processing exports done")
+
     def discover(self):
         # TODO: What to do here, kill and restart the thread?
         LOGGER.error(f"{self.lpfx} discover currently does nothing")
@@ -793,13 +836,20 @@ class Controller(Node):
             "user_code": "",
             "areas": "1",
             "outputs": "",
-            "change_node_names": "false"
+            "change_node_names": "false",
+            "check_elk_lights": "false"
         }
         for param in defaults:
             if not param in params:
                 self.Params[param] = defaults[param]
                 return
         self.check_params()
+        # Example of exported lights
+        self.lights_exported = {
+            #17: "n004_68ff7b0554c0",
+            #18: "n004_d807b6e69428"
+        }
+        self.export_process()
         if self.handler_config_done_st is True:
             self.elk_restart()
     
@@ -1002,6 +1052,14 @@ class Controller(Node):
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
 
+    def cmd_export(self, command):
+        try:
+            LOGGER.info(f"{self.lpfx}")
+            return self.export()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
+
     def cmd_speak_word(self, command):
         try:
             val = int(command.get('value'))
@@ -1036,6 +1094,7 @@ class Controller(Node):
         "QUERY": query,
         "QUERY_ALL": cmd_query_all,
         "DISCOVER": cmd_discover,
+        "EXPORT": cmd_export,
         "UPDATE_PROFILE": cmd_update_profile,
         "SPEAK_WORD": cmd_speak_word,
         "SPEAK_PHRASE": cmd_speak_phrase,
