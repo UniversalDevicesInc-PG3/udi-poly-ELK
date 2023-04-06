@@ -15,6 +15,9 @@ from node_funcs import *
 from nodes import AreaNode,OutputNode,LightNode,CounterNode,TaskNode
 from udi_interface import Node,LOGGER,Custom,LOG_HANDLER,ISY
 from const import SPEAK_WORDS,SPEAK_PHRASES,SYSTEM_TROUBLE_STATUS
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib import parse
+from urllib.parse import parse_qsl,urlparse
 
 # sys.path.insert(0, "../elkm1")
 from elkm1_lib import Elk
@@ -23,6 +26,47 @@ from elkm1_lib.const import (
     Max,
     ZoneType
 )
+
+class MyServer(BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        try:
+            file = 'server.json'
+            parsed_path = urlparse(self.path)
+            query = dict(parse_qsl(parsed_path.query))
+            LOGGER.debug(f"REST: Got path={parsed_path} query={query}")
+            if parsed_path.path == '/export':
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/plain')
+                self.send_header('Content-Disposition', 'attachment;'
+                                f'filename={file}')
+                self.end_headers()
+                with open(file, 'rb') as file: 
+                    self.wfile.write(file.read()) # Read the file and send the contents
+                return True
+            else:
+                code = 500
+                message = f"Unknown command {parsed_path.path}\r\n"
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            code = 500
+            message = f"Internal error {ex}\r\n"
+        self.send_response(code)
+        self.send_header('Content-Type',
+                        'text/plain; charset=utf-8')
+        self.end_headers()
+        self.wfile.write(message.encode('utf-8'))
+        return False
+
+    def log_message(self, fmt, *args):
+        # Stop log messages going to stdout
+        if args[1] == "200":
+            LOGGER.debug(fmt % args)
+        else:
+            # TODO: Pass a receive error to the parent.
+            LOGGER.error(fmt % args)
+            LOGGER.error(f'code="{args[1]}"')
+
 class Controller(Node):
     def __init__(self, poly, primary, address, name):
         self.ready = False
@@ -34,6 +78,7 @@ class Controller(Node):
         self.elk_thread = None
         self.config_st = None
         self.profile_done = False
+        self.rest = None
         self.errors = 0
         self.n_queue = []
         self._area_nodes = {}
@@ -62,9 +107,9 @@ class Controller(Node):
         poly.subscribe(poly.LOGLEVEL,          self.handler_log_level)
         poly.subscribe(poly.CONFIGDONE,        self.handler_config_done)
         poly.subscribe(poly.DISCOVER,          self.discover)
-        poly.subscribe(poly.STOP,              self.stop)
         poly.subscribe(poly.CONFIG,            self.handler_config)
         poly.subscribe(poly.ADDNODEDONE,       self.node_queue)
+        poly.subscribe(poly.STOP,              self.handler_stop)
         #poly.subscribe(poly.ADDNODEDONE,       self.handler_add_node_done)
         poly.ready()
         poly.addNode(self, conn_status='ST')
@@ -93,6 +138,11 @@ class Controller(Node):
                 self.inc_error(f"{self.lpfx} {ex}")
             LOGGER.info(f'{self.lpfx} Calling elk_start')
             self.elk_start()
+            try:
+                self.start_rest_server()
+            except Exception as ex:
+                LOGGER.error(f'{self.lpfx}',exc_info=True)
+                self.inc_error(f"{self.lpfx} {ex}")
 
 
     def wait_for_node_done(self):
@@ -184,6 +234,10 @@ class Controller(Node):
         self.heartbeat()
         self.check_connection()
         LOGGER.debug('done')
+
+    # Start our REST server session
+    def get_session(self):
+        self.session = pgSession(self,self.name,LOGGER)
 
     # This is the callback for the panel
     def callback(self, element, changeset):
@@ -784,7 +838,45 @@ class Controller(Node):
         LOGGER.info(
             f"{self.lpfx} Oh no I am being deleted. Nooooooooooooooooooooooooooooooooooooooooo."
         )
+        self.rest_stop()
+        self.elk_stop()
 
+    def handler_stop(self):
+        LOGGER.debug('NodeServer stopping.')
+        self.rest_stop()
+        self.elk_stop()
+        LOGGER.debug('NodeServer stopped.')
+        self.poly.stop()
+
+    def rest_stop(self):
+        if self.rest is not None:
+            LOGGER.info("REST:stop: Shutdoing down and closing")
+            self.rest.shutdown()
+            self.rest.server_close()
+
+    def start_rest_server(self):
+        msg = False
+        if self.rest is None:
+            try:
+                ni = self.poly.getNetworkInterface()
+                LOGGER.info(f"Starting REST Server on {ni['addr']}...")
+                self.rest = HTTPServer((ni['addr'], 0), MyServer)
+                self.url     = 'http://{0}:{1}'.format(self.rest.server_address[0],self.rest.server_address[1])
+                LOGGER.info(f"{self.lpfx} REST Server running on: {self.url}")
+                # Just keep serving until we are killed
+                self.rest_thread  = Thread(target=self.rest.serve_forever)
+                # Need this so the thread will die when the main process dies
+                self.rest_thread.daemon = True
+                self.rest_thread.start()
+            except Exception as ex:
+                LOGGER.error(f'{self.lpfx}',exc_info=True)
+                msg = f"REST Server not started check log for error {ex}"
+        else:
+            msg = f"REST Sever already running ({self.rest})"
+        if msg is not False:
+            LOGGER.error(msg)
+            self.inc_error(msg)
+                
     def elk_stop(self):
         LOGGER.info(f'elk={self.elk} thread={self.elk_thread}')
         if self.elk is not None:
@@ -808,12 +900,6 @@ class Controller(Node):
         if (self.elk_stop):
             self.elk_start()
         LOGGER.info(f"{self.lpfx} exit")
-
-    def stop(self):
-        LOGGER.warning(f"{self.lpfx} NodeServer stopping...")
-        self.elk_stop()
-        self.poly.stop()
-        LOGGER.warning(f"{self.lpfx} NodeServer stopping complete...")
 
     def wm(self,key,msg):
         LOGGER.warning(msg)
