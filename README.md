@@ -343,11 +343,9 @@ By default only a Zone node is created.  When you enable a Zone "Use Off Node" t
 
 #### Light Node
 
-The Lights configured on the ELK do not create Light nodes on the ISY.  In versions prior to 3.6.0 it did, but not anymore.  The ISY Light nodes should be deleted, but if they are not, then find them in the node server Nodes page and click the delete box to the right of the node.
+The Lights configured on the ELK do not create Light nodes on the ISY.  In versions prior to 3.6.0 it did, but not anymore.  The ISY Light nodes should be deleted, but if they are not then find them in the node server Nodes page and click the delete box to the right of the node.
 
-You can have the Elk Control existing ISY lights and the ISY Light status reflected back to he Elk by configuring a Light in ElkRP whose name matches the name or address of an existing light on the ISY.  The "Configuration" page of the node server provides more information, and creates a table shpwing the status of the Elk to ISY light matches.  To see a list of all your nodes and their address the node server creates a link on the configuration page "ISY Nodes" that you can click on to see the XML from your ISY.
-
-This does not include support which the ISY had for [Support ELK Export](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/67).  There is no easy way to define this in the Admin Console.  We could allow tagging a Light for Export using the "Notes" on an ISY node, and then allow passing back a file based on that.  The effort required for this doesn't seem worth it at this point. Please discss in the form [Elk NS Lights question](https://forum.universal-devices.com/topic/40807-elk-ns-lights-question/).
+You can have the Elk Control existing ISY lights and the ISY Light status reflected back to he Elk.  The [Configuration Doc](configdoc.md) which is also on the conformat page of the node server provides more information. The configuration page also has a table shpwing the status of the Elk to ISY light matches.  To see a list of all your nodes and their address the node server creates a link on the configuration page "ISY Nodes" that you can click on to see the XML from your ISY.  If using expport there is also a link to download the export file.
 
 #### Output Node
 
@@ -430,6 +428,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.7.0: 04/07/2023
+  - Added Export ability for [Support Elk Export](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/67)
 - 3.6.5: 04/01/2023
   - Fix crash if no Elk lights are defined
   - Add many traps to catch future errors in Light code
