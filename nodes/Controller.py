@@ -27,11 +27,14 @@ from elkm1_lib.const import (
     ZoneType
 )
 
+persist_dir = "persist"
+export_base = "export.xml"
+export_file = persist_dir + "/" + export_base
+
 class MyServer(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
-            file = 'server.json'
             parsed_path = urlparse(self.path)
             query = dict(parse_qsl(parsed_path.query))
             LOGGER.debug(f"REST: Got path={parsed_path} query={query}")
@@ -39,9 +42,9 @@ class MyServer(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/plain')
                 self.send_header('Content-Disposition', 'attachment;'
-                                f'filename={file}')
+                                f'filename={export_file}')
                 self.end_headers()
-                with open(file, 'rb') as file: 
+                with open(export_base, 'rb') as file: 
                     self.wfile.write(file.read()) # Read the file and send the contents
                 return True
             else:
@@ -607,34 +610,27 @@ class Controller(Node):
                             f"{self.lpfx} Skipping Light {n+1} because it set to default name"
                         )
                         continue
-                    if n+1 in self.lights_exported:
-                        need_pyisy = True
-                        LOGGER.info(
-                            f"{self.lpfx} Skipping Light {n+1} {self.elk.lights[n].name} because it's an exported light from IoP that I will trigger"
-                        )
-                    else:
-                        if self.Params['check_elk_lights'] == "true":
-                            node = self.is_isy_node(self.elk.lights[n].name)
-                            if node is None:
-                                self.lights_to_trigger[n] = None
-                                LOGGER.warning(f"{self.lpfx} No node address or name match for '{self.elk.lights[n].name}'")
-                            else:
-                                need_pyisy = True
-                                LOGGER.info(
-                                    f"{self.lpfx} Adding ISY Sync Light {n+1} {self.elk.lights[n].name} {node.address} because it's an existing light in IoP that I will trigger"
-                                )
-                                self.lights_to_trigger[n] = node.address
-                                # Add ELK callback to myself to handle an exported light.
-                                self.elk.lights[n].add_callback(self.callback)
-                                # Add PyISY callback for when the node changes
-                                node.status_events.subscribe(self.node_changed)
+                    if self.light_method == "ELKNAME":
+                        node = self.is_isy_node(self.elk.lights[n].name)
+                        if node is None:
+                            self.lights_to_trigger[n] = None
+                            LOGGER.warning(f"{self.lpfx} No node address or name match for '{self.elk.lights[n].name}'")
+                        else:
+                            need_pyisy = True
+                            LOGGER.info(
+                                f"{self.lpfx} Adding ISY Sync Light {n+1} {self.elk.lights[n].name} {node.address} because it's an existing light in IoP that I will trigger"
+                            )
+                            self.lights_to_trigger[n] = node.address
+                            # Add ELK callback to myself to handle an exported light.
+                            self.elk.lights[n].add_callback(self.callback)
+                            # Add PyISY callback for when the node changes
+                            node.status_events.subscribe(self.node_changed)
                 if self.isy is not None:
                     if need_pyisy:
                         LOGGER.info(f'{self.lpfx} Enabling pyisy auto_update...')
                         self.pyisy.auto_update = True
                     else:
                         LOGGER.info(f'{self.lpfx} No ELK<->ISY Nodes, shuting down PyISY')
-                        #self.pyisy = None
             except Exception as ex:
                 LOGGER.error(f'{self.lpfx}',exc_info=True)
                 self.inc_error(f"{self.lpfx} {ex}")
@@ -688,14 +684,17 @@ class Controller(Node):
             self.config_info = [
             '<h1>ELK To ISY Light Table</h1>',
             '<p>This table is refreshed after node server syncs with the elk, so it may be out of date for a few seconds</p>',
-            '<p>If you want the ELK Lights to Control ISY Lights then add a Light in ElkRP2 whose name matches an existing ISY node name or address',
-            f'To see a list of all your node names and address click <a href="{hstr}://{self.isy._isy_ip}:{self.isy._isy_port}/rest/nodes" target="_blank">ISY Nodes</a></p>'
-            '<table border=1>',
+            '<ul><li>If light_method is ELKNAME'
+            '<ul><li>If you want the ELK Lights to Control ISY Lights then add a Light in ElkRP2 whose name matches an existing ISY node name or address',
+            f'To see a list of all your node names and address click <a href="{hstr}://{self.isy._isy_ip}:{self.isy._isy_port}/rest/nodes" target="_blank">ISY Nodes</a></li></ul>',
+            '<li>If light_method is ELKID',
+            f'<ul><li>All ISY nodes will be checked for ELKID=n in their notes to create an export file which can be dowloaded with the <a href="{self.rest_url}/export">export</a> link then imported into ElkRP2',
+            '</ul></ul><table border=1>',
             '<tr><th colspan=2><center>ELK<th colspan=3><center>ISY</tr>',
             '<tr><th><center>Id<th><center>Name<th><center>Address<th><center>Name<th><center>Type</tr>']
             for n in self.lights_to_trigger:
                 node = self.pyisy.nodes[self.lights_to_trigger[n]]
-                self.config_info.append(f'<tr><td>&nbsp;{n+1}&nbsp;<td>{self.elk.lights[n].name}')
+                self.config_info.append(f'<tr><td>&nbsp;{n}&nbsp;<td>{self.elk.lights[n].name}')
                 if node is None:
                     self.config_info.append('<td>&nbsp;None&nbsp;<td>&nbsp;None&nbsp;<td>&nbsp;&nbsp;')
                 else:
@@ -790,23 +789,55 @@ class Controller(Node):
         self.elk.run()
         return elk
 
+    #
+    # This processes ISY nodes and looks for ELKID=<n> to create
+    # the lights_exported hash.
+    #
     def export(self):
         LOGGER.info(f"{self.lpfx} start")
-        # Need the isy/pyisy object defined to check
-        if self.isy is None and not self.init_isy():
-            return False
-        for (_, node) in self.pyisy.nodes:
-            if node.description is not None:
-                LOGGER.debug(f"{self.lpfx} check {node.name} description={node.description}")
-                n = re.sub(r'ELKID=([0-9]+)',r'\1',node.description,flags=re.IGNORECASE).strip()
-                LOGGER.debug(f"{self.lpfx} got {n}")
-                self.lights_exported[int(n)] = node.address
-        self.export_process()
+        if self.light_method == 'ELKID':
+            # Need the isy/pyisy object defined to check
+            if self.isy is None and not self.init_isy():
+                return False
+            try:
+                LOGGER.warning("Export Started")
+                self.lights_exported = {}
+                if not os.path.exists(persist_dir):
+                    os.makedirs(persist_dir)
+                fh = open(export_file, "w")
+                fh.write("<nodes>\n")
+                for (_, node) in self.pyisy.nodes:
+                    if node.description is not None:
+                        LOGGER.debug(f"{self.lpfx} check {node.name} description={node.description}")
+                        n = re.sub(r'ELKID=([0-9]+)',r'\1',node.description,flags=re.IGNORECASE).strip()
+                        LOGGER.debug(f"{self.lpfx} got {n}")
+                        self.lights_exported[int(n)] = node.address
+                        fh.write("  <node>\n")
+                        fh.write(f"    <address>{node.address}</address>\n")
+                        fh.write(f"    <name>{node.name}</name>\n")
+                        fh.write(f"    <type>{node.type}</type>\n")
+                        fh.write(f"    <ELK-ID>{self.int_to_id(n)}</ELK-ID>\n")
+                        fh.write("  </node>\n")
+                fh.write("</nodes>\n")
+                fh.close()
+                LOGGER.warning("Export Completed")
+                self.export_process()
+            except Exception as ex:
+                LOGGER.error(f'{self.lpfx}',exc_info=True)
+                msg = f"export error, see log file {ex}"
+                self.inc_error(msg)
         LOGGER.info(f"{self.lpfx} done")
     
+    def int_to_id(self,n):
+        n = int(n)
+        return '%s%02d' % (chr(65+(int(n / 16))), int(( n / 16 - int( n / 16 )) * 16) )
+
+    # 
+    # This processes the lights_exported hash to setup proper callbacks on
+    # ELK and ISY sides.
+    #
     def export_process(self):
         LOGGER.info(f"{self.lpfx} Processing exports")
-        self.update_config_docs()
         # Need the isy/pyisy object defined to check
         if self.isy is None and not self.init_isy():
             return False
@@ -824,6 +855,7 @@ class Controller(Node):
                 self.elk.lights[int(n)-1].add_callback(self.callback)
                 # Add PyISY callback for when the node changes
                 node.status_events.subscribe(self.node_changed)
+        self.update_config_docs()
         LOGGER.info(f"{self.lpfx} Processing exports done")
 
     def discover(self):
@@ -861,8 +893,8 @@ class Controller(Node):
                 ni = self.poly.getNetworkInterface()
                 LOGGER.info(f"Starting REST Server on {ni['addr']}...")
                 self.rest = HTTPServer((ni['addr'], 0), MyServer)
-                self.url     = 'http://{0}:{1}'.format(self.rest.server_address[0],self.rest.server_address[1])
-                LOGGER.info(f"{self.lpfx} REST Server running on: {self.url}")
+                self.rest_url = 'http://{0}:{1}'.format(self.rest.server_address[0],self.rest.server_address[1])
+                LOGGER.info(f"{self.lpfx} REST Server running on: {self.rest_url}")
                 # Just keep serving until we are killed
                 self.rest_thread  = Thread(target=self.rest.serve_forever)
                 # Need this so the thread will die when the main process dies
@@ -913,6 +945,13 @@ class Controller(Node):
         LOGGER.debug(f'enter: Loading typed data now {params}')
         self.Params.load(params)
         self.poly.Notices.clear()
+        # Old unused params
+        if "check_elk_lights" in params:
+            self.Params.delete('check_elk_lights')
+            return
+        if "check_isy_elkid" in params:
+            self.Params.delete('check_isy_elkid')
+            return
         #
         # Make sure params exist
         #
@@ -923,22 +962,23 @@ class Controller(Node):
             "areas": "1",
             "outputs": "",
             "change_node_names": "false",
-            "check_elk_lights": "false"
+            "light_method": "NONE",
         }
         for param in defaults:
             if not param in params:
                 self.Params[param] = defaults[param]
                 return
-        self.check_params()
-        # Example of exported lights
-        self.lights_exported = {
-            #17: "n004_68ff7b0554c0",
-            #18: "n004_d807b6e69428"
-        }
-        self.export_process()
-        if self.handler_config_done_st is True:
-            self.elk_restart()
-    
+        try:
+            self.check_params()
+            # Example of exported lights
+            self.export()
+            if self.handler_config_done_st is True:
+                self.elk_restart()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            msg = f"Check params error, see log file {ex}"
+            self.inc_error(msg)
+                
     def check_params(self):
         """
         Check all user params are available and valid
@@ -948,6 +988,14 @@ class Controller(Node):
         #
         # Change Node Names
         #
+        #
+        # Temperature Units
+        #
+        if self.Params['light_method'] == "NONE" or self.Params['light_method'] == "ELKID" or self.Params['light_method'] == "ELKNAME":
+            self.light_method = self.Params['light_method']
+        else:
+            self.wm('light_method',f"Light Method must be ELKID or ELKNAME not '{self.Params['light_method']}'")
+            config_st = False
         #
         # Temperature Units
         #
@@ -1141,6 +1189,11 @@ class Controller(Node):
     def cmd_export(self, command):
         try:
             LOGGER.info(f"{self.lpfx}")
+            if self.light_method != "ELKID":
+                msg = f'light_method is {self.light_method}, export only available for ELKID method'
+                LOGGER.error(f'{self.lpfx} {msg}')
+                self.inc_error(msg)
+                return False
             return self.export()
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
