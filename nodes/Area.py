@@ -354,18 +354,18 @@ class AreaNode(BaseNode):
     hint = [1,2,3,4]
     drivers = [
         # status
-        {'driver': 'ST',  'value': 0, 'uom': 25},
-        {'driver': 'GV0',  'value': 0, 'uom': 25},
-        {'driver': 'GV1',  'value': 0, 'uom': 25},
-        {'driver': 'GV2',  'value': 0, 'uom': 25},
-        {'driver': 'GV3',  'value': 0, 'uom': 25},
-        {'driver': 'GV4',  'value': 0, 'uom': 25},
-        {'driver': 'GV5',  'value': 0, 'uom': 2},
-        {'driver': 'GV6',  'value': 0, 'uom': 25},
-        {'driver': 'GV7',  'value': 0, 'uom': 25},
-        {'driver': 'GV8',  'value': 0, 'uom': 25},
-        {'driver': 'GV9',  'value': 0, 'uom': 25},
-        {'driver': 'GV10',  'value': 1, 'uom': 2},
+        {'driver': 'ST',  'value': 0, 'uom': 25, "desc": "Alarm Status"},
+        {'driver': 'GV0',  'value': 0, 'uom': 25, "desc": "Armed Status"},
+        {'driver': 'GV1',  'value': 0, 'uom': 25, "desc": "Arm Up State"},
+        {'driver': 'GV2',  'value': 0, 'uom': 25, "desc": "Chime Mode"},
+        {'driver': 'GV3',  'value': 0, 'uom': 25, "desc": "Zones Violated"},
+        {'driver': 'GV4',  'value': 0, 'uom': 25, "desc": "Zones Bypassed"},
+        {'driver': 'GV5',  'value': 0, 'uom': 2, "desc": "Poll Voltages"},
+        {'driver': 'GV6',  'value': 0, 'uom': 25, "desc": "Last User"},
+        {'driver': 'GV7',  'value': 0, 'uom': 25, "desc": "Last User Keyupad"},
+        {'driver': 'GV8',  'value': 0, 'uom': 25, "desc": "Last Violated Zone"},
+        {'driver': 'GV9',  'value': 0, 'uom': 25, "desc": "Last Triggered Zone"},
+        {'driver': 'GV10',  'value': 1, 'uom': 2, "desc": "Additional Trigger"},
     ]
     id = 'area'
     commands = {

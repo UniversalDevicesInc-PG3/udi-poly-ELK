@@ -81,6 +81,7 @@ class Controller(Node):
         self.elk_thread = None
         self.config_st = None
         self.profile_done = False
+        self.rest_url = None
         self.rest = None
         self.errors = 0
         self.n_queue = []
@@ -898,16 +899,20 @@ class Controller(Node):
         msg = False
         if self.rest is None:
             try:
-                ni = self.poly.getNetworkInterface()
-                LOGGER.info(f"Starting REST Server on {ni['addr']}...")
-                self.rest = HTTPServer((ni['addr'], 0), MyServer)
-                self.rest_url = 'http://{0}:{1}'.format(self.rest.server_address[0],self.rest.server_address[1])
-                LOGGER.info(f"{self.lpfx} REST Server running on: {self.rest_url}")
-                # Just keep serving until we are killed
-                self.rest_thread  = Thread(target=self.rest.serve_forever)
-                # Need this so the thread will die when the main process dies
-                self.rest_thread.daemon = True
-                self.rest_thread.start()
+                if self.light_method == 'ELKID':
+                    ni = self.poly.getNetworkInterface()
+                    LOGGER.info(f"Starting REST Server on {ni['addr']}...")
+                    self.rest = HTTPServer((ni['addr'], 0), MyServer)
+                    self.rest_url = 'http://{0}:{1}'.format(self.rest.server_address[0],self.rest.server_address[1])
+                    LOGGER.info(f"{self.lpfx} REST Server running on: {self.rest_url}")
+                    # Just keep serving until we are killed
+                    self.rest_thread  = Thread(target=self.rest.serve_forever)
+                    # Need this so the thread will die when the main process dies
+                    self.rest_thread.daemon = True
+                    self.rest_thread.start()
+                else:
+                    LOGGER.info(f"{self.lpfx} REST Server not running for light_method={self.light_method}")
+
             except Exception as ex:
                 LOGGER.error(f'{self.lpfx}',exc_info=True)
                 msg = f"REST Server not started check log for error {ex}"
@@ -1247,26 +1252,26 @@ class Controller(Node):
         "SPEAK_PHRASE": cmd_speak_phrase,
     }
     drivers = [
-        {"driver": "ST", "value": 0, "uom": 25},
-        {"driver": "ERR", "value": 0, "uom": 56},
-        {"driver": "GV1", "value": 0, "uom": 25},
-        {"driver": "GV2", "value": 0, "uom": 25},
-        {"driver": "GV3", "value": 0, "uom": 2},
-        {"driver": "GV5", "value": 0, "uom": 2},
-        {"driver": "GV6", "value": 0, "uom": 2},
-        {"driver": "GV7", "value": 0, "uom": 2},
-        {"driver": "GV9", "value": 0, "uom": 2},
-        {"driver": "GV10", "value": 0, "uom": 2},
-        {"driver": "GV11", "value": 0, "uom": 2},
-        {"driver": "GV12", "value": 0, "uom": 2},
-        {"driver": "GV13", "value": 0, "uom": 2},
-        {"driver": "GV14", "value": 0, "uom": 2},
-        {"driver": "GV15", "value": 0, "uom": 2},
-        {"driver": "GV16", "value": 0, "uom": 2},
-        {"driver": "GV17", "value": 0, "uom": 2},
-        {"driver": "GV19", "value": 0, "uom": 2},
-        {"driver": "GV21", "value": 0, "uom": 2},
-        {"driver": "GV22", "value": 0, "uom": 2},
-        {"driver": "GV23", "value": 0, "uom": 2},
-        {"driver": "GV24", "value": 0, "uom": 2},
+        {"driver": "ST", "value": 0, "uom": 25, "desc": "NodeServer Online"},
+        {"driver": "ERR", "value": 0, "uom": 56, "desc": "NodeServer Errors"},
+        {"driver": "GV1", "value": 0, "uom": 25, "desc": "M!EXP Status"},
+        {"driver": "GV2", "value": 0, "uom": 25, "desc": "Remote Programming Status"},
+        {"driver": "GV3", "value": 0, "uom": 2,  "desc": "AC Fail"},
+        {"driver": "GV5", "value": 0, "uom": 2,  "desc": "Fail To Communicate"},
+        {"driver": "GV6", "value": 0, "uom": 2,  "desc": "EEProm Memory Error"},
+        {"driver": "GV7", "value": 0, "uom": 2,  "desc": "Low Battery Control"},
+        {"driver": "GV9", "value": 0, "uom": 2,  "desc": "Over Current"},
+        {"driver": "GV10", "value": 0, "uom": 2, "desc": "Telephone Fault"},
+        {"driver": "GV11", "value": 0, "uom": 2, "desc": "Output 2"},
+        {"driver": "GV12", "value": 0, "uom": 2, "desc": "Missing Keypad"},
+        {"driver": "GV13", "value": 0, "uom": 2, "desc": "Zone Expander"},
+        {"driver": "GV14", "value": 0, "uom": 2, "desc": "Output Expander"},
+        {"driver": "GV15", "value": 0, "uom": 2, "desc": "ELKRP Remote Access"},
+        {"driver": "GV16", "value": 0, "uom": 2, "desc": "Common Area Not Armed"},
+        {"driver": "GV17", "value": 0, "uom": 2, "desc": "Flash Memory Error"},
+        {"driver": "GV19", "value": 0, "uom": 2, "desc": "Serial Port Expander"},
+        {"driver": "GV21", "value": 0, "uom": 2, "desc": "GE Smoke CleanMe"},
+        {"driver": "GV22", "value": 0, "uom": 2, "desc": "Ethernet"},
+        {"driver": "GV23", "value": 0, "uom": 2, "desc": "Display Message In Keypad Line 1"},
+        {"driver": "GV24", "value": 0, "uom": 2, "desc": "Display Message In Keypad Line 2"},
     ]

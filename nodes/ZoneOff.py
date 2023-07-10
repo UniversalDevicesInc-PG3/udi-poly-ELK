@@ -30,10 +30,8 @@ class ZoneOffNode(BaseNode):
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
-        # logical status
-        {'driver': 'ST',  'value': 0, 'uom': 25},
-        # physical status
-        {'driver': 'GV0', 'value': 0, 'uom': 25},
+        {'driver': 'ST',  'value': 0, 'uom': 25, "desc": "Logical Status"},
+        {'driver': 'GV0', 'value': 0, 'uom': 25, "desc": "Physical Status"},
     ]
     id = 'zoneoff'
     commands = {

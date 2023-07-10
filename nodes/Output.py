@@ -130,8 +130,8 @@ class OutputNode(BaseNode):
     hint = [1,2,3,4]
     drivers = [
         # On/Off
-        {'driver': 'ST',  'value': 101, 'uom': 78},
-        {'driver': 'TIME',  'value': 0, 'uom': 58},
+        {'driver': 'ST',  'value': 101, 'uom': 78, "desc": "Status"},
+        {'driver': 'TIME',  'value': 0, 'uom': 58, "desc": "Default On Seconds"},
     ]
     id = 'output'
     commands = {

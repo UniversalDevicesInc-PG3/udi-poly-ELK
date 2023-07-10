@@ -104,7 +104,7 @@ class LightNode(BaseNode):
     hint = [1,2,3,4]
     drivers = [
         # On/Off
-        {'driver': 'ST',  'value': 101, 'uom': 78},
+        {'driver': 'ST',  'value': 101, 'uom': 78, "desc": "Status"},
     ]
     id = 'light'
     commands = {

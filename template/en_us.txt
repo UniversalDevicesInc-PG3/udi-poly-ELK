@@ -125,7 +125,7 @@ CMD-light-TOGGLE-NAME = Toggle
 
 # Task
 ND-task-NAME = ELK Light
-ND-task-ICON = Outoput
+ND-task-ICON = Output
 CMD-task-ACTIVATE-NAME = Activate
 
 # Counter
