@@ -7,9 +7,14 @@
 - Set `areas` to the range of areas you would like to include
 - Set `outputs` to the range of outputs to include
 - Set `change_node_names` to true makes ELK the source of node names so if they are changed then ISY names will be changed to match.
-- Set 'light_method' to ELKID to check for ELKID=n on ISY Nodes, or ELKNAME to check if the Elk Light Name matches and ISY Node name or address.
-  - After changing to ELKID method, you must wait until you see "Export Completed" warning message in the Log.
-  - If you change an ELKID on a node then you must restart the nodeserver for it to be seen.
+- Set `light_method` to ELKID to check for ELKID=n on ISY Nodes, or ELKNAME to check if the Elk Light Name matches and ISY Node name or address.
+  - ELKID:
+    - This works by right-clicking on a node in the ISY and adding a note with "ELKID=n" where n is a unique integer
+    - After changing to ELKID method, you must wait until you see "Export Completed" warning message in the Log.
+    - Then click on the "export" like provided below
+    - If you change an ELKID on a node then you must restart the nodeserver for it to be seen.
+  - ELKNAME
+    - This attempts to match the name of an ISY Node with the Name of an ELK Light node to control the table on this page will show the matches.
 
 A range can be comma seperated to include just those numbers, or seperated with a dash to include numbers in between.  For example 1-3,5,7-8 will be 1,2,3,5,7,8
 All ranges start at one just like the numbering the Elk uses.
