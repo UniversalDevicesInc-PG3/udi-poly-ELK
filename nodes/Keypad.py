@@ -42,10 +42,10 @@ class KeypadNode(BaseNode):
             }
             self.drivers = [
                 # On/Off
-                {'driver': DNAMES['status'],      'value':  0,  'uom': self.uoms[DNAMES['status']], "desc": "Status"},
-                {'driver': DNAMES['user'],        'value': -1,  'uom': self.uoms[DNAMES['user']], "desc": "Last User"},
-                {'driver': DNAMES['keypress'],    'value': -1,  'uom': self.uoms[DNAMES['keypress']], "desc": "Last Keypress"},
-                {'driver': DNAMES['function_key'],'value': -1,  'uom': self.uoms[DNAMES['function_key']], "desc": "Last Function Key"},
+                {'driver': DNAMES['status'],      'value':  0,  'uom': self.uoms[DNAMES['status']], "name": "Status"},
+                {'driver': DNAMES['user'],        'value': -1,  'uom': self.uoms[DNAMES['user']], "name": "Last User"},
+                {'driver': DNAMES['keypress'],    'value': -1,  'uom': self.uoms[DNAMES['keypress']], "name": "Last Keypress"},
+                {'driver': DNAMES['function_key'],'value': -1,  'uom': self.uoms[DNAMES['function_key']], "name": "Last Function Key"},
             ]
             LOGGER.debug(f'KeypadNode:init: name="{name}" uom={self.uoms}')
             if self.has_temperature:

@@ -105,7 +105,7 @@ class CounterNode(BaseNode):
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]
     drivers = [
-        {'driver': 'ST',  'value': 0, 'uom': 56, "desc": "Count"},
+        {'driver': 'ST',  'value': 0, 'uom': 56, "name": "Count"},
     ]
     id = 'counter'
     commands = {

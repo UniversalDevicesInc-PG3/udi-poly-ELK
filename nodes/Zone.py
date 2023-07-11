@@ -12,25 +12,25 @@ from elkm1_lib.const import (
 
 class ZoneNode(BaseNode):
     drivers = [
-        {'driver': 'ST',  'value': 0, 'uom': 25, "desc": "Logical Status"},
-        {'driver': 'GV0', 'value': 0, 'uom': 25, "desc": "Physical Status"},
-        {'driver': 'GV1', 'value': 0, 'uom': 2, "desc": "Triggered Alarm"},
-        {'driver': 'GV2', 'value': 0, 'uom': 56, "desc": "Area"},
-        {'driver': 'GV3', 'value': 0, 'uom': 25, "desc": "Definition"},
-        {'driver': 'GV4', 'value': 0, 'uom': 25, "desc": "Alarm"},
+        {'driver': 'ST',  'value': 0, 'uom': 25, "name": "Logical Status"},
+        {'driver': 'GV0', 'value': 0, 'uom': 25, "name": "Physical Status"},
+        {'driver': 'GV1', 'value': 0, 'uom': 2, "name": "Triggered Alarm"},
+        {'driver': 'GV2', 'value': 0, 'uom': 56, "name": "Area"},
+        {'driver': 'GV3', 'value': 0, 'uom': 25, "name": "Definition"},
+        {'driver': 'GV4', 'value': 0, 'uom': 25, "name": "Alarm"},
         # DON/DOF Config
-        #{'driver': 'GV5', 'value': 0, 'uom': 25, "desc": "Send On/Off"},
-        #{'driver': 'GV6', 'value': 0, 'uom': 2, "desc": "Bypassed"},
-        {'driver': 'GV7', 'value': 0, 'uom': 2,  'restore':True, "desc": "Off Node"},
-        {'driver': 'GV8', 'value': 1, 'uom': 25, 'restore':True, "desc": "Send ON for"},
-        {'driver': 'GV9', 'value': 2, 'uom': 25, 'restore':True, "desc": "Send OFF for"},
-        {'driver': 'CV',  'value': 0, 'uom': 72, "desc": "Poll Voltage"},
-        {'driver': 'GV10', 'value': 0, 'uom': 2, "desc": "Voltage"},
-        {"driver": "GV11", "value": 0, "uom": 2, "desc": "Box Tamper"},
-        {"driver": "GV12", "value": 0, "uom": 2, "desc": "Transmitter Low Battery"},
-        {"driver": "GV13", "value": 0, "uom": 2, "desc": "Security Alert"},
-        {"driver": "GV14", "value": 0, "uom": 2, "desc": "Lost Transmitter"},
-        {"driver": "GV15", "value": 0, "uom": 2, "desc": "Fire"},
+        #{'driver': 'GV5', 'value': 0, 'uom': 25, "name": "Send On/Off"},
+        #{'driver': 'GV6', 'value': 0, 'uom': 2, "name": "Bypassed"},
+        {'driver': 'GV7', 'value': 0, 'uom': 2,  'restore':True, "name": "Off Node"},
+        {'driver': 'GV8', 'value': 1, 'uom': 25, 'restore':True, "name": "Send ON for"},
+        {'driver': 'GV9', 'value': 2, 'uom': 25, 'restore':True, "name": "Send OFF for"},
+        {'driver': 'CV',  'value': 0, 'uom': 72, "name": "Poll Voltage"},
+        {'driver': 'GV10', 'value': 0, 'uom': 2, "name": "Voltage"},
+        {"driver": "GV11", "value": 0, "uom": 2, "name": "Box Tamper"},
+        {"driver": "GV12", "value": 0, "uom": 2, "name": "Transmitter Low Battery"},
+        {"driver": "GV13", "value": 0, "uom": 2, "name": "Security Alert"},
+        {"driver": "GV14", "value": 0, "uom": 2, "name": "Lost Transmitter"},
+        {"driver": "GV15", "value": 0, "uom": 2, "name": "Fire"},
     ]
 
     def __init__(self, controller, parent, address, elk):
