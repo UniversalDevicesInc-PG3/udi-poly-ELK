@@ -14,7 +14,7 @@
     - Then click on the "export" like provided below
     - If you change an ELKID on a node then you must restart the nodeserver for it to be seen.
   - ELKNAME
-    - This attempts to match the name of an ISY Node with the Name of an ELK Light node to control the table on this page will show the matches.
+    - This attempts to match the name of an ISY Node with the Name of an ELK Light node to control. The table on this page will show the matches.
 
 A range can be comma seperated to include just those numbers, or seperated with a dash to include numbers in between.  For example 1-3,5,7-8 will be 1,2,3,5,7,8
 All ranges start at one just like the numbering the Elk uses.
