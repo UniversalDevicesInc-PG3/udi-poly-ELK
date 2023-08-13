@@ -13,3 +13,6 @@ PyISY*
 pyisy*
 udi_interface*
 persist
+*.cert
+*.key
+*.pid
