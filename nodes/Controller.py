@@ -88,6 +88,7 @@ class Controller(Node):
         self._area_nodes = {}
         self._output_nodes = {}
         self._keypad_nodes = {}
+        self._light_nodes = {}
         self._counter_nodes = {}
         self._task_nodes = {}
         self.system_trouble_save = {}
@@ -128,18 +129,6 @@ class Controller(Node):
         self.n_queue.append(data['address'])
         # Start up ELK connection when controller node is all done being added.
         if (data['address'] == self.address):
-            LOGGER.info(f'{self.lpfx} Checking for old ndoes to remove...')
-            try:
-                # Check for our old nodes to remove
-                for i in range(1,256):
-                    address = f'light_{i}'
-                    node = self.poly.getNodeNameFromDb(address)
-                    if node is not None:
-                        LOGGER.warning(f"{self.lpfx} Deleting previously added node for Light address='{address}' {node}")
-                        self.poly.delNode(address)
-            except Exception as ex:
-                LOGGER.error(f'{self.lpfx}',exc_info=True)
-                self.inc_error(f"{self.lpfx} {ex}")
             LOGGER.info(f'{self.lpfx} Calling elk_start')
             self.elk_start()
             try:
@@ -628,6 +617,17 @@ class Controller(Node):
                             self.elk.lights[n].add_callback(self.callback)
                             # Add PyISY callback for when the node changes
                             node.status_events.subscribe(self.node_changed)
+                    elif self.light_method == "ELKALL":
+                        if n in self._light_nodes:
+                            LOGGER.info(
+                                f"{self.lpfx} Skipping Light {n+1} because it already defined."
+                            )
+                        else:
+                            address = f'light_{n + 1}'
+                            LOGGER.info(f"{self.lpfx} Adding Light {n+1} address {address}")
+                            node = self.add_node(address,LightNode(self, address, self.elk.lights[n]))
+                            if node is not None:
+                                self._output_nodes[n] = node
                 if self.isy is not None:
                     if need_pyisy:
                         LOGGER.info(f'{self.lpfx} Enabling pyisy auto_update...')
@@ -683,40 +683,43 @@ class Controller(Node):
     def update_config_docs(self):
         # '<style> table { cellpadding: 10px } </style>'
         try:
-            if self.init_isy():
-                hstr = 'https' if self.isy._isy_https else 'http'
-                self.config_info = [
-                '<h1>ELK To ISY Light Table</h1>',
-                '<p>This table is refreshed after node server syncs with the elk, so it may be out of date for a few seconds</p>',
-                '<ul><li>If light_method is ELKNAME'
-                '<ul><li>If you want the ELK Lights to Control ISY Lights then add a Light in ElkRP2 whose name matches an existing ISY node name or address',
-                f'To see a list of all your node names and address click <a href="{hstr}://{self.isy._isy_ip}:{self.isy._isy_port}/rest/nodes" target="_blank">ISY Nodes</a></li></ul>',
-                '<li>If light_method is ELKID',
-                f'<ul><li>All ISY nodes will be checked for ELKID=n in their notes to create an export file which can be dowloaded with the <a href="{self.rest_url}/export">export</a> link then imported into ElkRP2',
-                '</ul></ul><table border=1>',
-                '<tr><th colspan=2><center>ELK<th colspan=3><center>ISY</tr>',
-                '<tr><th><center>Id<th><center>Name<th><center>Address<th><center>Name<th><center>Type</tr>']
-                for n in self.lights_to_trigger:
-                    self.config_info.append(f'<tr><td>&nbsp;{n}&nbsp;<td>{self.elk.lights[n-1].name}')
-                    if self.lights_to_trigger[n] is None:
-                        self.config_info.append('<td>&nbsp;None&nbsp;<td>&nbsp;None&nbsp;<td>&nbsp;&nbsp;')
-                    else:
-                        node = self.pyisy.nodes[self.lights_to_trigger[n]]
-                        self.config_info.append(f'<td>&nbsp;{node.address}&nbsp;<td>&nbsp;{node.name}&nbsp;<td>&nbsp;{type(node).__name__}&nbsp;')
-                    self.config_info.append('</tr>')
-                self.config_info.append('</table>')
-                #
-                # Set the Custom Config Doc when it changes
-                #
-                s = "\n"
-                cstr = s.join(self.config_info)
-                if self.sent_cstr != cstr:
-                    self.poly.setCustomParamsDoc(self.cfgdoc+cstr)
-                    self.sent_cstr = cstr
+            if self.light_method == "ELKID" or self.light_method == "ELKNAME":
+                if self.init_isy():
+                    hstr = 'https' if self.isy._isy_https else 'http'
+                    self.config_info = [
+                    '<h1>ELK To ISY Light Table</h1>',
+                    '<p>This table is refreshed after node server syncs with the elk, so it may be out of date for a few seconds</p>',
+                    '<ul><li>If light_method is ELKNAME'
+                    '<ul><li>If you want the ELK Lights to Control ISY Lights then add a Light in ElkRP2 whose name matches an existing ISY node name or address',
+                    f'To see a list of all your node names and address click <a href="{hstr}://{self.isy._isy_ip}:{self.isy._isy_port}/rest/nodes" target="_blank">ISY Nodes</a></li></ul>',
+                    '<li>If light_method is ELKID',
+                    f'<ul><li>All ISY nodes will be checked for ELKID=n in their notes to create an export file which can be dowloaded with the <a href="{self.rest_url}/export">export</a> link then imported into ElkRP2',
+                    '</ul></ul><table border=1>',
+                    '<tr><th colspan=2><center>ELK<th colspan=3><center>ISY</tr>',
+                    '<tr><th><center>Id<th><center>Name<th><center>Address<th><center>Name<th><center>Type</tr>']
+                    for n in self.lights_to_trigger:
+                        self.config_info.append(f'<tr><td>&nbsp;{n}&nbsp;<td>{self.elk.lights[n-1].name}')
+                        if self.lights_to_trigger[n] is None:
+                            self.config_info.append('<td>&nbsp;None&nbsp;<td>&nbsp;None&nbsp;<td>&nbsp;&nbsp;')
+                        else:
+                            node = self.pyisy.nodes[self.lights_to_trigger[n]]
+                            self.config_info.append(f'<td>&nbsp;{node.address}&nbsp;<td>&nbsp;{node.name}&nbsp;<td>&nbsp;{type(node).__name__}&nbsp;')
+                        self.config_info.append('</tr>')
+                    self.config_info.append('</table>')
+                    #
+                    # Set the Custom Config Doc when it changes
+                    #
+                    s = "\n"
+                    cstr = s.join(self.config_info)
+                    if self.sent_cstr != cstr:
+                        self.poly.setCustomParamsDoc(self.cfgdoc+cstr)
+                        self.sent_cstr = cstr
+                else:
+                    msg = f"ISY {self.isy} is not initialized, see log"
+                    self.inc_error(msg)
+                    LOGGER.error(msg)
             else:
-                msg = f"ISY {self.isy} is not initialized, see log"
-                self.inc_error(msg)
-                LOGGER.error(msg)
+                self.poly.setCustomParamsDoc(self.cfgdoc)
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             msg = f"update config docs error, see log file {ex}"
@@ -1004,10 +1007,13 @@ class Controller(Node):
         #
         # Temperature Units
         #
-        if self.Params['light_method'] == "NONE" or self.Params['light_method'] == "ELKID" or self.Params['light_method'] == "ELKNAME":
+        if self.Params['light_method'] == "NONE" \
+            or self.Params['light_method'] == "ELKALL" \
+                or self.Params['light_method'] == "ELKID" \
+                    or self.Params['light_method'] == "ELKNAME":
             self.light_method = self.Params['light_method']
         else:
-            self.wm('light_method',f"Light Method must be ELKID or ELKNAME not '{self.Params['light_method']}'")
+            self.wm('light_method',f"Light Method must be NONE, ELKALL, ELKID or ELKNAME not '{self.Params['light_method']}'")
             config_st = False
         #
         # Temperature Units

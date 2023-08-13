@@ -428,6 +428,10 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.8.0: 08/12/2023
+  - Added light_method ELKALL which creates an ISY Light node for all defined ELK Lights
+  - Add driver names so they show up in the PG3 UI
+  - Updated Configuration document
 - 3.7.0: 04/07/2023
   - Added Export ability for [Support Elk Export](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/67)
 - 3.6.5: 04/01/2023
