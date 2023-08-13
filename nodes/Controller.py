@@ -566,7 +566,7 @@ class Controller(Node):
                         f"{self.lpfx} Skipping Area {an+1} because it is not in areas range {self.use_areas} in configuration"
                     )
                 else:
-                    LOGGER.info(f"{self.lpfx} Adding Area {an}")
+                    LOGGER.info(f"{self.lpfx} Adding Area {an+1}")
                     address = f'area_{an + 1}'
                     node = self.add_node(address,AreaNode(self, address, self.elk.areas[an]))
                     if node is not None:

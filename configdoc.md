@@ -18,7 +18,7 @@
     - Then click on the "export" like provided below
     - If you change an ELKID on a node then you must restart the nodeserver for it to be seen.
   - ELKNAME
-    - This attempts to match the name of an ISY Node with the Name of an ELK Light node to control the table on this page will show the matches.
+    - This attempts to match the name of an ISY Node with the Name of an ELK Light node to control. The table on this page will show the matches.
 
 Note that if you remove an Area, it will not be removed from the ISY or Polyglot.  This is intentional just in case it's an accident and your scenes or programs reference the nodes.  
 
