@@ -12,7 +12,7 @@ from datetime import datetime
 from copy import deepcopy
 from threading import Thread
 from node_funcs import *
-from nodes import AreaNode,OutputNode,LightNode,CounterNode,TaskNode
+from nodes import VERSION,AreaNode,OutputNode,LightNode,CounterNode,TaskNode
 from udi_interface import Node,LOGGER,Custom,LOG_HANDLER,ISY
 from const import SPEAK_WORDS,SPEAK_PHRASES,SYSTEM_TROUBLE_STATUS
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -150,7 +150,7 @@ class Controller(Node):
 
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
-        LOGGER.info(f"Started ELK NodeServer {self.poly.serverdata['version']}")
+        LOGGER.info(f"Started ELK NodeServer {VERSION}")
         self.heartbeat()
 
         configurationHelp = './configdoc.md';
