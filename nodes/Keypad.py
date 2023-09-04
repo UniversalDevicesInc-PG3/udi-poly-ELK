@@ -135,6 +135,9 @@ class KeypadNode(BaseNode):
         if val is None:
             val = -1
         self.set_driver(DNAMES['keypress'],val,force=force)
+        if val == 0:
+            val = 10
+        self.send_driver(f'GV{val}')
 
     def set_user(self,val=None,force=False,reportCmd=True):
         LOGGER.info(f'{self.lpfx} val={val}')
@@ -156,6 +159,42 @@ class KeypadNode(BaseNode):
         LOGGER.debug(f'{self.lpfx}')
         self.query()
 
+    def send_driver(self,driver):
+        LOGGER.debug(f"{self.lpfx} reportCmd({driver},1.2)")
+        self.reportCmd(driver,1,2)
+
+    def cmd_key_user_code_entered(self,command):
+        LOGGER.warning(f'{self.lpfx}: {command}')
+        self.send_driver('GV10')
+
+    def cmd_key_star(self,command):
+        LOGGER.debug(f'{self.lpfx}: {command}')
+        self.elk.press_function_key(FunctionKeys.STAR)
+
+    def cmd_key_f1(self,command):
+        LOGGER.debug(f'{self.lpfx}: {command}')
+        self.elk.press_function_key(FunctionKeys.F1)
+
+    def cmd_key_f2(self,command):
+        LOGGER.debug(f'{self.lpfx}: {command}')
+        self.elk.press_function_key(FunctionKeys.F2)
+
+    def cmd_key_f3(self,command):
+        LOGGER.debug(f'{self.lpfx}: {command}')
+        self.elk.press_function_key(FunctionKeys.F3)
+
+    def cmd_key_f4(self,command):
+        LOGGER.debug(f'{self.lpfx}: {command}')
+        self.elk.press_function_key(FunctionKeys.F4)
+
+    def cmd_key_f5(self,command):
+        LOGGER.debug(f'{self.lpfx}: {command}')
+        self.elk.press_function_key(FunctionKeys.F5)
+
+    def cmd_key_f6(self,command):
+        LOGGER.debug(f'{self.lpfx}: {command}')
+        self.elk.press_function_key(FunctionKeys.F6)
+
     # For others to call, AreaNode uses this.
     def press_key_chime(self):
         LOGGER.debug(f'{self.lpfx}')
@@ -171,4 +210,11 @@ class KeypadNode(BaseNode):
     commands = {
         'QUERY': cmd_query,
         'KEY_CHIME': cmd_key_chime,
+        'KEY_STAR': cmd_key_star,
+        'KEY_F1': cmd_key_f1,
+        'KEY_F2': cmd_key_f2,
+        'KEY_F3': cmd_key_f3,
+        'KEY_F4': cmd_key_f4,
+        'KEY_F5': cmd_key_f5,
+        'KEY_F6': cmd_key_f6,
     }

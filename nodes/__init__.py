@@ -1,5 +1,5 @@
 """ Node classes used by the Airscape Node Server. """
-VERSION = "3.8.1"
+VERSION = "3.9.0"
 from .BaseNode import BaseNode
 from .ZoneOff import ZoneOffNode
 from .Zone import ZoneNode

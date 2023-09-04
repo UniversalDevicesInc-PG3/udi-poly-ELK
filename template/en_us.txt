@@ -38,77 +38,77 @@ CST-1 = Connected
 CST-2 = Failed
 
 # ELK Connection Status
-EST-0: False
-EST-1: Connected
-EST-2: Disconnected
-EST-3: Login Success
-EST-4: Login Failed
-EST-5: Sync Complete
-EST-6: Timeout
-EST-7: Unknown
+EST-0 = False
+EST-1 = Connected
+EST-2 = Disconnected
+EST-3 = Login Success
+EST-4 = Login Failed
+EST-5 = Sync Complete
+EST-6 = Timeout
+EST-7 = Unknown
 
 # Remote Programming Status
-RPST-0: Disconnected
-RPST-1: Connected
-RPST-2: Initializing
+RPST-0 = Disconnected
+RPST-1 = Connected
+RPST-2 = Initializing
 
 # Trouble Status
-TBST--2: None
-TBST--1: Unknown Error
-TBST-0: AC Fail
-TBST-1: Box Tamper", True)
-TBST-2: Fail To Communicate
-TBST-3: EEProm Memory Error
-TBST-4: Low Battery Control
-TBST-5: Transmitter Low Battery", True)
-TBST-6: Over Current
-TBST-7: Telephone Fault
-TBST-9: Output 2
-TBST-10: Missing Keypad
-TBST-11: Zone Expander
-TBST-12: Output Expander
-TBST-14: ELKRP Remote Access
-TBST-16: Common Area Not Armed
-TBST-17: Flash Memory Error
-TBST-18: Security Alert", True)
-TBST-19: Serial Port Expander
-TBST-20: Lost Transmitter", True)
-TBST-21: GE Smoke CleanMe
-TBST-22: Ethernet
-TBST-31: Display Message In Keypad Line 1
-TBST-32: Display Message In Keypad Line 2
-TBST-33: Fire
+TBST--2 = None
+TBST--1 = Unknown Error
+TBST-0 = AC Fail
+TBST-1 = Box Tamper", True)
+TBST-2 = Fail To Communicate
+TBST-3 = EEProm Memory Error
+TBST-4 = Low Battery Control
+TBST-5 = Transmitter Low Battery", True)
+TBST-6 = Over Current
+TBST-7 = Telephone Fault
+TBST-9 = Output 2
+TBST-10 = Missing Keypad
+TBST-11 = Zone Expander
+TBST-12 = Output Expander
+TBST-14 = ELKRP Remote Access
+TBST-16 = Common Area Not Armed
+TBST-17 = Flash Memory Error
+TBST-18 = Security Alert", True)
+TBST-19 = Serial Port Expander
+TBST-20 = Lost Transmitter", True)
+TBST-21 = GE Smoke CleanMe
+TBST-22 = Ethernet
+TBST-31 = Display Message In Keypad Line 1
+TBST-32 = Display Message In Keypad Line 2
+TBST-33 = Fire
 
-KEY--1: None
-KEY-0: User Code Entered
-KEY-11: STAR
-KEY-12: POUND
-KEY-13: F1
-KEY-14: F2
-KEY-15: F3
-KEY-16: F4
-KEY-17: STAY
-KEY-18: EXIT
-KEY-19: CHIME
-KEY-20: BYPASS
-KEY-21: ELK
-KEY-22: DOWN
-KEY-23: UP
-KEY-24: RIGHT
-KEY-25: LEFT
-KEY-26: F6
-KEY-27: F5
-KEY-28: Data Key Mode
+KEY--1 = None
+KEY-0 = User Code Entered
+KEY-11 = STAR
+KEY-12 = POUND
+KEY-13 = F1
+KEY-14 = F2
+KEY-15 = F3
+KEY-16 = F4
+KEY-17 = STAY
+KEY-18 = EXIT
+KEY-19 = CHIME
+KEY-20 = BYPASS
+KEY-21 = ELK
+KEY-22 = DOWN
+KEY-23 = UP
+KEY-24 = RIGHT
+KEY-25 = LEFT
+KEY-26 = F6
+KEY-27 = F5
+KEY-28 = Data Key Mode
 
-FKEY-0: None
-FKEY-1: F1
-FKEY-2: F2
-FKEY-3: F3
-FKEY-4: F4
-FKEY-5: F5
-FKEY-6: F6
-FKEY-7: Astrick
-FKEY-8: Chime
+FKEY-0 = None
+FKEY-1 = F1
+FKEY-2 = F2
+FKEY-3 = F3
+FKEY-4 = F4
+FKEY-5 = F5
+FKEY-6 = F6
+FKEY-7 = Astrick
+FKEY-8 = Chime
 
 # Debug/Logger Modes
 CDM-9 = Debug + elkm1_lib
@@ -152,6 +152,32 @@ ST-keypad-GV2-NAME = Temperature
 ST-keypad-GV3-NAME = Last Key
 ST-keypad-GV4-NAME = Last Function Key
 CMD-keypad-KEY_CHIME-NAME = Chime
+CMD-keypad-KEY_STAR-NAME = Star
+CMD-keypad-KEY_F1-NAME= F1
+CMD-keypad-KEY_F2-NAME= F2
+CMD-keypad-KEY_F3-NAME= F3
+CMD-keypad-KEY_F4-NAME= F4
+CMD-keypad-KEY_F5-NAME= F5
+CMD-keypad-KEY_F6-NAME= F6
+CMD-keypad-GV10-NAME = User Code Entered
+CMD-keypad-GV11-NAME = STAR
+CMD-keypad-GV12-NAME = POUND
+CMD-keypad-GV13-NAME = F1
+CMD-keypad-GV14-NAME = F2
+CMD-keypad-GV15-NAME = F3
+CMD-keypad-GV16-NAME = F4
+CMD-keypad-GV17-NAME = STAY
+CMD-keypad-GV18-NAME = EXIT
+CMD-keypad-GV19-NAME = CHIME
+CMD-keypad-GV20-NAME = BYPASS
+CMD-keypad-GV21-NAME = ELK
+CMD-keypad-GV22-NAME = DOWN
+CMD-keypad-GV23-NAME = UP
+CMD-keypad-GV24-NAME = RIGHT
+CMD-keypad-GV25-NAME = LEFT
+CMD-keypad-GV26-NAME = F6
+CMD-keypad-GV27-NAME = F5
+CMD-keypad-GV28-NAME = Data Key Mode
 
 # keypad
 ND-keypadT-NAME = ELK Keypad With Temperature
@@ -162,6 +188,25 @@ ST-keypadT-GV2-NAME = Temperature
 ST-keypadT-GV3-NAME = Last Keypress
 ST-keypadT-GV4-NAME = Last Function Key
 CMD-keypadT-KEY_CHIME-NAME = Chime
+CMD-keypadT-GV10-NAME = User Code Entered
+CMD-keypadT-GV11-NAME = STAR
+CMD-keypadT-GV12-NAME = POUND
+CMD-keypadT-GV13-NAME = F1
+CMD-keypadT-GV14-NAME = F2
+CMD-keypadT-GV15-NAME = F3
+CMD-keypadT-GV16-NAME = F4
+CMD-keypadT-GV17-NAME = STAY
+CMD-keypadT-GV18-NAME = EXIT
+CMD-keypadT-GV19-NAME = CHIME
+CMD-keypadT-GV20-NAME = BYPASS
+CMD-keypadT-GV21-NAME = ELK
+CMD-keypadT-GV22-NAME = DOWN
+CMD-keypadT-GV23-NAME = UP
+CMD-keypadT-GV24-NAME = RIGHT
+CMD-keypadT-GV25-NAME = LEFT
+CMD-keypadT-GV26-NAME = F6
+CMD-keypadT-GV27-NAME = F5
+CMD-keypadT-GV28-NAME = Data Key Mode
 
 # area
 ND-area-NAME = Area Node
@@ -198,8 +243,8 @@ CMDP-OffTimer-NAME = Off Timer
 CMDP-Content-NAME = Content
 
 # Clear, 0=clear message, 1=clear message with * key, 2=Display until timeout
-MCLR-1: Clear Message with * key
-MCLR-2: Display Until Timeout
+MCLR-1 = Clear Message with * key
+MCLR-2 = Display Until Timeout
 
 # ST = alarm_state
 ALARM--1 = Unknown

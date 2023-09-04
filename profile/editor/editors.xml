@@ -18,18 +18,6 @@
   <editor id="tbst">
     <range uom="25" subset="-2,33" nls="TBST"/>
   </editor>
-  <editor id="keyp">
-    <range uom="25" subset="-2-0,11-28" nls="KEY"/>
-  </editor>
-  <editor id="fkey">
-    <range uom="25" subset="0,8" nls="FKEY"/>
-  </editor>
-  <editor id="sp_words">
-    <range uom="25" subset="1-472" nls="SPW"/>
-  </editor>
-  <editor id="word_or_phrase">
-    <range uom="25" subset="1-2" nls="WOP"/>
-  </editor>
   <editor id="integer">
        <range uom="25" min="0" max="1000" prec="0" />
   </editor>
@@ -82,6 +70,18 @@
   </editor>
 
   <!-- KeyPads -->
+  <editor id="keyp">
+    <range uom="25" subset="-2-0,11-28" nls="KEY"/>
+  </editor>
+  <editor id="fkey">
+    <range uom="25" subset="0,8" nls="FKEY"/>
+  </editor>
+  <editor id="sp_words">
+    <range uom="25" subset="1-472" nls="SPW"/>
+  </editor>
+  <editor id="word_or_phrase">
+    <range uom="25" subset="1-2" nls="WOP"/>
+  </editor>
 
   <!-- Temperature -->
   <editor id="I_TEMP">
