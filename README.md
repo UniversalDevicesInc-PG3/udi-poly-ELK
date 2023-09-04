@@ -355,6 +355,10 @@ condition for zone types that require a short. E.G. Fire zone alarms cannot be t
 
 By default only a Zone node is created.  When you enable a Zone "Use Off Node" this will create another node for that Zone which is sent the "Off" commands.   This allows you to have separate nodes for On and Off so they can be in different Scenes if desired.  This is conveinent for turning on a scene when a door opens, but not turning it off when the door closes.  You could also sent 'Send Off For' to None as well, if you never care about the off control message being sent.
 
+#### Thermostat Node
+
+There will be a Thermostat node created under the ELK Controller node for each named thermostat in the ELK.
+
 #### Light Node
 
 The Lights configured on the ELK do not create Light nodes on the ISY.  In versions prior to 3.6.0 it did, but not anymore.  The ISY Light nodes should be deleted, but if they are not then find them in the node server Nodes page and click the delete box to the right of the node.
@@ -442,6 +446,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.10.0: 09/04/2023
+  - Beta release of [Add Elk thermostats](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/50)
 - 3.9.0: 09/03/2023
   - Enhancement [Allow Elk NS to Recognize Keypad Presses](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/69) see [Keypad Control events](#keypad-control-events)
   - Enhancement [Support ELK Remote button presses #90

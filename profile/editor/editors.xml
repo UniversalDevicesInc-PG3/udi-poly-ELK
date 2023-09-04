@@ -129,4 +129,53 @@
   <editor id="zvolt">
     <range uom="72" min="0" max="13.8" step="0.1" prec="1"/>
   </editor>
+
+  <!-- Thermostats -->
+  <!-- Temperature -->
+  <editor id="I_TEMP_C">
+    <range uom="4" min="-50" max="75" step="0.5" prec="1" />
+  </editor>
+  <editor id="I_TEMP_F">
+    <range uom="17" min="-50" max="150" step="0.5" prec="1" />
+  </editor>
+  <editor id="I_SETTEMP_C">
+    <range uom="4" min="0" max="10" step="0.5" prec="1" />
+  </editor>
+  <editor id="I_SETTEMP_F">
+    <range uom="17" min="0" max="10" step="1" prec="0" />
+  </editor>
+  <editor id="I_HUM">
+    <range uom="21" min="0" max="100" step="1" prec="0" />
+  </editor>
+
+  <!-- CLISPC -  Cool Setpoint -->
+  <editor id="I_CLISPC_C">
+    <range uom="4" min="5" max="35" step="0.5" prec="1" />
+  </editor>
+  <editor id="I_CLISPC_F">
+    <range uom="17" min="32" max="90" step="1" prec="0"/>
+  </editor>
+
+  <!-- CLISPH -  Heat Setpoint -->
+  <editor id="I_CLISPH_C">
+    <range uom="4" min="5" max="35" step="0.5" prec="1" />
+  </editor>
+  <editor id="I_CLISPH_F">
+    <range uom="17" min="32" max="90" step="1" prec="0"/>
+  </editor>
+
+  <editor id="I_TSTAT_FAN_MODE">
+    <range uom="68" subset="0,1" />
+  </editor>
+  <editor id="I_TSTAT_FAN_STATE">
+    <range uom="80" subset="0,1" />
+  </editor>
+
+  <editor id="I_TSTAT_HOLD">
+    <range uom="78" subset="0,100" />
+  </editor>
+  <editor id="I_TSTAT_MODE">
+    <range uom="67" subset="0-4" />
+  </editor>
+
 </editors>

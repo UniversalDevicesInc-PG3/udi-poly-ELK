@@ -7,6 +7,7 @@ from .Light import LightNode
 from .Output import OutputNode
 from .Counter import CounterNode
 from .Task import TaskNode
+from .Thermostat import ThermostatNode
 from .Keypad import KeypadNode
 from .Area import AreaNode
 from .Controller import Controller

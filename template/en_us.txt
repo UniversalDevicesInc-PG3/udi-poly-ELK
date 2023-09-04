@@ -474,3 +474,13 @@ ZDCONF-4 = Reverse Send Both
 ZDCONF-5 = Reverse On Only
 ZDCONF-6 = Reverse Off Only
 
+# Thermostat
+ND-ThermostatF-NAME = Thermostat (F)
+ND-ThermostatF-ICON = Thermostat
+ND-ThermostatC-NAME = Thermostat (C)
+ND-ThermostatC-ICON = Thermostat
+ST-140E-ST-NAME = Temperature
+ST-140E-GV1-NAME = Hold
+CMD-140E-GV1-NAME = Hold
+CMD-140E-BRT-NAME = Setpoint Up
+CMD-140E-DIM-NAME = Setpoint Down

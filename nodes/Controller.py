@@ -12,7 +12,7 @@ from datetime import datetime
 from copy import deepcopy
 from threading import Thread
 from node_funcs import *
-from nodes import VERSION,AreaNode,OutputNode,LightNode,CounterNode,TaskNode
+from nodes import VERSION,AreaNode,OutputNode,LightNode,CounterNode,TaskNode,ThermostatNode
 from udi_interface import Node,LOGGER,Custom,LOG_HANDLER,ISY
 from const import SPEAK_WORDS,SPEAK_PHRASES,SYSTEM_TROUBLE_STATUS
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -91,6 +91,7 @@ class Controller(Node):
         self._light_nodes = {}
         self._counter_nodes = {}
         self._task_nodes = {}
+        self._thermostat_nodes = {}
         self.system_trouble_save = {}
         self.lights_to_trigger = {}
         self.logger = LOGGER
@@ -670,8 +671,24 @@ class Controller(Node):
                     address = f'task_{n + 1}'
                     node = self.add_node(address,TaskNode(self, address, self.elk.tasks[n]))
                     if node is not None:
+                        self._task_nodes[n] = node
+            for n in range(Max.THERMOSTATS.value):
+                LOGGER.debug(f"Check thermostats: {self.elk.thermostats[n]} is_default_name={self.elk.thermostats[n].is_default_name()}")
+                if n in self._thermostat_nodes:
+                    LOGGER.info(
+                        f"{self.lpfx} Skipping Thermostat {n+1} because it already defined."
+                    )
+                elif self.elk.thermostats[n].is_default_name():
+                    LOGGER.info(
+                        f"{self.lpfx} Skipping Thermostat {n+1} because it set to default name"
+                    )
+                else:
+                    LOGGER.info(f"{self.lpfx} Adding Thermostat {n}")
+                    address = f'thermostat_{n + 1}'
+                    node = self.add_node(address,ThermostatNode(self, address, self.elk.thermostats[n]))
+                    if node is not None:
                         self._output_nodes[n] = node
-            LOGGER.info("adding tasks done")
+            LOGGER.info("adding thermostats done")
             # Only update profile on restart
             if not self.profile_done:
                 self.write_profile()
@@ -1018,12 +1035,13 @@ class Controller(Node):
         #
         # Temperature Units
         #
-        if self.Params['temperature_unit'] == "F":
+        self.temperature_unit = self.Params['temperature_unit']
+        if self.temperature_unit == "F":
             self.temperature_uom = 17
-        elif self.Params['temperature_unit'] == "C":
+        elif self.temperature_unit == "C":
             self.temperature_uom = 4
         else:
-            self.wm('temperature_unit',f"Temperature Unit must be F or C not '{self.Params['temperature_unit']}'")
+            self.wm('temperature_unit',f"Temperature Unit must be F or C not '{self.temperature_unit}'")
             config_st = False
         #
         # Host
