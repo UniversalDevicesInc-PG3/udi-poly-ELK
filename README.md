@@ -256,7 +256,21 @@ There is a Keypad node for each keypad found and they are by default grouped und
 
 Commands:
   - Query
-  - Chime, presses the chime button on the keypad
+  - Chime, Star, F1-F6 presses the button on the keypad
+
+##### Keypad Control events
+
+The Key status is not very useful, you should use the Control events for key presses instead as shown in this example progrea.
+
+ELK Key Test - [ID 001C][Parent 0001]
+```
+If
+        'ELK / Home / Master Bedroom' is switched F4
+ 
+Then
+        Set 'Notification Controller / UD Mobile' Send Message To JimsPhone Content 8 Notification ID (ID=8)
+``` 
+
 
 #### Zone Node
 
@@ -428,6 +442,10 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.9.0: 09/03/2023
+  - Enhancement [Allow Elk NS to Recognize Keypad Presses](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/69) see [Keypad Control events](#keypad-control-events)
+  - Enhancement [Support ELK Remote button presses #90
+](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/90)
 - 3.8.1: 08/15/2023
   - Properly set version
 - 3.8.0: 08/12/2023
