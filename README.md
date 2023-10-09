@@ -4,6 +4,10 @@
 
 I am not responsible for any issues related to this node server including missing an alarm!  However I have been using this in my production enviorment for many months and have had no issues.
 
+### New documentation
+
+There is a [new documentation](https://www.jimboautomates.com/pg3-node-servers#h.xscdgxvkku1o) page I am working on and will transition all the information contained here eventually
+
 ## Why use this when ISY has the ELK module?
 
 The ELK Module will not be available on Polisy, the node server will be the supported method.
