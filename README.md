@@ -450,6 +450,9 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.10.1: 10/15/2023
+  - Fix bug in renameNode caused by PG3 interface change
+  - Fix crash when pyISY returns 0 for node_changed
 - 3.10.0: 09/04/2023
   - Beta release of [Add Elk thermostats](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/50)
 - 3.9.0: 09/03/2023
