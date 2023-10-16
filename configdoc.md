@@ -10,6 +10,8 @@
 - Set `outputs` to the range of outputs to include
 - Set `change_node_names` to true makes ELK the source of node names so if they are changed then ISY names will be changed to match.
 - Set `light_method` to ELKID to check for ELKID=n on ISY Nodes, or ELKNAME to check if the Elk Light Name matches and ISY Node name or address.
+  - NONE
+    - Use this if you have no need to control ISY lights with your ELK.
   - ELKALL
     - This creates an ISY Light node for every definded Light node on the ELk
   - ELKID
