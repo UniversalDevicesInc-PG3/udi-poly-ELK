@@ -1024,10 +1024,13 @@ class Controller(Node):
             st = self.check_params()
             # Example of exported lights
             self.export()
-            if self.handler_params_st is not None:
+            if self.handler_params_st is None:
+                # handler_start will start elk
+                self.handler_params_st = st
+            else:
                 # Not First time thru
+                self.handler_params_st = st
                 self.elk_restart()
-            self.handler_params_st = st
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             msg = f"Check params error, see log file {ex}"
