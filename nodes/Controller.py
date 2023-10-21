@@ -99,8 +99,8 @@ class Controller(Node):
         self.poly.Notices.clear()
         self.tested = True
         self.isy = None
+        self.handler_params_st = None
         self.handler_config_st = None
-        self.handler_config_done_st = None
         self.sent_cstr = None
         # For the short/long poll threads, we run them in threads so the main
         # process is always available for controlling devices
@@ -128,16 +128,6 @@ class Controller(Node):
     '''
     def node_queue(self, data):
         self.n_queue.append(data['address'])
-        # Start up ELK connection when controller node is all done being added.
-        if (data['address'] == self.address):
-            LOGGER.info(f'{self.lpfx} Calling elk_start')
-            self.elk_start()
-            try:
-                self.start_rest_server()
-            except Exception as ex:
-                LOGGER.error(f'{self.lpfx}',exc_info=True)
-                self.inc_error(f"{self.lpfx} {ex}")
-
 
     def wait_for_node_done(self):
         while len(self.n_queue) == 0:
@@ -162,13 +152,35 @@ class Controller(Node):
             msg = f'config doc not found? {configurationHelp}'
             LOGGER.error(msg)
             self.inc_error(msg)
-            
+        #
+        # Wait for all handlers to finish
+        #
+        cnt = 10
+        while ((self.handler_config_st is None 
+                or self.handler_params_st is None)
+                and cnt > 0):
+            LOGGER.warning(f'Waiting for all to be loaded config={self.handler_config_st} params={self.handler_params_st}... cnt={cnt}')
+            time.sleep(1)
+            cnt -= 1
+        if cnt == 0:
+            LOGGER.error("Timed out waiting for handlers to startup")
+            self.inc_error(f"{self.lpfx} Timed out waiting for handlers to startup, check log for errors")
+            self.exit()
+
+        LOGGER.info(f'{self.lpfx} Calling elk_start')
+        self.elk_start()
+        try:
+            self.start_rest_server()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
+
         LOGGER.debug(f'{self.lpfx} exit')
 
     def handler_config_done(self):
         LOGGER.debug(f'{self.lpfx} enter')
         self.poly.addLogLevel('DEBUG_MODULES',9,'Debug + Modules')
-        self.handler_config_done_st = True
+        self.handler_config_st = True
         LOGGER.debug(f'{self.lpfx} exit')
 
     def heartbeat(self):
@@ -195,7 +207,7 @@ class Controller(Node):
     def handler_poll(self, polltype):
         LOGGER.debug('start')
         try:
-            if self.handler_config_done_st is None:
+            if self.handler_config_st is None:
                 LOGGER.warning('waiting for config handler to be called')
                 return
             if not self.ready:
@@ -1010,11 +1022,13 @@ class Controller(Node):
                 self.Params[param] = defaults[param]
                 return
         try:
-            self.check_params()
+            st = self.check_params()
             # Example of exported lights
             self.export()
-            if self.handler_config_done_st is True:
+            if self.handler_params_st is not None:
+                # Not First time thru
                 self.elk_restart()
+            self.handler_params_st = st
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             msg = f"Check params error, see log file {ex}"
@@ -1100,7 +1114,6 @@ class Controller(Node):
             except:
                 self.wm('outputs',f"Failed to parse outputs range '{self.use_areas}'  will not add any: {sys.exc_info()[1]}")
                 config_st = False
-        self.config_st = config_st
         #
         # Change Node Names
         #
@@ -1112,7 +1125,8 @@ class Controller(Node):
         # Done
         #
         LOGGER.debug(f'exit: config_st={config_st}')
-
+        return config_st
+    
     def write_profile(self):
         LOGGER.info(f"{self.lpfx} Starting...")
         #
