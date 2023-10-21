@@ -79,7 +79,6 @@ class Controller(Node):
         self.elk = None
         self.elk_st = None
         self.elk_thread = None
-        self.config_st = None
         self.profile_done = False
         self.rest_url = None
         self.rest = None
@@ -785,9 +784,9 @@ class Controller(Node):
         self.inc_error(msg)
 
     def elk_start(self):
-        LOGGER.debug(f'{self.lpfx} enter: config_st={self.config_st}')
-        if not self.config_st:
-            msg = "Can't start elk until configuration is completed"
+        LOGGER.debug(f'{self.lpfx} enter: config_st={self.handler_params_st}')
+        if not self.handler_params_st:
+            msg = "Can't start elk until configuration is fixed"
             LOGGER.error(msg)
             self.poly.Notices['elk_start'] = msg
             # Build temporary profile
@@ -1153,7 +1152,7 @@ class Controller(Node):
         #
         nls.write("\n# SPEAK PHRASES\n")
         sphrases = list()
-        if self.config_st:
+        if self.handler_params_st:
             for zn in range(Max.ZONES.value):
                 if self.elk.zones[zn].definition != ZoneType.DISABLED:
                     SPEAK_PHRASES[zn+1] = self.elk.zones[zn].name
@@ -1166,7 +1165,7 @@ class Controller(Node):
         #
         # Then write our custom NLS lines
         nls.write("\nUSER-0 = Unknown\n")
-        if self.config_st:
+        if self.handler_params_st:
             for n in range(Max.USERS.value - 3):
                 LOGGER.debug(f"{self.lpfx} user={self.elk.users[n]}")
                 nls.write(f"USER-{n+1} = {self.elk.users[n].name}\n")
@@ -1177,14 +1176,14 @@ class Controller(Node):
         #
         # Now the keypad names
         nls.write("\n\nKEYPAD-0 = Unknown\n")
-        if self.config_st:
+        if self.handler_params_st:
             for n in range(Max.KEYPADS.value):
                 LOGGER.debug(f"{self.lpfx} keypad={self.elk.keypads[n]}")
                 nls.write(f"KEYPAD-{n+1} = {self.elk.keypads[n].name}\n")
         #
         # Now the zones names
         nls.write("\n\nZONE-0 = Unknown\n")
-        if self.config_st:
+        if self.handler_params_st:
             for n in range(Max.ZONES.value):
                 LOGGER.debug(f"{self.lpfx} zone={self.elk.zones[n]}")
                 nls.write(f"ZONE-{n+1} = {self.elk.zones[n].name}\n")
