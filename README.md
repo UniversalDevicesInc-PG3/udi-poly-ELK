@@ -450,6 +450,10 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.10.2: 10/21/2023
+  - Restructure startup to avoid issues:
+    - [AttributeError: 'Controller' object has no attribute 'change_node_names'](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/101)
+    - [AttributeError: 'Controller' object has no attribute 'light_method'](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/100)
 - 3.10.1: 10/15/2023
   - Fix bug in renameNode caused by PG3 interface change
   - Fix crash when pyISY returns 0 for node_changed
