@@ -1101,6 +1101,16 @@ class Controller(Node):
                 self.wm('outputs',f"Failed to parse outputs range '{self.use_areas}'  will not add any: {sys.exc_info()[1]}")
                 config_st = False
         self.config_st = config_st
+        #
+        # Change Node Names
+        #
+        if self.Params['change_node_names'] == "true":
+            self.change_node_names = True
+        else:
+            self.change_node_names = False
+        # 
+        # Done
+        #
         LOGGER.debug(f'exit: config_st={config_st}')
 
     def write_profile(self):
