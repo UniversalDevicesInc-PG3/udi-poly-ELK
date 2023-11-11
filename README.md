@@ -450,7 +450,9 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
-- 3.10.2: 10/21/2023
+- 3.10.4: 11/11/2023
+  - Set default ST (Nodeserver Online) to 1.
+- 3.10.3: 10/21/2023
   - Restructure startup to avoid issues:
     - [AttributeError: 'Controller' object has no attribute 'change_node_names'](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/101)
     - [AttributeError: 'Controller' object has no attribute 'light_method'](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/100)

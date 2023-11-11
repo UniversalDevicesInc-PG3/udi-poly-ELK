@@ -1310,7 +1310,7 @@ class Controller(Node):
         "SPEAK_PHRASE": cmd_speak_phrase,
     }
     drivers = [
-        {"driver": "ST", "value": 0, "uom": 25, "name": "NodeServer Online"},
+        {"driver": "ST", "value": 1, "uom": 25, "name": "NodeServer Online"},
         {"driver": "ERR", "value": 0, "uom": 56, "name": "NodeServer Errors"},
         {"driver": "GV1", "value": 0, "uom": 25, "name": "M!EXP Status"},
         {"driver": "GV2", "value": 0, "uom": 25, "name": "Remote Programming Status"},
