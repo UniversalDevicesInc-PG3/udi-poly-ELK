@@ -175,15 +175,17 @@ class AreaNode(BaseNode):
 
     def set_zone_logical_status(self, zn, st, force=False):
         LOGGER.info(f'{self.lpfx} zn={zn} st={st}')
-        self.zones_logical_status[zn] = st
+        self.zones_logical_status[zn] = st.value
         self.zones_bypassed = 0
         self.zones_violated = 0
         for val in self.zones_logical_status:
+            LOGGER.info(f'{self.lpfx} val={val}')
             if val is not None:
                 if val == BYPASSED:
                     self.zones_bypassed += 1
                 elif val == VIOLATED:
                     self.zones_violated += 1
+        LOGGER.info(f'{self.lpfx} zones_violated={self.zones_violated} zones_bypassed={self.zones_bypassed}')
         self.set_driver('GV3',self.zones_violated,force=force)
         self.set_driver('GV4',self.zones_bypassed,force=force)
 
