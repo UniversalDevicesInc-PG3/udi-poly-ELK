@@ -450,6 +450,10 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.10.6: 12/16/2023
+  - Fix [Violated & Bypassed Zones not updating](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/95)
+- 3.10.5: 11/22/2023
+  - Fix Celcius Thermostat profile to remove Admin Console Errors
 - 3.10.4: 11/11/2023
   - Set default ST (Nodeserver Online) to 1.
 - 3.10.3: 10/21/2023
