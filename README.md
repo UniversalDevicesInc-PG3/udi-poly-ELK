@@ -450,6 +450,10 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.10.7: 12/26:2023
+  - Increase initialization timeout to allow for PyISY retries when no variables or network resources exist.
+  - Fix crash when ELKID is added to a scene
+  - Better parsing and error message for checking ELKID
 - 3.10.6: 12/16/2023
   - Fix [Violated & Bypassed Zones not updating](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/95)
 - 3.10.5: 11/22/2023

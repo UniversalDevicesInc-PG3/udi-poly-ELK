@@ -154,7 +154,7 @@ class Controller(Node):
         #
         # Wait for all handlers to finish
         #
-        cnt = 10
+        cnt = 300
         while ((self.handler_config_st is None 
                 or self.handler_params_st is None)
                 and cnt > 0):
@@ -164,7 +164,7 @@ class Controller(Node):
         if cnt == 0:
             LOGGER.error("Timed out waiting for handlers to startup")
             self.inc_error(f"{self.lpfx} Timed out waiting for handlers to startup, check log for errors")
-            self.exit()
+            self.poly.stop()
 
         LOGGER.info(f'{self.lpfx} Calling elk_start')
         self.elk_start()
@@ -318,6 +318,9 @@ class Controller(Node):
     # This is the callback for when a light changes
     # push the change to the elk if necessary
     def node_changed(self,node):
+        if self.elk is None:
+            LOGGER.error("ERROR: Elk is not initialized for node_changed node=%s" % (node))
+            return
         LOGGER.info('%s node=%s' % (self.lpfx, node))
         # Why does it send 0 sometimes?
         if node == 0:
@@ -855,15 +858,26 @@ class Controller(Node):
                 for (_, node) in self.pyisy.nodes:
                     if node.description is not None:
                         LOGGER.debug(f"{self.lpfx} check {node.name} description={node.description}")
-                        n = re.sub(r'ELKID=([0-9]+)',r'\1',node.description,flags=re.IGNORECASE).strip()
-                        LOGGER.debug(f"{self.lpfx} got {n}")
-                        self.lights_exported[int(n)] = node.address
-                        fh.write("  <node>\n")
-                        fh.write(f"    <address>{node.address}</address>\n")
-                        fh.write(f"    <name>{node.name}</name>\n")
-                        fh.write(f"    <type>{node.type}</type>\n")
-                        fh.write(f"    <ELK-ID>{self.int_to_id(n)}</ELK-ID>\n")
-                        fh.write("  </node>\n")
+                        if 'ELKID=' in node.description:
+                            n = re.sub(r'ELKID=([0-9]+)',r'\1',node.description,flags=re.IGNORECASE).strip()
+                            LOGGER.debug(f"{self.lpfx} got {n}")
+                            try:
+                                n = int(n)
+                            except:
+                                self.inc_error(f"Error on {node.name} unable to convert {n} to an integer must be ELKID=n where n is an integer")
+                            else:
+                                self.lights_exported[n] = node.address
+                                fh.write("  <node>\n")
+                                fh.write(f"    <address>{node.address}</address>\n")
+                                fh.write(f"    <name>{node.name}</name>\n")
+                                if node.protocol == pyisy_constants.PROTO_GROUP:
+                                    fh.write(f"    <type>{node.protocol}</type>\n")
+                                else:
+                                    fh.write(f"    <type>{node.type}</type>\n")
+                                fh.write(f"    <ELK-ID>{self.int_to_id(n)}</ELK-ID>\n")
+                                fh.write("  </node>\n")
+                        else:
+                            LOGGER.debug(f'{self.lpfx} no ELKID= in {node.name} description={node.description}')
                 fh.write("</nodes>\n")
                 fh.close()
                 LOGGER.warning("Export Completed")
