@@ -27,6 +27,7 @@ from elkm1_lib.const import (
     ZoneType
 )
 
+CONTROLLER = None
 persist_dir = "persist"
 export_base = "isy_elk_export.xml"
 export_file = persist_dir + "/" + export_base
@@ -39,6 +40,7 @@ class MyServer(BaseHTTPRequestHandler):
             query = dict(parse_qsl(parsed_path.query))
             LOGGER.debug(f"REST: Got path={parsed_path} query={query}")
             if parsed_path.path == '/export':
+                CONTROLLER.export()
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/plain')
                 self.send_header('Content-Disposition', 'attachment;'
@@ -72,6 +74,8 @@ class MyServer(BaseHTTPRequestHandler):
 
 class Controller(Node):
     def __init__(self, poly, primary, address, name):
+        global CONTROLLER
+        CONTROLLER = self
         self.ready = False
         # We track our drsiver values because we need the value before it's been pushed.
         super(Controller, self).__init__(poly, primary, address, name)
@@ -897,28 +901,31 @@ class Controller(Node):
     # ELK and ISY sides.
     #
     def export_process(self):
-        LOGGER.info(f"{self.lpfx} Processing exports")
-        # Need the isy/pyisy object defined to check
-        if self.isy is None and not self.init_isy():
-            return False
-        for n in self.lights_exported:
-            if self.pyisy.nodes.get_by_id(self.lights_exported[n]) is None:
-                msg = f"ELKID={n} address={self.lights_exported[n]} not found in ISY?"
-                LOGGER.error(f'{self.lpfx} {msg}')
-                self.inc_error(msg)
-                LOGGER.error(self.pyisy.nodes[self.lights_exported[n]])
-            else:
-                LOGGER.info(f"{self.lpfx} Adding ELKID={n} address={self.lights_exported[n]}")
-                node = self.pyisy.nodes[self.lights_exported[n]]
-                self.lights_to_trigger[n] = node.address
-                # Set ELK Light status to current ISY node status
-                self.node_changed({'address': node.address, 'status': node.status})
-                # Add callback to myself to handle an exported light.
-                self.elk.lights[int(n)-1].add_callback(self.callback)
-                # Add PyISY callback for when the node changes
-                node.status_events.subscribe(self.node_changed)
-        self.update_config_docs()
-        LOGGER.info(f"{self.lpfx} Processing exports done")
+        if self.light_method == 'ELKID':
+            LOGGER.info(f"{self.lpfx} Processing exports")
+            # Need the isy/pyisy object defined to check
+            if self.isy is None and not self.init_isy():
+                return False
+            for n in self.lights_exported:
+                if self.pyisy.nodes.get_by_id(self.lights_exported[n]) is None:
+                    msg = f"ELKID={n} address={self.lights_exported[n]} not found in ISY?"
+                    LOGGER.error(f'{self.lpfx} {msg}')
+                    self.inc_error(msg)
+                    LOGGER.error(self.pyisy.nodes[self.lights_exported[n]])
+                else:
+                    LOGGER.info(f"{self.lpfx} Adding ELKID={n} address={self.lights_exported[n]}")
+                    node = self.pyisy.nodes[self.lights_exported[n]]
+                    self.lights_to_trigger[n] = node.address
+                    # Set ELK Light status to current ISY node status
+                    self.node_changed({'address': node.address, 'status': node.status})
+                    # Add callback to myself to handle an exported light.
+                    self.elk.lights[int(n)-1].add_callback(self.callback)
+                    # Add PyISY callback for when the node changes
+                    node.status_events.subscribe(self.node_changed)
+            self.update_config_docs()
+            LOGGER.info(f"{self.lpfx} Processing exports done")
+        else:
+            LOGGER.info(f"{self.lpfx} Processing exports skipped for light_method={self.light_method}")
 
     def discover(self):
         # TODO: What to do here, kill and restart the thread?
@@ -1037,7 +1044,6 @@ class Controller(Node):
         try:
             st = self.check_params()
             # Example of exported lights
-            self.export()
             if self.handler_params_st is None:
                 # handler_start will start elk
                 self.handler_params_st = st

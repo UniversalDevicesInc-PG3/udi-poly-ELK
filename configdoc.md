@@ -16,9 +16,8 @@
     - This creates an ISY Light node for every definded Light node on the ELk
   - ELKID
     - This works by right-clicking on a node in the ISY and adding a note with "ELKID=n" where n is a unique integer
-    - After changing to ELKID method, you must wait until you see "Export Completed" warning message in the Log.
-    - Then click on the "export" like provided below
-    - If you change an ELKID on a node then you must restart the nodeserver for it to be seen.
+    - Then click on the "export" link provided below which will appear once your ELK is synced
+      - Note: Depending on how many devices on your IoX it may take a while to process and generate the export file.
   - ELKNAME
     - This attempts to match the name of an ISY Node with the Name of an ELK Light node to control. The table on this page will show the matches.
 

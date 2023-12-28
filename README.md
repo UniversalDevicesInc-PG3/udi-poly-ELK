@@ -450,6 +450,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.10.8: 12/27/2023
+  - Fix [Setting up ELK ns module](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/102)
 - 3.10.7: 12/26:2023
   - Increase initialization timeout to allow for PyISY retries when no variables or network resources exist.
   - Fix crash when ELKID is added to a scene
