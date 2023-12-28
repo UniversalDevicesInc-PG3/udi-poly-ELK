@@ -6,6 +6,7 @@ import asyncio
 import os
 import markdown2
 import re
+import json
 import pkg_resources
 from pyisy import constants as pyisy_constants
 from datetime import datetime
@@ -31,6 +32,8 @@ CONTROLLER = None
 persist_dir = "persist"
 export_base = "isy_elk_export.xml"
 export_file = persist_dir + "/" + export_base
+export_type_dimmable = "1.33.64.0"
+export_type_onoff = "2.42.67.0"
 
 class MyServer(BaseHTTPRequestHandler):
 
@@ -40,7 +43,7 @@ class MyServer(BaseHTTPRequestHandler):
             query = dict(parse_qsl(parsed_path.query))
             LOGGER.debug(f"REST: Got path={parsed_path} query={query}")
             if parsed_path.path == '/export':
-                CONTROLLER.export()
+                CONTROLLER.export(True)
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/plain')
                 self.send_header('Content-Disposition', 'attachment;'
@@ -104,15 +107,18 @@ class Controller(Node):
         self.isy = None
         self.handler_params_st = None
         self.handler_config_st = None
+        self.handler_data_st   = None
         self.sent_cstr = None
         # For the short/long poll threads, we run them in threads so the main
         # process is always available for controlling devices
         self.short_event = False
         self.long_event  = False
         self.Params      = Custom(poly, 'customparams')
+        self.Data        = Custom(self.poly, 'customdata')
         poly.subscribe(poly.START,             self.handler_start, address) 
         poly.subscribe(poly.POLL,              self.handler_poll)
         poly.subscribe(poly.CUSTOMPARAMS,      self.handler_params)
+        poly.subscribe(self.poly.CUSTOMDATA,   self.handler_data)
         poly.subscribe(poly.LOGLEVEL,          self.handler_log_level)
         poly.subscribe(poly.CONFIGDONE,        self.handler_config_done)
         poly.subscribe(poly.DISCOVER,          self.discover)
@@ -160,9 +166,10 @@ class Controller(Node):
         #
         cnt = 300
         while ((self.handler_config_st is None 
-                or self.handler_params_st is None)
+                or self.handler_params_st is None
+                or self.handler_data_st is None)
                 and cnt > 0):
-            LOGGER.warning(f'Waiting for all to be loaded config={self.handler_config_st} params={self.handler_params_st}... cnt={cnt}')
+            LOGGER.warning(f'Waiting for all to be loaded config={self.handler_config_st} params={self.handler_params_st} data={self.handler_data_st}... cnt={cnt}')
             time.sleep(1)
             cnt -= 1
         if cnt == 0:
@@ -360,8 +367,10 @@ class Controller(Node):
 #        logging.getLogger("elkm1_lib").setLevel(slevel)
         LOGGER.info(f'exit: level={level}')
 
-    def init_isy(self):
+    def init_isy(self,restart=False):
         try:
+            if restart:
+                self.isy_stop()
             if self.isy is None:
                 self.pyisy = None
                 pyisy_version = pkg_resources.get_distribution("pyisy").version
@@ -715,6 +724,8 @@ class Controller(Node):
                     if node is not None:
                         self._output_nodes[n] = node
             LOGGER.info("adding thermostats done")
+            # Process our exports
+            self.export_process()
             # Only update profile on restart
             if not self.profile_done:
                 self.write_profile()
@@ -736,7 +747,7 @@ class Controller(Node):
                     '<ul><li>If you want the ELK Lights to Control ISY Lights then add a Light in ElkRP2 whose name matches an existing ISY node name or address',
                     f'To see a list of all your node names and address click <a href="{hstr}://{self.isy._isy_ip}:{self.isy._isy_port}/rest/nodes" target="_blank">ISY Nodes</a></li></ul>',
                     '<li>If light_method is ELKID',
-                    f'<ul><li>All ISY nodes will be checked for ELKID=n in their notes to create an export file which can be dowloaded with the <a href="{self.rest_url}/export">export</a> link then imported into ElkRP2',
+                    f'<ul><li>All ISY nodes will be checked for ELKID=n in their notes to create an export file which can be dowloaded with the <a href="{self.rest_url}/export">export</a> link then imported into ElkRP2. Clicking this link will reconnect to your IoX and process all nodes, which can take a little while.',
                     '</ul></ul><table border=1>',
                     '<tr><th colspan=2><center>ELK<th colspan=3><center>ISY</tr>',
                     '<tr><th><center>Id<th><center>Name<th><center>Address<th><center>Name<th><center>Type</tr>']
@@ -875,17 +886,23 @@ class Controller(Node):
                                 fh.write(f"    <address>{node.address}</address>\n")
                                 fh.write(f"    <name>{node.name}</name>\n")
                                 if node.protocol == pyisy_constants.PROTO_GROUP:
-                                    fh.write(f"    <type>{node.protocol}</type>\n")
+                                    fh.write(f"    <type>{export_type_onoff}</type>\n")
                                 else:
-                                    fh.write(f"    <type>{node.type}</type>\n")
+                                    if node.dimmable is True:
+                                        fh.write(f"    <type>{export_type_dimmable}</type>\n")
+                                    else:
+                                        fh.write(f"    <type>{export_type_onoff}</type>\n")
                                 fh.write(f"    <ELK-ID>{self.int_to_id(n)}</ELK-ID>\n")
                                 fh.write("  </node>\n")
                         else:
                             LOGGER.debug(f'{self.lpfx} no ELKID= in {node.name} description={node.description}')
                 fh.write("</nodes>\n")
                 fh.close()
-                LOGGER.warning("Export Completed")
-                self.export_process()
+                LOGGER.info("Export Completed")
+                # Save it in the DB
+                self.Data['ELKID'] = json.dumps(self.lights_exported)
+                # Process our exports
+                self.export_process()                
             except Exception as ex:
                 LOGGER.error(f'{self.lpfx}',exc_info=True)
                 msg = f"export error, see log file {ex}"
@@ -903,6 +920,7 @@ class Controller(Node):
     def export_process(self):
         if self.light_method == 'ELKID':
             LOGGER.info(f"{self.lpfx} Processing exports")
+            LOGGER.debug(f"{self.lpfx} lights_exported={self.lights_exported}")
             # Need the isy/pyisy object defined to check
             if self.isy is None and not self.init_isy():
                 return False
@@ -915,7 +933,7 @@ class Controller(Node):
                 else:
                     LOGGER.info(f"{self.lpfx} Adding ELKID={n} address={self.lights_exported[n]}")
                     node = self.pyisy.nodes[self.lights_exported[n]]
-                    self.lights_to_trigger[n] = node.address
+                    self.lights_to_trigger[int(n)] = node.address
                     # Set ELK Light status to current ISY node status
                     self.node_changed({'address': node.address, 'status': node.status})
                     # Add callback to myself to handle an exported light.
@@ -944,11 +962,18 @@ class Controller(Node):
 
     def handler_stop(self):
         LOGGER.debug('NodeServer stopping.')
+        self.isy_stop()
         self.rest_stop()
         self.elk_stop()
         LOGGER.debug('NodeServer stopped.')
         self.poly.stop()
 
+    def isy_stop(self):
+        if self.isy is not None and self.pyisy is not None:
+            self.pyisy.auto_update = False
+            self.pyisy = None
+            self.isy = None
+    
     def rest_stop(self):
         if self.rest is not None:
             LOGGER.info("REST:stop: Shutdoing down and closing")
@@ -1056,6 +1081,26 @@ class Controller(Node):
             msg = f"Check params error, see log file {ex}"
             self.inc_error(msg)
                 
+    def handler_data(self,data):
+        LOGGER.debug(f'enter: Loading data {data}')
+        if data is None:
+            LOGGER.warning("No custom data")
+            self.lights_exported = dict()
+        else:
+            self.Data.load(data)
+            if 'ELKID' in self.Data:
+                LOGGER.info(f'{self.lpfx}: Loading ELKID from custom data')
+                try:
+                    self.lights_exported = json.loads(self.Data['ELKID'])
+                    LOGGER.debug(f'{self.lpfx}: lights_exported={self.lights_exported}')
+                except Exception as ex:
+                    LOGGER.error(f'{self.lpfx}',exc_info=True)
+                    msg = f"Loading ELKID data error, see log file {ex}"
+                    self.inc_error(msg)
+            else:
+                LOGGER.info(f'{self.lpfx}: No ELKID in custom data')
+        self.handler_data_st = True
+
     def check_params(self):
         """
         Check all user params are available and valid
@@ -1285,7 +1330,7 @@ class Controller(Node):
                 LOGGER.error(f'{self.lpfx} {msg}')
                 self.inc_error(msg)
                 return False
-            return self.export()
+            return self.export(True)
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")

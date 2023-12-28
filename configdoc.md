@@ -18,6 +18,7 @@
     - This works by right-clicking on a node in the ISY and adding a note with "ELKID=n" where n is a unique integer
     - Then click on the "export" link provided below which will appear once your ELK is synced
       - Note: Depending on how many devices on your IoX it may take a while to process and generate the export file.
+    - Once the file is downloaded, open ElkRP connect to your System, then right click on Automation -> Lighting and import the file.
   - ELKNAME
     - This attempts to match the name of an ISY Node with the Name of an ELK Light node to control. The table on this page will show the matches.
 
