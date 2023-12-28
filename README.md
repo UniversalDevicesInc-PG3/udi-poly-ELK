@@ -451,7 +451,7 @@ https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
 - 3.10.9: 12/28/2023
-  - Improved light_method=ELKID.  All users of this method MUST click on the "export" link on the configuration page to run the new export procedure.  If you ELKID's have not changed you don't need to re-import into ElkRP, but you still must click that link to update the node server to the new method.
+  - Improved light_method=ELKID.  All users of this method MUST click on the "export" link on the configuration page to run the new export procedure.  If you ELKID's have not changed you don't need to re-import into ElkRP but it would be best.
 - 3.10.8: 12/27/2023
   - Fix [Setting up ELK ns module](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/102)
 - 3.10.7: 12/26:2023
