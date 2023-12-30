@@ -861,13 +861,13 @@ class Controller(Node):
         LOGGER.info(f"{self.lpfx} start")
         if self.light_method == 'ELKID':
             # Restart ISY connection so we have the lastest data.
-            if self.init_isy(True):
+            if not self.init_isy(True):
                 return False
             try:
                 LOGGER.warning("Export Started")
                 self.lights_exported = {}
                 if not os.path.exists(persist_dir):
-                    os.makedirs(persist_dir)
+                    os.makedir(persist_dir)
                 fh = open(export_file, "w")
                 fh.write("<nodes>\n")
                 for (_, node) in self.pyisy.nodes:
