@@ -43,7 +43,7 @@ class MyServer(BaseHTTPRequestHandler):
             query = dict(parse_qsl(parsed_path.query))
             LOGGER.debug(f"REST: Got path={parsed_path} query={query}")
             if parsed_path.path == '/export':
-                CONTROLLER.export(True)
+                CONTROLLER.export()
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/plain')
                 self.send_header('Content-Disposition', 'attachment;'
@@ -860,8 +860,8 @@ class Controller(Node):
     def export(self):
         LOGGER.info(f"{self.lpfx} start")
         if self.light_method == 'ELKID':
-            # Need the isy/pyisy object defined to check
-            if self.isy is None and not self.init_isy():
+            # Restart ISY connection so we have the lastest data.
+            if self.init_isy(True):
                 return False
             try:
                 LOGGER.warning("Export Started")
@@ -1330,7 +1330,7 @@ class Controller(Node):
                 LOGGER.error(f'{self.lpfx} {msg}')
                 self.inc_error(msg)
                 return False
-            return self.export(True)
+            return self.export()
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
