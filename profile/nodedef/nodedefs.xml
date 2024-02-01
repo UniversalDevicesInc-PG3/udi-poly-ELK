@@ -398,10 +398,36 @@
         </sts>
         <cmds>
             <sends>
+              <cmd id="GV10" />
+              <cmd id="GV11" />
+              <cmd id="GV12" />
+              <cmd id="GV13" />
+              <cmd id="GV14" />
+              <cmd id="GV15" />
+              <cmd id="GV16" />
+              <cmd id="GV17" />
+              <cmd id="GV18" />
+              <cmd id="GV19" />
+              <cmd id="GV20" />
+              <cmd id="GV21" />
+              <cmd id="GV22" />
+              <cmd id="GV23" />
+              <cmd id="GV24" />
+              <cmd id="GV25" />
+              <cmd id="GV26" />
+              <cmd id="GV27" />
+              <cmd id="GV28" />
             </sends>
             <accepts>
               <cmd id="QUERY" />
               <cmd id="KEY_CHIME" />
+              <cmd id="KEY_STAR" />
+              <cmd id="KEY_F1" />
+              <cmd id="KEY_F2" />
+              <cmd id="KEY_F3" />
+              <cmd id="KEY_F4" />
+              <cmd id="KEY_F5" />
+              <cmd id="KEY_F6" />
           </accepts>
         </cmds>
     </nodeDef>
