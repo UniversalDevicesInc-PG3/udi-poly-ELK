@@ -109,6 +109,7 @@ class Controller(Node):
         self.handler_config_st = None
         self.handler_data_st   = None
         self.sent_cstr = None
+        self.cfgdoc = None
         # For the short/long poll threads, we run them in threads so the main
         # process is always available for controlling devices
         self.short_event = False
@@ -146,21 +147,14 @@ class Controller(Node):
     def handler_config(self,data):
         #LOGGER.debug(f'{self.lpfx} {data}')        
         LOGGER.debug(f'{self.lpfx}')
+        self.profileNum = data['profileNum']
         self.handler_config_st = True
 
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
         LOGGER.info(f"Started ELK NodeServer {VERSION}")
         self.heartbeat()
-
-        configurationHelp = './configdoc.md';
-        if os.path.isfile(configurationHelp):
-            self.cfgdoc = markdown2.markdown_path(configurationHelp)
-            self.poly.setCustomParamsDoc(self.cfgdoc)
-        else:
-            msg = f'config doc not found? {configurationHelp}'
-            LOGGER.error(msg)
-            self.inc_error(msg)
+        self.ni = self.poly.getNetworkInterface()
         #
         # Wait for all handlers to finish
         #
@@ -368,6 +362,7 @@ class Controller(Node):
         LOGGER.info(f'exit: level={level}')
 
     def init_isy(self,restart=False):
+        LOGGER.debug(f"{self.lpfx} restart={restart}")
         try:
             if restart:
                 self.isy_stop()
@@ -393,23 +388,59 @@ class Controller(Node):
             self.inc_error(f"{self.lpfx} {ex}")
         return False
 
-    def is_isy_node(self,value):
+    # This delets the light_<n> nodes which can be created in ELKALL mode.
+    def delete_light_nodes(self):
         ret = None
         # Need the isy/pyisy object defined to check
         if self.isy is None and not self.init_isy():
             return ret
         try:
+            del_list = list()
             for (_, child) in self.pyisy.nodes:
-                ctype = type(child).__name__
-                #LOGGER.debug(f'{self.lpfx} ctype={ctype} check={child} name={child.name}')
-                if ctype != 'Folder' and (child.name == value or child.address == value):
-                    ret = child
-                    LOGGER.debug(f'{self.lpfx} ctype={ctype} got={ret}')
-            LOGGER.info(f'{self.lpfx} for={value} got={ret}')
+                LOGGER.debug(f'{self.lpfx} check name={child.name} address={child.address}')
+                match = re.search(f'^n{self.profileNum:03}_(light_[0-9]+)',child.address)
+                if match:
+                    LOGGER.warning(f'{self.lpfx} Will delete light_method=ELKALL node {child.name} address={child.address}')
+                    del_list.append(match.group(1))
+            if len(del_list) > 0:
+                for address in del_list:
+                    LOGGER.info(f'{self.lpfx} Deleting node {address}')
+                    self.poly.delNode(address)
+                # Must restart since we deleted nodes, tried update_ndoes but that didn't work.
+                self.init_isy(restart=True)
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             self.inc_error(f"{self.lpfx} {ex}")
         return ret
+
+
+    def is_isy_node(self,value):
+        # Need the isy/pyisy object defined to check
+        if self.isy is None and not self.init_isy():
+            return None
+        try:
+            for (_, child) in self.pyisy.nodes:
+                ctype = type(child).__name__
+                #LOGGER.debug(f'{self.lpfx} ctype={ctype} check={child} name={child.name}')
+                if ctype != 'Folder' and (child.name == value or child.address == value):
+                    LOGGER.debug(f'{self.lpfx} ctype={ctype} for={value} got={child}')
+                    return child
+            for (_, child) in self.pyisy.nodes:
+                ctype = type(child).__name__
+                #LOGGER.debug(f'{self.lpfx} ctype={ctype} check={child} name={child.name}')
+                if ctype != 'Folder' and re.search(f'^{value}',child.name):
+                    LOGGER.debug(f'{self.lpfx} ctype={ctype} for={value} got={child}')
+                    return child
+            for (_, child) in self.pyisy.nodes:
+                ctype = type(child).__name__
+                #LOGGER.debug(f'{self.lpfx} ctype={ctype} check={child} name={child.name}')
+                if ctype != 'Folder' and re.search(f'^{value}',child.address):
+                    LOGGER.debug(f'{self.lpfx} ctype={ctype} for={value} got={child}')
+                    return child
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}',exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
+        return None
 
     def set_st(self, st, force=False):
         LOGGER.debug(f"{self.lpfx} elk_st={self.elk_st} st={st}")
@@ -629,6 +660,11 @@ class Controller(Node):
             try:
                 # elkm1_lib uses zone numbers starting at zero.
                 need_pyisy = False
+                # Stop ISY in case we no longer need it, and if we do might as well reload
+                self.isy_stop()
+                # Delete any nodes created in ELKALL mode if we are no longer in that mode.
+                if self.light_method != "ELKALL":
+                    self.delete_light_nodes()
                 for n in range(Max.LIGHTS.value):
                     LOGGER.debug(f"Check light: {self.elk.lights[n]} is_default_name={self.elk.lights[n].is_default_name()}")
                     if self.elk.lights[n].is_default_name() or self.elk.lights[n].name == '':
@@ -735,17 +771,20 @@ class Controller(Node):
         self.update_config_docs()
 
     def update_config_docs(self):
+        LOGGER.debug(f"{self.lpfx} start light_method={self.light_method}")
         # '<style> table { cellpadding: 10px } </style>'
         try:
             if self.light_method == "ELKID" or self.light_method == "ELKNAME":
                 if self.init_isy():
                     hstr = 'https' if self.isy._isy_https else 'http'
+                    # If ISY is myself, then get the real address
+                    isy_ip = self.isy._isy_ip if self.isy._isy_ip != '127.0.0.1:8080' else self.ni['addr']
                     self.config_info = [
                     '<h1>ELK To ISY Light Table</h1>',
                     '<p>This table is refreshed after node server syncs with the elk, so it may be out of date for a few seconds</p>',
                     '<ul><li>If light_method is ELKNAME'
                     '<ul><li>If you want the ELK Lights to Control ISY Lights then add a Light in ElkRP2 whose name matches an existing ISY node name or address',
-                    f'To see a list of all your node names and address click <a href="{hstr}://{self.isy._isy_ip}:{self.isy._isy_port}/rest/nodes" target="_blank">ISY Nodes</a></li></ul>',
+                    f'To see a list of all your node names and address click <a href="{hstr}://{isy_ip}:{self.isy._isy_port}/rest/nodes" target="_blank">ISY Nodes</a></li></ul>',
                     '<li>If light_method is ELKID',
                     f'<ul><li>All ISY nodes will be checked for ELKID=n in their notes to create an export file which can be dowloaded with the <a href="{self.rest_url}/export">export</a> link then imported into ElkRP2. Clicking this link will reconnect to your IoX and process all nodes, which can take a little while.',
                     '</ul></ul><table border=1>',
@@ -764,20 +803,35 @@ class Controller(Node):
                     # Set the Custom Config Doc when it changes
                     #
                     s = "\n"
-                    cstr = s.join(self.config_info)
-                    if self.sent_cstr != cstr:
-                        self.poly.setCustomParamsDoc(self.cfgdoc+cstr)
-                        self.sent_cstr = cstr
+                    self.set_config_doc(s.join(self.config_info))
                 else:
+                    self.set_config_doc()
                     msg = f"ISY {self.isy} is not initialized, see log"
                     self.inc_error(msg)
                     LOGGER.error(msg)
             else:
-                self.poly.setCustomParamsDoc(self.cfgdoc)
+                self.set_config_doc()
         except Exception as ex:
             LOGGER.error(f'{self.lpfx}',exc_info=True)
             msg = f"update config docs error, see log file {ex}"
             self.inc_error(msg)
+        LOGGER.debug(f"{self.lpfx} done")
+
+    def set_config_doc(self,append=""):
+        if self.cfgdoc is None:
+            configurationHelp = './configdoc.md';
+            if os.path.isfile(configurationHelp):
+                self.cfgdoc = markdown2.markdown_path(configurationHelp)
+                self.set_config_doc()
+            else:
+                msg = f'config doc not found? {configurationHelp}'
+                LOGGER.error(msg)
+                self.inc_error(msg)
+                self.cfgdoc = f'<h1>{msg}</h1>'
+        if self.sent_cstr != append:
+            self.poly.setCustomParamsDoc(self.cfgdoc+append)
+            self.sent_cstr = append
+
 
     def timeout(self, msg_code):
         msg = f"{self.lpfx} Timeout sending message {msg_code}!!!"
@@ -824,6 +878,7 @@ class Controller(Node):
         self.elk_thread = Thread(name="ELK-" + str(os.getpid()), target=self._elk_start)
         self.elk_thread.daemon = True
         self.elk_thread.start()
+        self.set_config_doc("<h4>ELK Connection started... Config info will update when complete.</h4>")
         LOGGER.debug(f'{self.lpfx} exit:')
 
     def _elk_start(self):
@@ -985,9 +1040,8 @@ class Controller(Node):
         if self.rest is None:
             try:
                 if self.light_method == 'ELKID':
-                    ni = self.poly.getNetworkInterface()
-                    LOGGER.info(f"Starting REST Server on {ni['addr']}...")
-                    self.rest = HTTPServer((ni['addr'], 0), MyServer)
+                    LOGGER.info(f"Starting REST Server on {self.ni['addr']}...")
+                    self.rest = HTTPServer((self.ni['addr'], 0), MyServer)
                     self.rest_url = 'http://{0}:{1}'.format(self.rest.server_address[0],self.rest.server_address[1])
                     LOGGER.info(f"{self.lpfx} REST Server running on: {self.rest_url}")
                     # Just keep serving until we are killed

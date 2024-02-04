@@ -450,6 +450,9 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.10.13: 02/03/2024
+  - Fix [Issue with light_method=ELKNAME and old light_n nodes](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/104)
+  - Also lots of fixes for when light_method is changed, now no restarts should be necessary
 - 3.10.12: 02/01/2024
   - Fixed keypad with Temperture sensor profile to match keypad.
 - 3.10.11: 12/28/2023
