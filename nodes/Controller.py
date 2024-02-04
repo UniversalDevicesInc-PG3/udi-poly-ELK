@@ -777,8 +777,8 @@ class Controller(Node):
             if self.light_method == "ELKID" or self.light_method == "ELKNAME":
                 if self.init_isy():
                     hstr = 'https' if self.isy._isy_https else 'http'
-                    # If ISY is myself, then get the real address
-                    isy_ip = self.isy._isy_ip if self.isy._isy_ip != '127.0.0.1:8080' else self.ni['addr']
+                    # If ISY is not myself, then get the real address
+                    isy_ip = self.ni['addr'] if self.isy._isy_ip == '127.0.0.1' or self.isy._isy_ip == 'localhost' else self.isy._isy_ip
                     self.config_info = [
                     '<h1>ELK To ISY Light Table</h1>',
                     '<p>This table is refreshed after node server syncs with the elk, so it may be out of date for a few seconds</p>',

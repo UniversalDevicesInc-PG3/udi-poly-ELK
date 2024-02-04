@@ -450,6 +450,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.10.14: 02/03/2024
+  - Fix ISY Nodes IP address in Configuration Page
 - 3.10.13: 02/03/2024
   - Fix [Issue with light_method=ELKNAME and old light_n nodes](https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues/104)
   - Also lots of fixes for when light_method is changed, now no restarts should be necessary
