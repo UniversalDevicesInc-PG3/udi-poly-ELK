@@ -450,6 +450,8 @@ This can be adapated to your prefered notification method.
 https://github.com/UniversalDevicesInc-PG3/udi-poly-ELK/issues
 
 ## Release Notes
+- 3.10.15: 02/10/2024
+  - Prepare for next PG3x release. If using ELKID or ELKNAME you must enable the "Allow ISY Access by PLugin" on the configuration page.
 - 3.10.14: 02/03/2024
   - Fix ISY Nodes IP address in Configuration Page
 - 3.10.13: 02/03/2024

@@ -9,7 +9,7 @@
 - Set `areas` to the range of areas you would like to include
 - Set `outputs` to the range of outputs to include
 - Set `change_node_names` to true makes ELK the source of node names so if they are changed then ISY names will be changed to match.
-- Set `light_method` to ELKID to check for ELKID=n on ISY Nodes, or ELKNAME to check if the Elk Light Name matches and ISY Node name or address.
+- Set `light_method` to one of the following. IMPORTANT: If using ELKID or ELKNAME you must enable the "Allow ISY Access by PLugin" on the configuration page.
   - NONE
     - Use this if you have no need to control ISY lights with your ELK.
   - ELKALL

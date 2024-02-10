@@ -105,6 +105,7 @@ class Controller(Node):
         self.poly.Notices.clear()
         self.tested = True
         self.isy = None
+        self.allowIsyAccess    = None
         self.handler_params_st = None
         self.handler_config_st = None
         self.handler_data_st   = None
@@ -144,15 +145,9 @@ class Controller(Node):
             time.sleep(0.1)
         self.n_queue.pop()
 
-    def handler_config(self,data):
-        #LOGGER.debug(f'{self.lpfx} {data}')        
-        LOGGER.debug(f'{self.lpfx}')
-        self.profileNum = data['profileNum']
-        self.handler_config_st = True
-
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
-        LOGGER.info(f"Started ELK NodeServer {VERSION}")
+        LOGGER.info(f"Started ELK NodeServer {self.poly.serverdata['version']}")
         self.heartbeat()
         self.ni = self.poly.getNetworkInterface()
         #
@@ -170,16 +165,23 @@ class Controller(Node):
             LOGGER.error("Timed out waiting for handlers to startup")
             self.inc_error(f"{self.lpfx} Timed out waiting for handlers to startup, check log for errors")
             self.poly.stop()
-
-        LOGGER.info(f'{self.lpfx} Calling elk_start')
-        self.elk_start()
-        try:
-            self.start_rest_server()
-        except Exception as ex:
-            LOGGER.error(f'{self.lpfx}',exc_info=True)
-            self.inc_error(f"{self.lpfx} {ex}")
-
+        else:
+            LOGGER.info(f'{self.lpfx} Calling elk_start')
+            self.elk_start()
+            try:
+                self.start_rest_server()
+            except Exception as ex:
+                LOGGER.error(f'{self.lpfx}',exc_info=True)
+                self.inc_error(f"{self.lpfx} {ex}")
         LOGGER.debug(f'{self.lpfx} exit')
+
+    # This is only called on startup, not when any config changes :()
+    def handler_config(self,data):
+        #LOGGER.debug(f'{self.lpfx} {data}')
+        LOGGER.debug(f'{self.lpfx}')
+        self.profileNum = data['profileNum']
+        self.allowIsyAccess = data['allowIsyAccess']
+        self.handler_config_st = True
 
     def handler_config_done(self):
         LOGGER.debug(f'{self.lpfx} enter')
@@ -264,6 +266,9 @@ class Controller(Node):
                         LOGGER.error(f'{self.lpfx}: {msg}')
                         self.inc_error(f"{msg}")
                     else:
+                        # Need the isy/pyisy object defined to check
+                        if not self.init_isy():
+                            return False
                         node = self.pyisy.nodes.get_by_id(address)
                         if node is None:
                             msg = f"No ISY device with address={address} got={node}"
@@ -371,14 +376,19 @@ class Controller(Node):
                 pyisy_version = pkg_resources.get_distribution("pyisy").version
                 LOGGER.warning(f"pyisy_version={pyisy_version}")
                 self.isy = ISY(self.poly)
-                while not self.isy.valid:
-                    LOGGER.info(f"{self.lpfx} Waiting for isy.valid... {self.isy.valid}")
+                while not (self.isy.valid or self.isy.unauthorized):
+                    LOGGER.info(f"{self.lpfx} Waiting for isy.valid... valid={self.isy.valid} unauthorized={self.isy.unauthorized}")
                     time.sleep(2)
-            if self.isy is not None and self.pyisy is None:
-                self.pyisy = self.isy.pyisy()
-            LOGGER.info(f"{self.lpfx} got isy={self.isy} pyisy={self.pyisy} pyisy.connected={self.pyisy.connected}")
-            if self.pyisy.connected:
-                return True
+            if self.isy is not None:
+                if self.isy.unauthorized:
+                    msg = 'Please enable "Allow ISY Access by Plugin" on Configuration Page click "Save" then Restart this plugin.'
+                    LOGGER.error(msg)
+                    self.inc_error(msg)
+                    return False
+                elif self.pyisy is None:
+                    self.pyisy = self.isy.pyisy()
+                if self.pyisy.connected:
+                    return True
             else:
                 msg = 'Failed to connect to ISY see log file'
                 LOGGER.error(msg)
@@ -392,7 +402,7 @@ class Controller(Node):
     def delete_light_nodes(self):
         ret = None
         # Need the isy/pyisy object defined to check
-        if self.isy is None and not self.init_isy():
+        if not self.init_isy():
             return ret
         try:
             del_list = list()
@@ -416,7 +426,7 @@ class Controller(Node):
 
     def is_isy_node(self,value):
         # Need the isy/pyisy object defined to check
-        if self.isy is None and not self.init_isy():
+        if not self.init_isy():
             return None
         try:
             for (_, child) in self.pyisy.nodes:
@@ -700,7 +710,7 @@ class Controller(Node):
                             node = self.add_node(address,LightNode(self, address, self.elk.lights[n]))
                             if node is not None:
                                 self._output_nodes[n] = node
-                if self.isy is not None:
+                if self.pyisy is not None:
                     if need_pyisy:
                         LOGGER.info(f'{self.lpfx} Enabling pyisy auto_update...')
                         self.pyisy.auto_update = True
@@ -805,10 +815,8 @@ class Controller(Node):
                     s = "\n"
                     self.set_config_doc(s.join(self.config_info))
                 else:
-                    self.set_config_doc()
-                    msg = f"ISY {self.isy} is not initialized, see log"
-                    self.inc_error(msg)
-                    LOGGER.error(msg)
+                    # We don't log this because init_isy will handle that.
+                    self.set_config_doc(f"<h3>ISY {self.isy} is not initialized, see log</h3>")
             else:
                 self.set_config_doc()
         except Exception as ex:
@@ -973,11 +981,14 @@ class Controller(Node):
     # ELK and ISY sides.
     #
     def export_process(self):
+        # Restart ISY connection so we have the lastest data.
+        if not self.init_isy(True):
+            return False
         if self.light_method == 'ELKID':
             LOGGER.info(f"{self.lpfx} Processing exports")
             LOGGER.debug(f"{self.lpfx} lights_exported={self.lights_exported}")
             # Need the isy/pyisy object defined to check
-            if self.isy is None and not self.init_isy():
+            if not self.init_isy():
                 return False
             for n in self.lights_exported:
                 if self.pyisy.nodes.get_by_id(self.lights_exported[n]) is None:
@@ -1024,9 +1035,10 @@ class Controller(Node):
         self.poly.stop()
 
     def isy_stop(self):
-        if self.isy is not None and self.pyisy is not None:
-            self.pyisy.auto_update = False
-            self.pyisy = None
+        if self.isy is not None:
+            if self.pyisy is not None:
+                self.pyisy.auto_update = False
+                self.pyisy = None
             self.isy = None
     
     def rest_stop(self):
