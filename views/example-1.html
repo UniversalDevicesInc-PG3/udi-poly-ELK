@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+    <html>
+        <head>
+           <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+                /* To support Light and Dark Modes*/
+                :root {
+                    color-scheme: light dark;
+                }
+                /* Full width Slider */
+                input {
+                    width: 100%
+                }
+                /* Container Padding */
+                div {
+                    padding-right: 5px;
+                    padding-left: 5px;
+                }
+                body {
+                    /* This is the standard Favorites tile color, this can be removed if no background is desired*/
+                    background-color: #B0B1B133;
+                }
+                p {
+                    font-size: 14px;
+                }
+                html * {
+                    /* Prevent Text size adjustments in Safari (iOS Web View) on screen rotation*/
+                    -webkit-text-size-adjust: none; /* Never autoresize text */
+                }
+            </style>
+            <script>
+                <!-- Receives json messages from IoX Client -->
+                function newMessage(jsonString) {
+                    console.log('newMessage received');
+                    let json = JSON.parse(jsonString);
+                    <!-- statusUpdate-->
+                    let statusUpdate = json["statusUpdate"];
+                    if (statusUpdate != undefined) {
+                        updateStatus(statusUpdate);
+                        return;
+                    }
+                    <!-- getObservedAddresses -->
+                    let getObservedAddresses = json["getObservedAddresses"];
+                    if (getObservedAddresses != undefined){
+                        setObservedAddresses(getObservedAddresses);
+                        return;
+                    }
+                    <!-- nodeUpdate -->
+                    let nodeUpdate = json["nodeUpdate"];
+                    if (nodeUpdate != undefined){
+                        updateNode(nodeUpdate);
+                        return;
+                    }
+                    console.log('could not match newMessage Type');
+        }
+
+                <!-- Sends json message to IoX client -->
+                function publishMessage(jsonString) {
+                    console.log('publishMessage');
+                    try {
+                        <!-- iOS -->
+                        if (window.webkit != undefined) {
+                            webkit.messageHandlers.postToUdm.postMessage(jsonString);
+                        }
+                        <!-- Android -->
+                        if (window.androidInterface != undefined) {
+                            androidInterface.postToUdm(jsonString);
+                        }
+                        <!-- TODO Add other Clients such as browser -->
+                    } catch(err) {
+                        console.log('error');
+                    }
+                }
+
+                <!-- Send command to IoX -->
+                function sendCommand(address, cmd, params) {
+                    console.log('sendCommand called');
+                    let obj = {"sendCommand": {"address": address , "cmd": cmd, "p": params }};
+                    <!-- Multiple Params would be let obj = {"address": "ZB25235_001_1" , "cmd": "DON", "p": [{'pId': '', 'value': this.value, 'uom': '51'}, {'pId': 'OL', 'value': '100', 'uom': '51'}] }; -->
+                    let jsonString = JSON.stringify(obj);
+                    publishMessage(jsonString);
+                }
+
+
+                <!-- Process Status Update. For multiple nodes switch(address) -->
+                function updateStatus(json){
+                    let address = json["address"];
+                    let status = json["status_id"];
+                    let statusName = json["status_name"];
+                    let value = json["value"];
+                    let formatted = json["formatted"];
+                    switch(status){
+                    case "GV0":
+                        var statuslabel = document.getElementById("statuslabel");
+                        statuslabel.innerHTML = "Arm Up State: " + formatted;
+                        break;
+                    default:
+                       break;
+                    }
+                }
+
+                <!-- Process Node Update. For multiple nodes switch(address) -->
+                function updateNode(json){
+                    let address = json["address"];
+                    let name = json["name"];
+                    let enabled = json["enabled"];
+                    var myelement = document.getElementById("nodeName");
+                    myelement.innerHTML = name;
+                }
+
+                <!-- Process Observed Addresses Request -->
+                function setObservedAddresses(json){
+                    <!-- This is the Address of the node attached by the client. There is no need to request observation of this address as the Client will automatically observe if not null.  If other addresses are to be observed they are requested here -->
+                    let address = json["address"];
+                    let obj = {"setObservedAddresses": []};
+                    let jsonString = JSON.stringify(obj);
+                    publishMessage(jsonString);
+                }
+
+            </script>
+
+        </head>
+    <body>
+        <div class="namecontainer">
+            <p id="nodeName">-</p>
+        </div>
+        <div class="buttoncontainer">
+            <p id="statuslabel">-</p>
+            <button type="submit" class="style" onclick="sendCommand('', 'GV1', ['0'])"><i>Disarm</i></button>
+        </div>
+        <div class="onlevelcontainer">
+            <p id="onLevelLabel">-</p>
+        </div>
+    </body>
+</html>
