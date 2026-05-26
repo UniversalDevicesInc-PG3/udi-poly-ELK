@@ -105,6 +105,7 @@ class Controller(Node):
         self.poly.Notices.clear()
         self.tested = True
         self.isy = None
+        self.ni = None
         self.allowIsyAccess    = None
         self.handler_params_st = None
         self.handler_config_st = None
@@ -145,11 +146,25 @@ class Controller(Node):
             time.sleep(0.1)
         self.n_queue.pop()
 
+    def get_local_network_interface(self):
+        if self.ni is None:
+            try:
+                ni = self.poly.getNetworkInterface()
+                if not ni or not ni.get('addr'):
+                    raise ValueError(f"invalid network interface: {ni}")
+                self.ni = ni
+            except Exception:
+                self.ni = False
+                LOGGER.warning(
+                    f"{self.lpfx} Failed to determine local network interface, optional local bind features will be unavailable",
+                    exc_info=True,
+                )
+        return self.ni
+
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
         LOGGER.info(f"Started ELK NodeServer {self.poly.serverdata['version']}")
         self.heartbeat()
-        self.ni = self.poly.getNetworkInterface()
         #
         # Wait for all handlers to finish
         #
@@ -788,7 +803,21 @@ class Controller(Node):
                 if self.init_isy():
                     hstr = 'https' if self.isy._isy_https else 'http'
                     # If ISY is not myself, then get the real address
-                    isy_ip = self.ni['addr'] if self.isy._isy_ip == '127.0.0.1' or self.isy._isy_ip == 'localhost' else self.isy._isy_ip
+                    isy_ip = self.isy._isy_ip
+                    if isy_ip == '127.0.0.1' or isy_ip == 'localhost':
+                        ni = self.get_local_network_interface()
+                        if ni:
+                            isy_ip = ni['addr']
+                        else:
+                            LOGGER.warning(f"{self.lpfx} Using {isy_ip} in config docs because no local interface address is available")
+                    if self.rest_url:
+                        export_help = (
+                            f'All ISY nodes will be checked for ELKID=n in their notes to create an export file which can be dowloaded with the <a href="{self.rest_url}/export">export</a> link then imported into ElkRP2. Clicking this link will reconnect to your IoX and process all nodes, which can take a little while.'
+                        )
+                    else:
+                        export_help = (
+                            'All ISY nodes will be checked for ELKID=n in their notes to create an export file. The export link is currently unavailable because the export REST server is not running.'
+                        )
                     self.config_info = [
                     '<h1>ELK To ISY Light Table</h1>',
                     '<p>This table is refreshed after node server syncs with the elk, so it may be out of date for a few seconds</p>',
@@ -796,7 +825,7 @@ class Controller(Node):
                     '<ul><li>If you want the ELK Lights to Control ISY Lights then add a Light in ElkRP2 whose name matches an existing ISY node name or address',
                     f'To see a list of all your node names and address click <a href="{hstr}://{isy_ip}:{self.isy._isy_port}/rest/nodes" target="_blank">ISY Nodes</a></li></ul>',
                     '<li>If light_method is ELKID',
-                    f'<ul><li>All ISY nodes will be checked for ELKID=n in their notes to create an export file which can be dowloaded with the <a href="{self.rest_url}/export">export</a> link then imported into ElkRP2. Clicking this link will reconnect to your IoX and process all nodes, which can take a little while.',
+                    f'<ul><li>{export_help}',
                     '</ul></ul><table border=1>',
                     '<tr><th colspan=2><center>ELK<th colspan=3><center>ISY</tr>',
                     '<tr><th><center>Id<th><center>Name<th><center>Address<th><center>Name<th><center>Type</tr>']
@@ -1052,8 +1081,14 @@ class Controller(Node):
         if self.rest is None:
             try:
                 if self.light_method == 'ELKID':
-                    LOGGER.info(f"Starting REST Server on {self.ni['addr']}...")
-                    self.rest = HTTPServer((self.ni['addr'], 0), MyServer)
+                    ni = self.get_local_network_interface()
+                    if not ni:
+                        msg = "REST Server not started because the local network interface could not be determined"
+                        self.wm('rest_server', msg)
+                        return False
+                    self.poly.Notices.delete('rest_server')
+                    LOGGER.info(f"Starting REST Server on {ni['addr']}...")
+                    self.rest = HTTPServer((ni['addr'], 0), MyServer)
                     self.rest_url = 'http://{0}:{1}'.format(self.rest.server_address[0],self.rest.server_address[1])
                     LOGGER.info(f"{self.lpfx} REST Server running on: {self.rest_url}")
                     # Just keep serving until we are killed
