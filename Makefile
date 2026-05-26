@@ -1,7 +1,7 @@
 # udi-poly-ELK — XML validation and PG3 release artifacts (tag + per-track zips).
 #
 # PG3 release flow (clean tree; not detached HEAD):
-#   1. Bump nodes/__init__.py VERSION and profile/version.txt; commit.
+#   1. Bump nodes/__init__.py VERSION; only update profile/version.txt when profile files change.
 #   2. `make release`     — tag v<VERSION> and push current branch + tag.
 #                           Then in PG3 UI, edit the plugin and set Version to that exact VERSION.
 #   3. `make beta`        — push HEAD to the `beta` branch (reference) and build $(NAME)-beta-<VERSION>.zip.

@@ -9,7 +9,7 @@ and versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ### Changed
 
-- **Release workflow:** add ecobee-style `make release`, `make beta`, and `make production` targets, track the profile version in `profile/version.txt`, and move release history from `README.md` into this changelog.
+- **Release workflow:** add ecobee-style `make release`, `make beta`, and `make production` targets and move release history from `README.md` into this changelog. `profile/version.txt` remains reserved for actual profile changes only.
 
 ### Fixed
 
