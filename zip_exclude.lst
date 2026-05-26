@@ -18,3 +18,5 @@ persist
 *.pid
 *.log
 persist/*
+.installed
+.local/*

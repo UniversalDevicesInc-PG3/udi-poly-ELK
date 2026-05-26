@@ -7,10 +7,6 @@ and versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [3.10.16] - 2026-05-25
 
-### Changed
-
-- **Release workflow:** add ecobee-style `make release`, `make beta`, and `make production` targets and move release history from `README.md` into this changelog. `profile/version.txt` remains reserved for actual profile changes only.
-
 ### Fixed
 
 - **Startup on systems without an IPv4 default gateway:** the controller now resolves the local network interface lazily for config docs and the optional ELKID export REST server, so `getNetworkInterface()` failures no longer block startup or panel sync.

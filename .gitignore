@@ -75,3 +75,16 @@ target/
 #Project specific
 polyinterface
 *.zip
+.installed
+.local/
+*.cert
+*.key
+persist/
+phrases.txt
+PyISY*/
+profile/editor/custom.xml
+profile/nls/
+elkm1/
+elkm1_lib.lnk
+pyisy.lnk
+udi_interface.lnk
