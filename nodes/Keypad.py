@@ -168,57 +168,60 @@ class KeypadNode(BaseNode):
         self.send_driver('GV10')
 
     def cmd_key_star(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         LOGGER.debug(f'{self.lpfx}: {command}')
         self.elk.press_function_key(FunctionKeys.STAR)
 
     def cmd_key_f1(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         LOGGER.debug(f'{self.lpfx}: {command}')
         self.elk.press_function_key(FunctionKeys.F1)
 
     def cmd_key_f2(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         LOGGER.debug(f'{self.lpfx}: {command}')
         self.elk.press_function_key(FunctionKeys.F2)
 
     def cmd_key_f3(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         LOGGER.debug(f'{self.lpfx}: {command}')
         self.elk.press_function_key(FunctionKeys.F3)
 
     def cmd_key_f4(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         LOGGER.debug(f'{self.lpfx}: {command}')
         self.elk.press_function_key(FunctionKeys.F4)
 
     def cmd_key_f5(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         LOGGER.debug(f'{self.lpfx}: {command}')
         self.elk.press_function_key(FunctionKeys.F5)
 
     def cmd_key_f6(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         LOGGER.debug(f'{self.lpfx}: {command}')
         self.elk.press_function_key(FunctionKeys.F6)
 
     # For others to call, AreaNode uses this.
     def press_key_chime(self):
-        if not self.elk_panel_ready():
+        command = {'cmd': 'KEY_CHIME', 'address': self.address}
+        if not self.elk_panel_ready_or_queue(command):
             return
         LOGGER.debug(f'{self.lpfx}')
         self.elk.press_function_key(FunctionKeys.CHIME)
 
     def cmd_key_chime(self,command):
+        if not self.elk_panel_ready_or_queue(command):
+            return
         LOGGER.debug(f'{self.lpfx}')
-        self.press_key_chime()
+        self.elk.press_function_key(FunctionKeys.CHIME)
 
     "Hints See: https://github.com/UniversalDevicesInc/hints"
     hint = [1,2,3,4]

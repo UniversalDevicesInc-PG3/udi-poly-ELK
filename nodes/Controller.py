@@ -116,6 +116,7 @@ class Controller(Node):
         self._startup_complete = False
         self._startup_lock = Lock()
         self._startup_thread = None
+        self._panel_command_queue = CommandQueue()
         self.sent_cstr = None
         self.cfgdoc = None
         # For the short/long poll threads, we run them in threads so the main
@@ -217,6 +218,54 @@ class Controller(Node):
         return (self.ready
                 and self.elk is not None
                 and self.elk.is_connected())
+
+    def enqueue_panel_command(self, address, command):
+        dropped = self._panel_command_queue.enqueue({
+            'address': address,
+            'command': deepcopy(command),
+        })
+        if dropped is not None:
+            dropped_payload = dropped.get('payload', {})
+            dropped_cmd = dropped_payload.get('command', {})
+            msg = (
+                f"{self.lpfx} Panel command queue full, dropped oldest command "
+                f"{dropped_cmd.get('cmd')} for {dropped_payload.get('address')}"
+            )
+            LOGGER.warning(msg)
+            self.inc_error(msg)
+            return False
+        LOGGER.info(
+            f"{self.lpfx} Queued panel command {command.get('cmd')} for {address} "
+            f"until sync completes (queue size {self._panel_command_queue.size()})"
+        )
+        return True
+
+    def flush_panel_command_queue(self):
+        if not self.elk_panel_ready():
+            return
+        raw_items = self._panel_command_queue.pop_all()
+        if not raw_items:
+            return
+        items, stale = self._panel_command_queue.keep_fresh(raw_items)
+        if stale:
+            LOGGER.warning(f'{self.lpfx} Dropped {stale} stale queued panel command(s)')
+        for item in items:
+            address = item.get('address')
+            command = item.get('command')
+            if not address or not command:
+                continue
+            node = self.poly.getNode(address)
+            if node is None:
+                LOGGER.warning(
+                    f"{self.lpfx} Queued panel command {command.get('cmd')} for missing node {address}"
+                )
+                continue
+            LOGGER.info(f"{self.lpfx} Running queued panel command {command.get('cmd')} for {address}")
+            try:
+                node.runCmd(command)
+            except Exception as ex:
+                LOGGER.error(f'{self.lpfx}', exc_info=True)
+                self.inc_error(f"{self.lpfx} Queued command failed for {address}: {ex}")
 
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
@@ -839,6 +888,7 @@ class Controller(Node):
                 self.profile_done = True
             LOGGER.warning(f'{self.lpfx} All nodes added, ready to go...')
         self.ready = True
+        self.flush_panel_command_queue()
         self.update_config_docs()
 
     def update_config_docs(self):

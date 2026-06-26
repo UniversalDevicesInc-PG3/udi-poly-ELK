@@ -347,7 +347,7 @@ class ZoneNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_bypass(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             LOGGER.info(f'{self.lpfx} Calling bypass...')
@@ -357,7 +357,7 @@ class ZoneNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_clear_bypass(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             LOGGER.info(f'{self.lpfx} Calling bypass...')
@@ -367,7 +367,7 @@ class ZoneNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_trigger(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             LOGGER.warning(f'{self.lpfx} Calling trigger...')

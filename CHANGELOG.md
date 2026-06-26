@@ -5,6 +5,14 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.18] - 2026-06-26
+
+### Changed
+
+- **Panel commands before sync or during reconnect** are queued (up to 128 items, 1 hour max age) and replayed automatically when panel sync completes, instead of being ignored.
+
+---
+
 ## [3.10.17] - 2026-06-26
 
 ### Fixed

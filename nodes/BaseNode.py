@@ -36,11 +36,12 @@ class BaseNode(Node):
     def inc_error(self,err_str,val=None):
         return self.controller.inc_error(err_str,val=val)
 
-    def elk_panel_ready(self):
-        if not self.controller.elk_panel_ready():
-            LOGGER.warning(f'{self.lpfx} Panel not ready or not connected, ignoring command')
-            return False
-        return True
+    def elk_panel_ready_or_queue(self, command):
+        if self.controller.elk_panel_ready():
+            return True
+        address = command.get('address', self.address)
+        self.controller.enqueue_panel_command(address, command)
+        return False
 
     """
     Create our own get/set driver methods because getDriver from Polyglot can be

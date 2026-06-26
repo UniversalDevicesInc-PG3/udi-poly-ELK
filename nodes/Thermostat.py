@@ -167,7 +167,7 @@ class ThermostatNode(BaseNode):
         self.set_driver('CLIHUM', val, report=reportCmd, force=force)
 
     def cmd_set_mode(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             val = int(command.get('value'))
@@ -178,7 +178,7 @@ class ThermostatNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_hold(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             val = int(command.get('value'))
@@ -191,7 +191,7 @@ class ThermostatNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_fan(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             val = int(command.get('value'))
@@ -202,7 +202,7 @@ class ThermostatNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_heat_setpoint(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             val = int(command.get('value'))
@@ -213,7 +213,7 @@ class ThermostatNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_cool_setpoint(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             val = int(command.get('value'))
@@ -224,7 +224,7 @@ class ThermostatNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_setpoint(self,cmd):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(cmd):
             return
         if 'value' in cmd:
             val = float(cmd['value'])

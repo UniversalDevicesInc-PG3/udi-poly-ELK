@@ -87,7 +87,7 @@ class OutputNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_on_wtime(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             LOGGER.debug(f'{self.lpfx} {command}')
@@ -97,7 +97,7 @@ class OutputNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_on(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             LOGGER.debug(f'{self.lpfx}')
@@ -107,7 +107,7 @@ class OutputNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_off(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             LOGGER.debug(f'{self.lpfx}')
@@ -117,7 +117,7 @@ class OutputNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_toggle(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             LOGGER.debug(f'{self.lpfx}')

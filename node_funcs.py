@@ -1,5 +1,48 @@
 
 import re,os
+import time
+from collections import deque
+from threading import Lock
+
+PANEL_COMMAND_QUEUE_MAX = 128
+PANEL_COMMAND_QUEUE_MAX_AGE = 3600
+
+class CommandQueue:
+    def __init__(self, max_items=PANEL_COMMAND_QUEUE_MAX, max_age=PANEL_COMMAND_QUEUE_MAX_AGE):
+        self.max_items = max_items
+        self.max_age = max_age
+        self.items = deque()
+        self.lock = Lock()
+
+    def enqueue(self, payload):
+        dropped = None
+        with self.lock:
+            self.items.append({'ts': time.time(), 'payload': payload})
+            while len(self.items) > self.max_items:
+                dropped = self.items.popleft()
+        return dropped
+
+    def pop_all(self):
+        with self.lock:
+            items = list(self.items)
+            self.items.clear()
+        return items
+
+    def size(self):
+        with self.lock:
+            return len(self.items)
+
+    def keep_fresh(self, items):
+        now = time.time()
+        fresh = []
+        stale = 0
+        for item in items:
+            ts = item.get('ts', 0)
+            if now - ts <= self.max_age:
+                fresh.append(item.get('payload'))
+            else:
+                stale += 1
+        return fresh, stale
 
 def myfloat(value, prec=4):
     """ round and return float """

@@ -58,7 +58,7 @@ class TaskNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_activate(self,command):
-        if not self.elk_panel_ready():
+        if not self.elk_panel_ready_or_queue(command):
             return
         try:
             LOGGER.debug(f'{self.lpfx}')
