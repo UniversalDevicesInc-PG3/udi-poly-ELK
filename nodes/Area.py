@@ -237,6 +237,8 @@ class AreaNode(BaseNode):
         self.entry_exit_trigger = False if val == 0 else True
 
     def cmd_set_armed_status(self,command):
+        if not self.elk_panel_ready():
+            return
         try:
             val = command.get('value')
             LOGGER.info(f'{self.lpfx} elk.arm({val},****')
@@ -247,6 +249,8 @@ class AreaNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_bypass(self,command):
+        if not self.elk_panel_ready():
+            return
         try:
             val = command.get('value')
             LOGGER.info(f'{self.lpfx} Calling bypass...')
@@ -256,6 +260,8 @@ class AreaNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_clear_bypass(self,command):
+        if not self.elk_panel_ready():
+            return
         try:
             val = command.get('value')
             LOGGER.info(f'{self.lpfx} Calling clear bypass...')
@@ -286,6 +292,8 @@ class AreaNode(BaseNode):
     # Clear, 0=clear message, 1=clear message with * key, 2=Display until timeout
     #     def display_message(self, clear, beep, timeout, line1, line2)
     def cmd_display_message(self,command):
+        if not self.elk_panel_ready():
+            return
         LOGGER.debug(f'command={command}')
         try:
             query = command.get('query')
@@ -328,6 +336,8 @@ class AreaNode(BaseNode):
         return fixed
 
     def cmd_clear_message(self,command):
+        if not self.elk_panel_ready():
+            return
         try:
             LOGGER.info(f'display_message(0, False, 0, "", "")')
             self.elk.display_message(
@@ -338,6 +348,8 @@ class AreaNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_chime_mode(self,command):
+        if not self.elk_panel_ready():
+            return
         LOGGER.debug(f'command={command}')
         # command={'address': 'area_1', 'cmd': 'SET_CHIME_MODE', 'value': '3', 'uom': '25', 'query': {}}
         try:

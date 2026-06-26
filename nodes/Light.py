@@ -73,6 +73,8 @@ class LightNode(BaseNode):
                 self.reportCmd("DOF")
 
     def cmd_set_on(self,command):
+        if not self.elk_panel_ready():
+            return
         try:
             LOGGER.debug(f'{self.lpfx}')
             self.elk.level(100)
@@ -81,6 +83,8 @@ class LightNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_set_off(self,command):
+        if not self.elk_panel_ready():
+            return
         try:
             LOGGER.debug(f'{self.lpfx}')
             self.elk.level(0)
@@ -89,6 +93,8 @@ class LightNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_toggle(self,command):
+        if not self.elk_panel_ready():
+            return
         try:
             LOGGER.debug(f'{self.lpfx}')
             self.elk.toggle()

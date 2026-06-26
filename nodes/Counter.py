@@ -78,6 +78,8 @@ class CounterNode(BaseNode):
         self.query()
 
     def cmd_set(self,command):
+        if not self.elk_panel_ready():
+            return
         try:
             val = int(command.get('value'))
             LOGGER.debug(f'{self.lpfx} {val}')
@@ -87,6 +89,8 @@ class CounterNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_inc(self,command):
+        if not self.elk_panel_ready():
+            return
         try:
             LOGGER.debug(f'{self.lpfx}')
             self.elk.set(int(self.elk.value) + 1)
@@ -95,6 +99,8 @@ class CounterNode(BaseNode):
             self.inc_error(f"{self.lpfx} {ex}")
 
     def cmd_dec(self,command):
+        if not self.elk_panel_ready():
+            return
         try:
             LOGGER.debug(f'{self.lpfx}')
             self.elk.set(int(self.elk.value) - 1)

@@ -5,6 +5,17 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.10.17] - 2026-06-26
+
+### Fixed
+
+- **Slow PG3 boot no longer stops the nodeserver:** startup waits indefinitely for config/params/data handlers in a background thread instead of calling `poly.stop()` after 300 seconds. Each handler also triggers startup when it is the last one to arrive.
+- **`elk_restart()`** now stops the existing ELK connection before starting a new one.
+- **Panel commands** (arm, bypass, outputs, lights, zones, thermostats, counters, tasks, keypad keys) are ignored until initial sync completes and the panel TCP connection is active.
+- **`ready` flag** is cleared on panel disconnect so polls are skipped until reconnect sync completes.
+
+---
+
 ## [3.10.16] - 2026-05-25
 
 ### Fixed

@@ -11,7 +11,7 @@ import pkg_resources
 from pyisy import constants as pyisy_constants
 from datetime import datetime
 from copy import deepcopy
-from threading import Thread
+from threading import Thread, Lock
 from node_funcs import *
 from nodes import VERSION,AreaNode,OutputNode,LightNode,CounterNode,TaskNode,ThermostatNode
 from udi_interface import Node,LOGGER,Custom,LOG_HANDLER,ISY
@@ -34,6 +34,9 @@ export_base = "isy_elk_export.xml"
 export_file = persist_dir + "/" + export_base
 export_type_dimmable = "1.33.64.0"
 export_type_onoff = "2.42.67.0"
+STARTUP_WAIT_NOTICE = 'startup_wait'
+STARTUP_WARN_AFTER = 5
+STARTUP_NOTICE_AFTER = 60
 
 class MyServer(BaseHTTPRequestHandler):
 
@@ -110,6 +113,9 @@ class Controller(Node):
         self.handler_params_st = None
         self.handler_config_st = None
         self.handler_data_st   = None
+        self._startup_complete = False
+        self._startup_lock = Lock()
+        self._startup_thread = None
         self.sent_cstr = None
         self.cfgdoc = None
         # For the short/long poll threads, we run them in threads so the main
@@ -161,33 +167,70 @@ class Controller(Node):
                 )
         return self.ni
 
+    def _handlers_ready(self):
+        return (self.handler_config_st is not None
+                and self.handler_params_st is not None
+                and self.handler_data_st is not None)
+
+    def _log_startup_wait(self, waited):
+        msg = (
+            f'Waiting for PG3 handlers: config={self.handler_config_st} '
+            f'params={self.handler_params_st} data={self.handler_data_st} '
+            f'elapsed={waited}s'
+        )
+        if waited >= STARTUP_WARN_AFTER:
+            LOGGER.warning(msg)
+        else:
+            LOGGER.debug(msg)
+        if waited == STARTUP_NOTICE_AFTER:
+            self.wm(
+                STARTUP_WAIT_NOTICE,
+                'Still waiting for PG3 configuration to load. '
+                'The nodeserver will start automatically when configuration is ready.',
+            )
+
+    def _try_finish_startup(self):
+        with self._startup_lock:
+            if self._startup_complete or not self._handlers_ready():
+                return False
+            self._startup_complete = True
+        self.poly.Notices.delete(STARTUP_WAIT_NOTICE)
+        LOGGER.info(f'{self.lpfx} All handlers ready, starting ELK')
+        self.elk_start()
+        try:
+            self.start_rest_server()
+        except Exception as ex:
+            LOGGER.error(f'{self.lpfx}', exc_info=True)
+            self.inc_error(f"{self.lpfx} {ex}")
+        return True
+
+    def _wait_for_handlers_and_start(self):
+        waited = 0
+        while not self._handlers_ready():
+            self._log_startup_wait(waited)
+            time.sleep(1)
+            waited += 1
+        if self._try_finish_startup() and waited >= STARTUP_WARN_AFTER:
+            LOGGER.warning(f'{self.lpfx} Startup completed after waiting {waited} seconds for handlers')
+
+    def elk_panel_ready(self):
+        return (self.ready
+                and self.elk is not None
+                and self.elk.is_connected())
+
     def handler_start(self):
         LOGGER.debug(f'{self.lpfx} enter')
         LOGGER.info(f"Started ELK NodeServer {self.poly.serverdata['version']}")
         self.heartbeat()
-        #
-        # Wait for all handlers to finish
-        #
-        cnt = 300
-        while ((self.handler_config_st is None 
-                or self.handler_params_st is None
-                or self.handler_data_st is None)
-                and cnt > 0):
-            LOGGER.warning(f'Waiting for all to be loaded config={self.handler_config_st} params={self.handler_params_st} data={self.handler_data_st}... cnt={cnt}')
-            time.sleep(1)
-            cnt -= 1
-        if cnt == 0:
-            LOGGER.error("Timed out waiting for handlers to startup")
-            self.inc_error(f"{self.lpfx} Timed out waiting for handlers to startup, check log for errors")
-            self.poly.stop()
-        else:
-            LOGGER.info(f'{self.lpfx} Calling elk_start')
-            self.elk_start()
-            try:
-                self.start_rest_server()
-            except Exception as ex:
-                LOGGER.error(f'{self.lpfx}',exc_info=True)
-                self.inc_error(f"{self.lpfx} {ex}")
+        if self._try_finish_startup():
+            LOGGER.debug(f'{self.lpfx} exit')
+            return
+        self._startup_thread = Thread(
+            name="ELK-Startup-" + str(os.getpid()),
+            target=self._wait_for_handlers_and_start,
+        )
+        self._startup_thread.daemon = True
+        self._startup_thread.start()
         LOGGER.debug(f'{self.lpfx} exit')
 
     # This is only called on startup, not when any config changes :()
@@ -197,11 +240,13 @@ class Controller(Node):
         self.profileNum = data['profileNum']
         self.allowIsyAccess = data['allowIsyAccess']
         self.handler_config_st = True
+        self._try_finish_startup()
 
     def handler_config_done(self):
         LOGGER.debug(f'{self.lpfx} enter')
         self.poly.addLogLevel('DEBUG_MODULES',9,'Debug + Modules')
         self.handler_config_st = True
+        self._try_finish_startup()
         LOGGER.debug(f'{self.lpfx} exit')
 
     def heartbeat(self):
@@ -601,6 +646,7 @@ class Controller(Node):
 
     def disconnected(self):
         LOGGER.info(f"{self.lpfx} Disconnected!!!")
+        self.ready = False
         self.set_st(2)
 
     def login(self, succeeded):
@@ -1128,8 +1174,8 @@ class Controller(Node):
 
     def elk_restart(self):
         LOGGER.warning(f"{self.lpfx} Restarting ELK Connection")
-        if (self.elk_stop):
-            self.elk_start()
+        self.elk_stop()
+        self.elk_start()
         LOGGER.info(f"{self.lpfx} exit")
 
     def wm(self,key,msg):
@@ -1171,8 +1217,8 @@ class Controller(Node):
             st = self.check_params()
             # Example of exported lights
             if self.handler_params_st is None:
-                # handler_start will start elk
                 self.handler_params_st = st
+                self._try_finish_startup()
             else:
                 # Not First time thru
                 self.handler_params_st = st
@@ -1201,6 +1247,7 @@ class Controller(Node):
             else:
                 LOGGER.info(f'{self.lpfx}: No ELKID in custom data')
         self.handler_data_st = True
+        self._try_finish_startup()
 
     def check_params(self):
         """

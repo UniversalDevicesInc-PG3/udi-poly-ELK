@@ -52,7 +52,7 @@
                         return;
                     }
                     console.log('could not match newMessage Type');
-        }
+                }
 
                 <!-- Sends json message to IoX client -->
                 function publishMessage(jsonString) {
@@ -80,7 +80,6 @@
                     let jsonString = JSON.stringify(obj);
                     publishMessage(jsonString);
                 }
-
 
                 <!-- Process Status Update. For multiple nodes switch(address) -->
                 function updateStatus(json){
@@ -126,7 +125,7 @@
         </div>
         <div class="buttoncontainer">
             <p id="statuslabel">-</p>
-            <button type="submit" class="style" onclick="sendCommand('', 'GV1', ['0'])"><i>Disarm</i></button>
+            <button type="submit" class="style" onclick="sendCommand('', 'GV1', [{'pId': '', 'value': '0'}])"><i>Disarm</i></button>
         </div>
         <div class="onlevelcontainer">
             <p id="onLevelLabel">-</p>
